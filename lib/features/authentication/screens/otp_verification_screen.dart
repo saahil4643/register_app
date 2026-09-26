@@ -63,6 +63,16 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   }
 
   void _onKeyPress(int index, String value) {
+    if (value.length > 1) {
+      final digits = value.replaceAll(RegExp(r'\D'), '');
+      for (int i = 0; i < digits.length && (index + i) < 6; i++) {
+        _controllers[index + i].text = digits[i];
+      }
+      final nextIndex = (index + digits.length < 6) ? (index + digits.length) : 5;
+      _focusNodes[nextIndex].requestFocus();
+      return;
+    }
+
     if (value.isNotEmpty) {
       if (index < 5) {
         _focusNodes[index + 1].requestFocus();
@@ -73,7 +83,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   }
 
   String _getOtpCode() {
-    return _controllers.map((c) => c.text).join();
+    return _controllers.map((c) => c.text.trim()).join();
   }
 
   Future<void> _handleVerify() async {
@@ -81,7 +91,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     if (otpCode.length < 6) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please enter all 6 digits.'),
+          content: Text('Please enter all 6 digits of the OTP code.'),
           backgroundColor: Colors.red,
         ),
       );
@@ -90,30 +100,37 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
     final authProvider = context.read<AuthProvider>();
     final email = widget.arguments?['email'] ?? authProvider.tempEmail ?? authProvider.pendingVerificationEmail ?? '';
+    final isForgotPassword = widget.arguments?['isForgotPassword'] ?? false;
+
+    if (isForgotPassword) {
+      context.push('/reset-password', extra: {
+        'email': email,
+        'otp': otpCode,
+      });
+      return;
+    }
+
     final success = await authProvider.verifyOtp(otpCode, email: email);
 
-    if (mounted) {
-      if (success) {
-        final isForgotPassword = widget.arguments?['isForgotPassword'] ?? false;
-        if (isForgotPassword) {
-          context.push('/reset-password');
-        } else {
-          context.push('/success', extra: {
-            'title': 'Verification Successful!',
-            'description': 'Welcome to Prabhim One. Your account has been verified. Please log in to continue.',
-            'buttonText': 'Go to Login',
-            'routePath': '/login',
-          });
-        }
-      } else {
-        showDialog(
-          context: context,
-          builder: (context) => ErrorDialog(
-            title: 'Verification Failed',
-            content: authProvider.errorMessage ?? 'Invalid OTP code. Please try again.',
-          ),
-        );
-      }
+    if (!mounted) return;
+
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Email verified successfully! You can now log in.'),
+          backgroundColor: Color(0xFF10B981),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      context.go('/login');
+    } else {
+      showDialog(
+        context: context,
+        builder: (context) => ErrorDialog(
+          title: 'Verification Failed',
+          content: authProvider.errorMessage ?? 'Invalid OTP code. Please try again.',
+        ),
+      );
     }
   }
 
@@ -123,6 +140,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     final isDark = theme.brightness == Brightness.dark;
     final authProvider = context.watch<AuthProvider>();
     final email = widget.arguments?['email'] ?? authProvider.tempEmail ?? authProvider.pendingVerificationEmail ?? 'your email';
+    final isForgotPassword = widget.arguments?['isForgotPassword'] ?? false;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -134,7 +152,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
             if (context.canPop()) {
               context.pop();
             } else {
-              context.go('/welcome');
+              context.go('/login');
             }
           },
         ),
@@ -155,7 +173,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
-                  Icons.shield_outlined,
+                  isForgotPassword ? Icons.lock_reset_rounded : Icons.shield_outlined,
                   size: 48,
                   color: theme.colorScheme.primary,
                 ),
@@ -164,7 +182,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
               const SizedBox(height: 32),
               
               Text(
-                'Verify Account',
+                isForgotPassword ? 'Reset Verification' : 'Verify Account',
                 style: theme.textTheme.titleLarge?.copyWith(
                   fontSize: 32,
                   fontWeight: FontWeight.w900,
@@ -178,7 +196,9 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Text(
-                  'We sent a 6-digit verification code to $email. Enter it below to proceed.',
+                  isForgotPassword
+                      ? 'We sent a 6-digit password reset code to $email. Enter it below to proceed.'
+                      : 'We sent a 6-digit verification code to $email. Enter it below to proceed.',
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontSize: 15,
                     color: isDark ? Colors.grey[400] : Colors.grey[600],
@@ -204,7 +224,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                       textAlign: TextAlign.center,
                       keyboardType: TextInputType.number,
                       inputFormatters: [
-                        LengthLimitingTextInputFormatter(1),
+                        LengthLimitingTextInputFormatter(6),
                         FilteringTextInputFormatter.digitsOnly,
                       ],
                       onChanged: (value) => _onKeyPress(index, value),
@@ -267,32 +287,30 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                         CustomTextButton(
                           text: 'Resend Code',
                           onPressed: () async {
-                            final isForgotPassword = widget.arguments?['isForgotPassword'] ?? false;
+                            final currentContext = context;
+                            final messenger = ScaffoldMessenger.of(context);
                             final success = await authProvider.resendOtp(
                               email: email,
                               purpose: isForgotPassword ? 'password_reset' : 'registration',
                             );
+                            if (!mounted) return;
                             if (success) {
                               _startTimer();
-                              if (mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text('A new OTP has been sent to $email.'),
-                                    backgroundColor: AppColors.success,
-                                    behavior: SnackBarBehavior.floating,
-                                  ),
-                                );
-                              }
+                              messenger.showSnackBar(
+                                SnackBar(
+                                  content: Text('A new OTP has been sent to $email.'),
+                                  backgroundColor: AppColors.success,
+                                  behavior: SnackBarBehavior.floating,
+                                ),
+                              );
                             } else {
-                              if (mounted) {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) => ErrorDialog(
-                                    title: 'Resend Failed',
-                                    content: authProvider.errorMessage ?? 'Unable to resend OTP.',
-                                  ),
-                                );
-                              }
+                              showDialog(
+                                context: currentContext,
+                                builder: (context) => ErrorDialog(
+                                  title: 'Resend Failed',
+                                  content: authProvider.errorMessage ?? 'Unable to resend OTP.',
+                                ),
+                              );
                             }
                           },
                         ),
@@ -306,7 +324,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
               // Verify button
               CustomPrimaryButton(
-                text: 'Verify & Proceed',
+                text: isForgotPassword ? 'Continue to Reset' : 'Verify & Proceed',
                 isLoading: authProvider.isLoading,
                 onPressed: _handleVerify,
               ).animate().fade(delay: 400.ms),

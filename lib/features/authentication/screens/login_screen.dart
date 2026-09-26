@@ -21,6 +21,20 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _rememberMe = false;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final authProvider = context.read<AuthProvider>();
+      if (_emailController.text.isEmpty && authProvider.tempEmail != null && authProvider.tempEmail!.isNotEmpty) {
+        setState(() {
+          _emailController.text = authProvider.tempEmail!;
+        });
+      }
+    });
+  }
+
+  @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();

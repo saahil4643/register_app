@@ -8,7 +8,12 @@ import '../../../core/widgets/custom_dialogs.dart';
 import '../providers/auth_provider.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
-  const ResetPasswordScreen({super.key});
+  final Map<String, dynamic>? arguments;
+
+  const ResetPasswordScreen({
+    super.key,
+    this.arguments,
+  });
 
   @override
   State<ResetPasswordScreen> createState() => _ResetPasswordScreenState();
@@ -16,11 +21,25 @@ class ResetPasswordScreen extends StatefulWidget {
 
 class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _emailController;
+  late final TextEditingController _otpController;
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    final authProvider = context.read<AuthProvider>();
+    final initialEmail = widget.arguments?['email'] ?? authProvider.tempEmail ?? '';
+    final initialOtp = widget.arguments?['otp'] ?? '';
+    _emailController = TextEditingController(text: initialEmail);
+    _otpController = TextEditingController(text: initialOtp);
+  }
+
+  @override
   void dispose() {
+    _emailController.dispose();
+    _otpController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
@@ -39,16 +58,26 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       }
 
       final authProvider = context.read<AuthProvider>();
-      final success = await authProvider.resetPassword(_passwordController.text);
+      final email = _emailController.text.trim();
+      final otp = _otpController.text.trim();
+
+      final success = await authProvider.resetPassword(
+        email: email,
+        otp: otp,
+        newPassword: _passwordController.text,
+        confirmPassword: _confirmPasswordController.text,
+      );
 
       if (mounted) {
         if (success) {
-          context.push('/success', extra: {
-            'title': 'Password Reset Success!',
-            'description': 'Your password has been reset successfully. You can now log in with your new password.',
-            'buttonText': 'Back to Login',
-            'routePath': '/login',
-          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Password reset successfully! Please log in with your new password.'),
+              backgroundColor: Color(0xFF10B981),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+          context.go('/login');
         } else {
           showDialog(
             context: context,
@@ -128,17 +157,67 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   ),
                 ).animate().fade(delay: 100.ms),
 
-                const SizedBox(height: 48),
+                const SizedBox(height: 36),
+
+                // Email field (read-only if pre-filled, editable if needed)
+                CustomEmailField(
+                  controller: _emailController,
+                  hint: 'email@example.com',
+                ).animate().fade(delay: 150.ms).slideY(begin: 0.1),
+
+                const SizedBox(height: 18),
+
+                // OTP field
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 4, bottom: 6),
+                      child: Text(
+                        '6-Digit OTP Code',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: isDark ? Colors.grey[300] : Colors.grey[700],
+                        ),
+                      ),
+                    ),
+                    TextFormField(
+                      controller: _otpController,
+                      keyboardType: TextInputType.number,
+                      textInputAction: TextInputAction.next,
+                      style: const TextStyle(fontSize: 15, letterSpacing: 2),
+                      decoration: InputDecoration(
+                        hintText: 'e.g. 123456',
+                        prefixIcon: Icon(
+                          Icons.pin_outlined,
+                          size: 20,
+                          color: theme.colorScheme.primary.withOpacity(0.7),
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Please enter the 6-digit OTP';
+                        }
+                        if (value.trim().length != 6) {
+                          return 'OTP must be exactly 6 digits';
+                        }
+                        return null;
+                      },
+                    ),
+                  ],
+                ).animate().fade(delay: 200.ms).slideY(begin: 0.1),
+
+                const SizedBox(height: 18),
 
                 // Password field
                 CustomPasswordField(
                   controller: _passwordController,
                   label: 'New Password',
-                  hint: 'Enter new password',
+                  hint: 'At least 6 characters',
                   textInputAction: TextInputAction.next,
-                ).animate().fade(delay: 200.ms).slideY(begin: 0.1),
+                ).animate().fade(delay: 250.ms).slideY(begin: 0.1),
 
-                const SizedBox(height: 20),
+                const SizedBox(height: 18),
 
                 // Confirm Password field
                 CustomPasswordField(

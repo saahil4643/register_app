@@ -47,14 +47,15 @@ class _SignupScreenState extends State<SignupScreen> {
     if (_formKey.currentState!.validate()) {
       final authProvider = context.read<AuthProvider>();
 
-      final nameParts = _nameController.text.trim().split(' ');
+      final nameParts = _nameController.text.trim().split(RegExp(r'\s+'));
       final firstName = nameParts.isNotEmpty ? nameParts.first : '';
-      final lastName = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
+      final lastName = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : firstName;
 
+      final email = _emailController.text.trim();
       final success = await authProvider.signup(
         firstName: firstName,
         lastName: lastName,
-        email: _emailController.text.trim(),
+        email: email,
         password: _passwordController.text,
         phone: _phoneController.text.trim(),
         businessName: _businessNameController.text.trim(),
@@ -62,11 +63,16 @@ class _SignupScreenState extends State<SignupScreen> {
 
       if (mounted) {
         if (success) {
-          context.push('/success', extra: {
-            'title': 'Account Created Successfully!',
-            'description': 'Your Prabhim One account has been created. Let\'s verify your identity next.',
-            'buttonText': 'Proceed to Verification',
-            'routePath': '/otp-verify',
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Verification OTP has been sent to $email.'),
+              backgroundColor: const Color(0xFF10B981),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+          context.push('/otp-verify', extra: {
+            'email': email,
+            'isForgotPassword': false,
           });
         } else {
           showDialog(
@@ -224,12 +230,12 @@ class _SignupScreenState extends State<SignupScreen> {
                         ),
                       ),
                       validator: (value) {
-                        if (value == null || value.isEmpty) {
+                        if (value == null || value.trim().isEmpty) {
                           return 'Please enter your phone number';
                         }
                         final digitsOnly = value.replaceAll(RegExp(r'\D'), '');
-                        if (digitsOnly.length > 10) {
-                          return 'Phone number cannot be greater than 10 digits';
+                        if (digitsOnly.length < 7 || digitsOnly.length > 15) {
+                          return 'Please enter a valid phone number (7-15 digits)';
                         }
                         return null;
                       },

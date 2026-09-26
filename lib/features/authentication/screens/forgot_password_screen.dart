@@ -31,9 +31,17 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
       if (mounted) {
         if (success) {
+          final email = _emailController.text.trim();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Password reset OTP sent to $email.'),
+              backgroundColor: const Color(0xFF10B981),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
           context.push('/otp-verify', extra: {
             'isForgotPassword': true,
-            'email': _emailController.text.trim(),
+            'email': email,
           });
         } else {
           showDialog(

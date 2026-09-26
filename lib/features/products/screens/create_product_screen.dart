@@ -93,6 +93,9 @@ class _CreateProductScreenState extends State<CreateProductScreen> with SingleTi
     final navigator = Navigator.of(context, rootNavigator: false);
     final messenger = ScaffoldMessenger.of(context);
 
+    final categoryVal = _categoryController.text.trim();
+    final isService = categoryVal.toLowerCase() == 'services' || categoryVal.toLowerCase() == 'consulting';
+
     final product = Product(
       id: widget.product?.id ?? '',
       name: _nameController.text.trim(),
@@ -100,12 +103,16 @@ class _CreateProductScreenState extends State<CreateProductScreen> with SingleTi
           ? 'SKU-${DateTime.now().millisecondsSinceEpoch.toString().substring(8)}' 
           : _skuController.text.trim(),
       barcode: _barcodeController.text.trim(),
-      category: _categoryController.text.trim(),
+      productType: isService ? 'service' : 'goods',
+      category: categoryVal,
       brand: _brandController.text.trim().isEmpty ? 'Generic' : _brandController.text.trim(),
+      unitOfMeasurement: _unitController.text.trim().isNotEmpty ? _unitController.text.trim() : 'Pieces',
       purchasePrice: double.tryParse(_purchasePriceController.text) ?? 0.0,
       sellingPrice: double.tryParse(_sellingPriceController.text) ?? 0.0,
       stock: int.tryParse(_currentStockController.text) ?? 0,
       minStock: int.tryParse(_minStockController.text) ?? 5,
+      trackInventory: !isService,
+      description: _descriptionController.text.trim(),
       gst: double.tryParse(_gstController.text) ?? 18.0,
       image: _mockImages.isNotEmpty ? _mockImages.first : null,
       createdAt: widget.product?.createdAt ?? DateTime.now(),

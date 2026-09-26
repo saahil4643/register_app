@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -15,14 +16,26 @@ class ProfileBusinessSettingsScreen extends StatefulWidget {
   State<ProfileBusinessSettingsScreen> createState() => _ProfileBusinessSettingsScreenState();
 }
 
-class _ProfileBusinessSettingsScreenState extends State<ProfileBusinessSettingsScreen> {
-  final _formKey = GlobalKey<FormState>();
+class _ProfileBusinessSettingsScreenState extends State<ProfileBusinessSettingsScreen>
+    with SingleTickerProviderStateMixin {
+  final _profileFormKey = GlobalKey<FormState>();
+  final _businessFormKey = GlobalKey<FormState>();
 
+  late TabController _tabController;
+
+  // Profile controllers
   late TextEditingController _fullNameController;
+  late TextEditingController _personalPhoneController;
+  late TextEditingController _designationController;
+  late TextEditingController _personalEmailController;
+  String _selectedAvatar = '👤';
+  String _selectedTheme = 'light';
+
+  // Business / Organization controllers
   late TextEditingController _companyNameController;
   late TextEditingController _legalNameController;
-  late TextEditingController _emailController;
-  late TextEditingController _phoneController;
+  late TextEditingController _businessEmailController;
+  late TextEditingController _businessPhoneController;
   late TextEditingController _websiteController;
   late TextEditingController _gstNumberController;
   late TextEditingController _panNumberController;
@@ -33,21 +46,33 @@ class _ProfileBusinessSettingsScreenState extends State<ProfileBusinessSettingsS
   late TextEditingController _postalCodeController;
   late TextEditingController _timezoneController;
 
+  final List<String> _avatarOptions = [
+    '👤', '👨‍💻', '👩‍💻', '🧑‍💼', '🚀', '💼', '⭐', '🎨', '🤖'
+  ];
+
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+
     final settingsProvider = context.read<SettingsProvider>();
     final comp = settingsProvider.companySettings;
 
     final authProvider = context.read<AuthProvider>();
-    final firstName = authProvider.currentUserFirstName ?? '';
-    final lastName = authProvider.currentUserLastName ?? '';
-    
-    _fullNameController = TextEditingController(text: '$firstName $lastName'.trim());
+    final initialName = authProvider.currentUserName ??
+        '${authProvider.currentUserFirstName ?? ''} ${authProvider.currentUserLastName ?? ''}'.trim();
+
+    _fullNameController = TextEditingController(text: initialName);
+    _personalPhoneController = TextEditingController(text: authProvider.currentUserPhone ?? '');
+    _designationController = TextEditingController(text: authProvider.currentUserDesignation ?? '');
+    _personalEmailController = TextEditingController(text: authProvider.currentUserEmail ?? '');
+    _selectedAvatar = authProvider.currentUserAvatar ?? '👤';
+    _selectedTheme = authProvider.currentUserTheme ?? 'light';
+
     _companyNameController = TextEditingController(text: comp?.companyName ?? '');
     _legalNameController = TextEditingController(text: comp?.legalName ?? '');
-    _emailController = TextEditingController(text: authProvider.currentUserEmail ?? comp?.email ?? '');
-    _phoneController = TextEditingController(text: comp?.phone ?? '');
+    _businessEmailController = TextEditingController(text: comp?.email ?? '');
+    _businessPhoneController = TextEditingController(text: comp?.phone ?? '');
     _websiteController = TextEditingController(text: comp?.website ?? '');
     _gstNumberController = TextEditingController(text: comp?.gstNumber ?? '');
     _panNumberController = TextEditingController(text: comp?.panNumber ?? '');
@@ -57,15 +82,71 @@ class _ProfileBusinessSettingsScreenState extends State<ProfileBusinessSettingsS
     _addressController = TextEditingController(text: comp?.address ?? '');
     _postalCodeController = TextEditingController(text: comp?.postalCode ?? '');
     _timezoneController = TextEditingController(text: comp?.timezone ?? 'UTC');
+
+    // Asynchronously fetch fresh profile and organization data
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final auth = context.read<AuthProvider>();
+      final settings = context.read<SettingsProvider>();
+
+      final profileData = await auth.getProfile();
+      final orgData = await settings.fetchOrganization();
+
+      if (mounted) {
+        if (profileData != null) {
+          final name = profileData['name'] ?? profileData['fullName'];
+          if (name != null && name.toString().isNotEmpty) {
+            _fullNameController.text = name.toString();
+          }
+          if (profileData['phone'] != null) {
+            _personalPhoneController.text = profileData['phone'].toString();
+          }
+          if (profileData['designation'] != null) {
+            _designationController.text = profileData['designation'].toString();
+          }
+          if (profileData['avatar'] != null) {
+            setState(() {
+              _selectedAvatar = profileData['avatar'].toString();
+            });
+          }
+          if (profileData['theme'] != null) {
+            setState(() {
+              _selectedTheme = profileData['theme'].toString();
+            });
+          }
+        }
+
+        if (orgData != null) {
+          _companyNameController.text = orgData.companyName;
+          _legalNameController.text = orgData.legalName;
+          _businessEmailController.text = orgData.email;
+          _businessPhoneController.text = orgData.phone;
+          _websiteController.text = orgData.website;
+          _gstNumberController.text = orgData.gstNumber;
+          _panNumberController.text = orgData.panNumber;
+          _addressController.text = orgData.address;
+          _cityController.text = orgData.city;
+          _stateController.text = orgData.state;
+          _postalCodeController.text = orgData.postalCode;
+          if (orgData.timezone.isNotEmpty) {
+            _timezoneController.text = orgData.timezone;
+          }
+        }
+      }
+    });
   }
 
   @override
   void dispose() {
+    _tabController.dispose();
     _fullNameController.dispose();
+    _personalPhoneController.dispose();
+    _designationController.dispose();
+    _personalEmailController.dispose();
+
     _companyNameController.dispose();
     _legalNameController.dispose();
-    _emailController.dispose();
-    _phoneController.dispose();
+    _businessEmailController.dispose();
+    _businessPhoneController.dispose();
     _websiteController.dispose();
     _gstNumberController.dispose();
     _panNumberController.dispose();
@@ -91,14 +172,13 @@ class _ProfileBusinessSettingsScreenState extends State<ProfileBusinessSettingsS
 
   Future<void> _pickImage({required bool isProfile}) async {
     try {
-      // 1. Show Modal Bottom Sheet to choose between Camera and Gallery
       final ImageSource? source = await showModalBottomSheet<ImageSource>(
         context: context,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
         ),
-        builder: (BuildContext context) {
-          final theme = Theme.of(context);
+        builder: (BuildContext ctx) {
+          final theme = Theme.of(ctx);
           return SafeArea(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -114,12 +194,12 @@ class _ProfileBusinessSettingsScreenState extends State<ProfileBusinessSettingsS
                 ListTile(
                   leading: const Icon(Icons.photo_library_rounded, color: Colors.blue),
                   title: const Text('Choose from Gallery'),
-                  onTap: () => Navigator.pop(context, ImageSource.gallery),
+                  onTap: () => Navigator.pop(ctx, ImageSource.gallery),
                 ),
                 ListTile(
                   leading: const Icon(Icons.camera_alt_rounded, color: Colors.green),
                   title: const Text('Take Photo (Camera)'),
-                  onTap: () => Navigator.pop(context, ImageSource.camera),
+                  onTap: () => Navigator.pop(ctx, ImageSource.camera),
                 ),
                 const SizedBox(height: 8),
               ],
@@ -133,232 +213,331 @@ class _ProfileBusinessSettingsScreenState extends State<ProfileBusinessSettingsS
       final ImagePicker picker = ImagePicker();
       final XFile? image = await picker.pickImage(source: source, imageQuality: 85);
       if (image == null) return;
-
       if (!mounted) return;
-
-      final bytes = await image.readAsBytes();
-
-      // Get initial logo settings
-      final settingsProvider = context.read<SettingsProvider>();
-      String selectedShape = isProfile ? 'circle' : settingsProvider.logoShape;
-      String selectedFit = isProfile ? 'cover' : settingsProvider.logoFit;
-
-      final TransformationController transformationController = TransformationController(
-        isProfile ? Matrix4.identity() : settingsProvider.logoMatrix,
-      );
-
-      // 2. Show confirmation/edit dialog with live shape, fit & dynamic InteractiveViewer preview
-      final bool? confirm = await showDialog<bool>(
-        context: context,
-        builder: (BuildContext context) {
-          return StatefulBuilder(
-            builder: (context, setStateDialog) {
-              final theme = Theme.of(context);
-              final isDark = theme.brightness == Brightness.dark;
-
-              final double previewWidth = selectedShape == 'rectangle' ? 150 : 100;
-              final double previewHeight = 100;
-              final fit = selectedFit == 'contain' ? BoxFit.contain : BoxFit.cover;
-              final double borderRadiusValue = selectedShape == 'circle' ? (previewWidth / 2) : 8.0;
-
-              return AlertDialog(
-                title: Text(
-                  isProfile ? 'Confirm Profile Photo' : 'Adjust Logo Layout',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                content: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text(
-                        'Pinch to zoom and drag to position the logo inside the frame:',
-                        style: TextStyle(fontSize: 12, color: Colors.grey),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 20),
-                      // Circular / Square / Rectangular Interactive Preview
-                      Center(
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 250),
-                          curve: Curves.easeInOut,
-                          width: previewWidth,
-                          height: previewHeight,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(borderRadiusValue),
-                            shape: BoxShape.rectangle, // Always rectangle to avoid animation assertion errors
-                            border: Border.all(
-                              color: theme.colorScheme.primary.withOpacity(0.4),
-                              width: 2,
-                            ),
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(borderRadiusValue - 1),
-                            child: InteractiveViewer(
-                              transformationController: transformationController,
-                              minScale: 0.5,
-                              maxScale: 5.0,
-                              boundaryMargin: const EdgeInsets.all(80),
-                              child: Image.memory(
-                                bytes,
-                                fit: fit,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      if (!isProfile) ...[
-                        // Shape Choice Chips
-                        const Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            'Logo Shape:',
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          alignment: WrapAlignment.center,
-                          children: [
-                            ChoiceChip(
-                              label: const Text('Circle'),
-                              selected: selectedShape == 'circle',
-                              onSelected: (selected) {
-                                if (selected) setStateDialog(() => selectedShape = 'circle');
-                              },
-                            ),
-                            ChoiceChip(
-                              label: const Text('Square'),
-                              selected: selectedShape == 'square',
-                              onSelected: (selected) {
-                                if (selected) setStateDialog(() => selectedShape = 'square');
-                              },
-                            ),
-                            ChoiceChip(
-                              label: const Text('Rectangle'),
-                              selected: selectedShape == 'rectangle',
-                              onSelected: (selected) {
-                                if (selected) setStateDialog(() => selectedShape = 'rectangle');
-                              },
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        // Fit Choice Chips
-                        const Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            'Image Fit:',
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          alignment: WrapAlignment.center,
-                          children: [
-                            ChoiceChip(
-                              label: const Text('Fill (Cover)'),
-                              selected: selectedFit == 'cover',
-                              onSelected: (selected) {
-                                if (selected) setStateDialog(() => selectedFit = 'cover');
-                              },
-                            ),
-                            ChoiceChip(
-                              label: const Text('Fit Inside (Contain)'),
-                              selected: selectedFit == 'contain',
-                              onSelected: (selected) {
-                                if (selected) setStateDialog(() => selectedFit = 'contain');
-                              },
-                            ),
-                          ],
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context, false),
-                    child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
-                  ),
-                  ElevatedButton(
-                    onPressed: () => Navigator.pop(context, true),
-                    child: const Text('Confirm & Save'),
-                  ),
-                ],
-              );
-            },
-          );
-        },
-      );
-
-      if (confirm != true) return;
-      if (!mounted) return;
-
-      // 3. Save shape, fit and matrix choices to SettingsProvider
-      if (!isProfile) {
-        await settingsProvider.updateLogoSettings(
-          shape: selectedShape,
-          fit: selectedFit,
-          matrix: transformationController.value,
-        );
-      }
 
       if (isProfile) {
-        final provider = context.read<AuthProvider>();
-        final success = await provider.uploadProfileImage(image);
-        if (success) {
-          _showSnackBar('Profile image uploaded successfully', isError: false);
-        } else {
-          final err = provider.errorMessage ?? 'Failed to upload profile image';
-          _showSnackBar(err, isError: true);
+        final auth = context.read<AuthProvider>();
+        final success = await auth.uploadProfilePicture(image);
+        if (mounted) {
+          if (success) {
+            _showSnackBar('Profile picture updated successfully', isError: false);
+          } else {
+            _showSnackBar(auth.errorMessage ?? 'Failed to upload profile picture', isError: true);
+          }
         }
       } else {
-        final provider = context.read<SettingsProvider>();
-        final success = await provider.uploadCompanyLogo(image);
-        if (success) {
-          _showSnackBar('Company logo uploaded successfully', isError: false);
-        } else {
-          final err = provider.errorMessage ?? 'Failed to upload company logo';
-          _showSnackBar(err, isError: true);
+        final settings = context.read<SettingsProvider>();
+        final success = await settings.uploadCompanyLogo(image);
+        if (mounted) {
+          if (success) {
+            _showSnackBar('Company logo updated successfully', isError: false);
+          } else {
+            _showSnackBar(settings.errorMessage ?? 'Failed to upload company logo', isError: true);
+          }
         }
       }
     } catch (e) {
-      _showSnackBar('Error picking image: $e', isError: true);
+      _showSnackBar('Error selecting image: $e', isError: true);
     }
   }
 
   Future<void> _deleteImage({required bool isProfile}) async {
     try {
       if (isProfile) {
-        final provider = context.read<AuthProvider>();
-        final success = await provider.deleteProfileImage();
-        if (success) {
-          _showSnackBar('Profile image deleted successfully', isError: false);
-        } else {
-          final err = provider.errorMessage ?? 'Failed to delete profile image';
-          _showSnackBar(err, isError: true);
+        final auth = context.read<AuthProvider>();
+        final success = await auth.deleteProfilePicture();
+        if (mounted) {
+          if (success) {
+            _showSnackBar('Profile picture removed', isError: false);
+          } else {
+            _showSnackBar(auth.errorMessage ?? 'Failed to remove picture', isError: true);
+          }
         }
       } else {
-        final provider = context.read<SettingsProvider>();
-        final success = await provider.deleteCompanyLogo();
-        if (success) {
-          _showSnackBar('Company logo deleted successfully', isError: false);
-        } else {
-          final err = provider.errorMessage ?? 'Failed to delete company logo';
-          _showSnackBar(err, isError: true);
+        final settings = context.read<SettingsProvider>();
+        final success = await settings.deleteCompanyLogo();
+        if (mounted) {
+          if (success) {
+            _showSnackBar('Company logo removed', isError: false);
+          } else {
+            _showSnackBar(settings.errorMessage ?? 'Failed to remove logo', isError: true);
+          }
         }
       }
     } catch (e) {
-      _showSnackBar('Error deleting image: $e', isError: true);
+      _showSnackBar('Error removing image: $e', isError: true);
     }
   }
 
-  Widget _buildImagePickerCard({
+  void _showChangePasswordDialog() {
+    final oldPasswordController = TextEditingController();
+    final newPasswordController = TextEditingController();
+    final confirmPasswordController = TextEditingController();
+    final dialogFormKey = GlobalKey<FormState>();
+
+    bool obscureOld = true;
+    bool obscureNew = true;
+    bool obscureConfirm = true;
+    bool isSubmitting = false;
+    String? dialogError;
+
+    showDialog(
+      context: context,
+      barrierDismissible: !isSubmitting,
+      builder: (BuildContext dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            final theme = Theme.of(context);
+
+            return AlertDialog(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              title: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.lock_reset_rounded, color: theme.colorScheme.primary, size: 22),
+                  ),
+                  const SizedBox(width: 12),
+                  const Text('Change Password', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                ],
+              ),
+              content: SingleChildScrollView(
+                child: Form(
+                  key: dialogFormKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (dialogError != null)
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          margin: const EdgeInsets.only(bottom: 12),
+                          decoration: BoxDecoration(
+                            color: AppColors.error.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.error_outline_rounded, color: AppColors.error, size: 18),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  dialogError!,
+                                  style: const TextStyle(color: AppColors.error, fontSize: 13),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      TextFormField(
+                        controller: oldPasswordController,
+                        obscureText: obscureOld,
+                        decoration: InputDecoration(
+                          labelText: 'Current Password',
+                          prefixIcon: const Icon(Icons.lock_outline_rounded, size: 20),
+                          suffixIcon: IconButton(
+                            icon: Icon(obscureOld ? Icons.visibility_off : Icons.visibility, size: 20),
+                            onPressed: () => setDialogState(() => obscureOld = !obscureOld),
+                          ),
+                        ),
+                        validator: (v) => v == null || v.isEmpty ? 'Enter current password' : null,
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: newPasswordController,
+                        obscureText: obscureNew,
+                        decoration: InputDecoration(
+                          labelText: 'New Password',
+                          helperText: 'Must be at least 8 characters',
+                          prefixIcon: const Icon(Icons.lock_rounded, size: 20),
+                          suffixIcon: IconButton(
+                            icon: Icon(obscureNew ? Icons.visibility_off : Icons.visibility, size: 20),
+                            onPressed: () => setDialogState(() => obscureNew = !obscureNew),
+                          ),
+                        ),
+                        validator: (v) {
+                          if (v == null || v.isEmpty) return 'Enter new password';
+                          if (v.length < 8) return 'Password must be at least 8 characters long';
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      TextFormField(
+                        controller: confirmPasswordController,
+                        obscureText: obscureConfirm,
+                        decoration: InputDecoration(
+                          labelText: 'Confirm New Password',
+                          prefixIcon: const Icon(Icons.check_circle_outline_rounded, size: 20),
+                          suffixIcon: IconButton(
+                            icon: Icon(obscureConfirm ? Icons.visibility_off : Icons.visibility, size: 20),
+                            onPressed: () => setDialogState(() => obscureConfirm = !obscureConfirm),
+                          ),
+                        ),
+                        validator: (v) {
+                          if (v == null || v.isEmpty) return 'Confirm your password';
+                          if (v != newPasswordController.text) return 'Passwords do not match';
+                          return null;
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: isSubmitting ? null : () => Navigator.pop(dialogContext),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: isSubmitting
+                      ? null
+                      : () async {
+                          if (!dialogFormKey.currentState!.validate()) return;
+                          setDialogState(() {
+                            isSubmitting = true;
+                            dialogError = null;
+                          });
+
+                          final auth = context.read<AuthProvider>();
+                          final success = await auth.changePassword(
+                            oldPassword: oldPasswordController.text,
+                            newPassword: newPasswordController.text,
+                            confirmPassword: confirmPasswordController.text,
+                          );
+
+                          if (dialogContext.mounted) {
+                            if (success) {
+                              Navigator.pop(dialogContext);
+                              _showSnackBar('Password changed successfully.', isError: false);
+                            } else {
+                              setDialogState(() {
+                                isSubmitting = false;
+                                dialogError = auth.errorMessage ?? 'Failed to change password.';
+                              });
+                            }
+                          }
+                        },
+                  child: isSubmitting
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                        )
+                      : const Text('Update Password'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Future<void> _saveAll() async {
+    final isProfileTab = _tabController.index == 0;
+    if (isProfileTab) {
+      if (!_profileFormKey.currentState!.validate()) return;
+    } else {
+      if (!_businessFormKey.currentState!.validate()) return;
+    }
+
+    final authProvider = context.read<AuthProvider>();
+    final settingsProvider = context.read<SettingsProvider>();
+
+    bool allSuccess = true;
+
+    // Save Profile
+    if (_profileFormKey.currentState?.validate() ?? true) {
+      final profileSuccess = await authProvider.updateProfile(
+        name: _fullNameController.text.trim(),
+        phone: _personalPhoneController.text.trim(),
+        designation: _designationController.text.trim(),
+        avatar: _selectedAvatar,
+        theme: _selectedTheme,
+        timeZone: _timezoneController.text.trim(),
+      );
+      if (!profileSuccess) {
+        allSuccess = false;
+        if (mounted) {
+          _showSnackBar(authProvider.errorMessage ?? 'Failed to update personal profile', isError: true);
+        }
+      }
+    }
+
+    // Save Business / Organization
+    final updatedOrg = CompanySettings(
+      companyName: _companyNameController.text.trim(),
+      legalName: _legalNameController.text.trim(),
+      website: _websiteController.text.trim(),
+      email: _businessEmailController.text.trim(),
+      phone: _businessPhoneController.text.trim(),
+      gstNumber: _gstNumberController.text.trim(),
+      panNumber: _panNumberController.text.trim(),
+      currency: settingsProvider.companySettings?.currency ?? 'INR',
+      timezone: _timezoneController.text.trim(),
+      country: _countryController.text.trim(),
+      state: _stateController.text.trim(),
+      city: _cityController.text.trim(),
+      address: _addressController.text.trim(),
+      postalCode: _postalCodeController.text.trim(),
+      financialYear: settingsProvider.companySettings?.financialYear ?? 'April - March',
+      language: settingsProvider.companySettings?.language ?? 'en',
+      dateFormat: settingsProvider.companySettings?.dateFormat ?? 'YYYY-MM-DD',
+      timeFormat: settingsProvider.companySettings?.timeFormat ?? 'HH:mm:ss',
+      companyLogo: settingsProvider.companySettings?.companyLogo,
+    );
+
+    final orgSuccess = await settingsProvider.updateCompany(updatedOrg);
+    if (!orgSuccess) {
+      allSuccess = false;
+      if (mounted) {
+        _showSnackBar(settingsProvider.errorMessage ?? 'Failed to update organization details', isError: true);
+      }
+    }
+
+    if (mounted && allSuccess) {
+      _showSnackBar('Profile & Business details saved successfully', isError: false);
+      Navigator.pop(context);
+    }
+  }
+
+  Widget _buildImageWidget(String? url, IconData placeholderIcon, bool isDark) {
+    if (url == null || url.isEmpty) {
+      return Center(
+        child: Icon(placeholderIcon, size: 40, color: isDark ? Colors.grey[600] : Colors.grey[400]),
+      );
+    }
+
+    if (url.startsWith('data:image')) {
+      try {
+        final commaIdx = url.indexOf(',');
+        final base64Data = commaIdx != -1 ? url.substring(commaIdx + 1) : url;
+        final bytes = base64Decode(base64Data);
+        return Image.memory(bytes, fit: BoxFit.cover);
+      } catch (_) {
+        return Center(
+          child: Icon(placeholderIcon, size: 40, color: isDark ? Colors.grey[600] : Colors.grey[400]),
+        );
+      }
+    }
+
+    final fullUrl = url.startsWith('http') ? url : '${Env.apiBaseUrl}$url';
+    return Image.network(
+      fullUrl,
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) {
+        return Center(
+          child: Icon(placeholderIcon, size: 40, color: isDark ? Colors.grey[600] : Colors.grey[400]),
+        );
+      },
+    );
+  }
+
+  Widget _buildPhotoCard({
     required String title,
     required String? imageUrl,
     required VoidCallback onPick,
@@ -369,24 +548,6 @@ class _ProfileBusinessSettingsScreenState extends State<ProfileBusinessSettingsS
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    final settingsProvider = context.read<SettingsProvider>();
-    final isLogo = title == 'Company Logo';
-    final shape = isLogo ? settingsProvider.logoShape : 'circle';
-    final fitStr = isLogo ? settingsProvider.logoFit : 'cover';
-    final fit = fitStr == 'contain' ? BoxFit.contain : BoxFit.cover;
-
-    final double width = shape == 'rectangle' ? 140 : 100;
-    final double height = 100;
-
-    String? fullImageUrl;
-    if (imageUrl != null && imageUrl.isNotEmpty) {
-      if (imageUrl.startsWith('http')) {
-        fullImageUrl = imageUrl;
-      } else {
-        fullImageUrl = '${Env.apiBaseUrl}$imageUrl';
-      }
-    }
-
     return Column(
       children: [
         Text(
@@ -396,17 +557,14 @@ class _ProfileBusinessSettingsScreenState extends State<ProfileBusinessSettingsS
             color: isDark ? Colors.grey[300] : Colors.grey[700],
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 10),
         Stack(
           children: [
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 250),
-              curve: Curves.easeInOut,
-              width: width,
-              height: height,
+            Container(
+              width: 104,
+              height: 104,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(shape == 'circle' ? (width / 2) : 8.0),
-                shape: BoxShape.rectangle, // Always rectangle to avoid animation assertion errors
+                borderRadius: BorderRadius.circular(52),
                 gradient: LinearGradient(
                   colors: isDark
                       ? [Colors.grey[800]!, Colors.grey[900]!]
@@ -416,18 +574,18 @@ class _ProfileBusinessSettingsScreenState extends State<ProfileBusinessSettingsS
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.08),
+                    color: Colors.black.withValues(alpha: 0.08),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
                 ],
                 border: Border.all(
-                  color: theme.colorScheme.primary.withOpacity(0.2),
-                  width: 2,
+                  color: theme.colorScheme.primary.withValues(alpha: 0.3),
+                  width: 2.5,
                 ),
               ),
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(shape == 'circle' ? (width / 2 - 1) : 6.0),
+                borderRadius: BorderRadius.circular(50),
                 child: isLoading
                     ? const Center(
                         child: Padding(
@@ -435,31 +593,7 @@ class _ProfileBusinessSettingsScreenState extends State<ProfileBusinessSettingsS
                           child: CircularProgressIndicator(strokeWidth: 2.5),
                         ),
                       )
-                    : (fullImageUrl != null
-                        ? Transform(
-                            transform: isLogo ? settingsProvider.getScaledLogoMatrix(height) : Matrix4.identity(),
-                            alignment: Alignment.topLeft,
-                            child: Image.network(
-                              fullImageUrl,
-                              fit: fit,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Center(
-                                  child: Icon(
-                                    placeholderIcon,
-                                    size: 36,
-                                    color: isDark ? Colors.grey[600] : Colors.grey[400],
-                                  ),
-                                );
-                              },
-                            ),
-                          )
-                        : Center(
-                            child: Icon(
-                              placeholderIcon,
-                              size: 36,
-                              color: isDark ? Colors.grey[600] : Colors.grey[400],
-                            ),
-                          )),
+                    : _buildImageWidget(imageUrl, placeholderIcon, isDark),
               ),
             ),
             Positioned(
@@ -474,16 +608,12 @@ class _ProfileBusinessSettingsScreenState extends State<ProfileBusinessSettingsS
                   customBorder: const CircleBorder(),
                   child: const Padding(
                     padding: EdgeInsets.all(8.0),
-                    child: Icon(
-                      Icons.camera_alt_rounded,
-                      size: 14,
-                      color: Colors.white,
-                    ),
+                    child: Icon(Icons.camera_alt_rounded, size: 16, color: Colors.white),
                   ),
                 ),
               ),
             ),
-            if (fullImageUrl != null && onDelete != null)
+            if (imageUrl != null && imageUrl.isNotEmpty && onDelete != null)
               Positioned(
                 top: 0,
                 right: 0,
@@ -496,11 +626,7 @@ class _ProfileBusinessSettingsScreenState extends State<ProfileBusinessSettingsS
                     customBorder: const CircleBorder(),
                     child: const Padding(
                       padding: EdgeInsets.all(6.0),
-                      child: Icon(
-                        Icons.delete_rounded,
-                        size: 12,
-                        color: Colors.white,
-                      ),
+                      child: Icon(Icons.delete_rounded, size: 14, color: Colors.white),
                     ),
                   ),
                 ),
@@ -509,83 +635,6 @@ class _ProfileBusinessSettingsScreenState extends State<ProfileBusinessSettingsS
         ),
       ],
     );
-  }
-
-  Future<void> _save() async {
-    if (!_formKey.currentState!.validate()) return;
-
-    final settingsProvider = context.read<SettingsProvider>();
-    final authProvider = context.read<AuthProvider>();
-
-    final nameParts = _fullNameController.text.trim().split(' ');
-    final firstName = nameParts.isNotEmpty ? nameParts.first : '';
-    final lastName = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
-
-    // Update User Profile
-    final profileSuccess = await authProvider.updateUserProfile(
-      firstName: firstName,
-      lastName: lastName,
-      phone: _phoneController.text.trim(),
-    );
-
-    if (!profileSuccess) {
-      if (mounted) {
-        final err = authProvider.errorMessage ?? 'Failed to update user profile';
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(err),
-            backgroundColor: AppColors.error,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
-      return;
-    }
-
-    // Update Company Settings
-    final updated = CompanySettings(
-      companyName: _companyNameController.text.trim(),
-      legalName: _legalNameController.text.trim(),
-      website: _websiteController.text.trim(),
-      email: _emailController.text.trim(),
-      phone: _phoneController.text.trim(),
-      gstNumber: _gstNumberController.text.trim(),
-      panNumber: _panNumberController.text.trim(),
-      currency: settingsProvider.companySettings?.currency ?? 'INR',
-      timezone: _timezoneController.text.trim(),
-      country: _countryController.text.trim(),
-      state: _stateController.text.trim(),
-      city: _cityController.text.trim(),
-      address: _addressController.text.trim(),
-      postalCode: _postalCodeController.text.trim(),
-      financialYear: settingsProvider.companySettings?.financialYear ?? 'April - March',
-      language: settingsProvider.companySettings?.language ?? 'en',
-      dateFormat: settingsProvider.companySettings?.dateFormat ?? 'YYYY-MM-DD',
-      timeFormat: settingsProvider.companySettings?.timeFormat ?? 'HH:mm:ss',
-    );
-
-    final success = await settingsProvider.updateProfile(updated);
-    if (mounted) {
-      if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Profile updated successfully'),
-            backgroundColor: AppColors.success,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-        Navigator.pop(context);
-      } else {
-        final err = settingsProvider.errorMessage ?? 'Failed to update company settings';
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(err),
-            backgroundColor: AppColors.error,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-      }
-    }
   }
 
   Widget _buildCustomTextField({
@@ -609,7 +658,7 @@ class _ProfileBusinessSettingsScreenState extends State<ProfileBusinessSettingsS
           child: Text(
             label,
             style: theme.textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w600,
               color: isDark ? Colors.grey[300] : Colors.grey[700],
             ),
           ),
@@ -625,7 +674,7 @@ class _ProfileBusinessSettingsScreenState extends State<ProfileBusinessSettingsS
             prefixIcon: Icon(
               prefixIcon,
               size: 20,
-              color: theme.colorScheme.primary.withOpacity(0.7),
+              color: theme.colorScheme.primary.withValues(alpha: 0.7),
             ),
             fillColor: isReadOnly
                 ? (isDark ? Colors.grey[900] : Colors.grey[100])
@@ -634,6 +683,404 @@ class _ProfileBusinessSettingsScreenState extends State<ProfileBusinessSettingsS
           validator: validator,
         ),
       ],
+    );
+  }
+
+  Widget _buildProfileTab(AuthProvider auth) {
+    final role = auth.currentUserRole ?? 'Administrator';
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16.0),
+      child: Form(
+        key: _profileFormKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Center(
+              child: _buildPhotoCard(
+                title: 'Profile Picture',
+                imageUrl: auth.currentUserProfileImage,
+                onPick: () => _pickImage(isProfile: true),
+                onDelete: auth.currentUserProfileImage != null && auth.currentUserProfileImage!.isNotEmpty
+                    ? () => _deleteImage(isProfile: true)
+                    : null,
+                isLoading: auth.isLoading,
+                placeholderIcon: Icons.person_rounded,
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            // Avatar Emoji Selector
+            Card(
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Choose Avatar Emoji',
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                        ),
+                        Text(
+                          _selectedAvatar,
+                          style: const TextStyle(fontSize: 22),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 10,
+                      runSpacing: 10,
+                      children: _avatarOptions.map((emoji) {
+                        final isSelected = _selectedAvatar == emoji;
+                        return InkWell(
+                          onTap: () => setState(() => _selectedAvatar = emoji),
+                          borderRadius: BorderRadius.circular(24),
+                          child: AnimatedContainer(
+                            duration: const Duration(milliseconds: 200),
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: isSelected
+                                  ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.15)
+                                  : Colors.transparent,
+                              borderRadius: BorderRadius.circular(24),
+                              border: Border.all(
+                                color: isSelected
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Colors.grey.withValues(alpha: 0.3),
+                                width: isSelected ? 2 : 1,
+                              ),
+                            ),
+                            child: Text(emoji, style: const TextStyle(fontSize: 20)),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Profile Details Card
+            Card(
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Personal Information',
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            role,
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    _buildCustomTextField(
+                      controller: _fullNameController,
+                      label: 'Full Name',
+                      hintText: 'John Doe',
+                      prefixIcon: Icons.person_outline_rounded,
+                      validator: (val) =>
+                          val == null || val.trim().isEmpty ? 'Please enter your name' : null,
+                    ),
+                    const SizedBox(height: 14),
+                    _buildCustomTextField(
+                      controller: _designationController,
+                      label: 'Designation / Title',
+                      hintText: 'e.g. Director, Managing Partner',
+                      prefixIcon: Icons.badge_outlined,
+                    ),
+                    const SizedBox(height: 14),
+                    _buildCustomTextField(
+                      controller: _personalPhoneController,
+                      label: 'Phone Number',
+                      hintText: '9876543210',
+                      prefixIcon: Icons.phone_outlined,
+                      keyboardType: TextInputType.phone,
+                    ),
+                    const SizedBox(height: 14),
+                    _buildCustomTextField(
+                      controller: _personalEmailController,
+                      label: 'Account Email',
+                      hintText: 'user@example.com',
+                      prefixIcon: Icons.email_outlined,
+                      isReadOnly: true,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Security & Password Card
+            Card(
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
+              ),
+              child: ListTile(
+                leading: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.amber.withValues(alpha: 0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.lock_reset_rounded, color: Colors.amber, size: 22),
+                ),
+                title: const Text('Change Password', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                subtitle: const Text('Update your account login password', style: TextStyle(fontSize: 12)),
+                trailing: const Icon(Icons.chevron_right_rounded),
+                onTap: _showChangePasswordDialog,
+              ),
+            ),
+          ],
+        ).animate().fade(duration: 200.ms),
+      ),
+    );
+  }
+
+  Widget _buildBusinessTab(SettingsProvider settings) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16.0),
+      child: Form(
+        key: _businessFormKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Center(
+              child: _buildPhotoCard(
+                title: 'Company Logo',
+                imageUrl: settings.companySettings?.companyLogo,
+                onPick: () => _pickImage(isProfile: false),
+                onDelete: settings.companySettings?.companyLogo != null &&
+                        settings.companySettings!.companyLogo!.isNotEmpty
+                    ? () => _deleteImage(isProfile: false)
+                    : null,
+                isLoading: settings.isSaving,
+                placeholderIcon: Icons.business_rounded,
+              ),
+            ),
+            const SizedBox(height: 20),
+
+            Card(
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Company Information',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    ),
+                    const SizedBox(height: 16),
+                    _buildCustomTextField(
+                      controller: _companyNameController,
+                      label: 'Company / Business Name *',
+                      hintText: 'Acme Solutions Pvt Ltd',
+                      prefixIcon: Icons.business_outlined,
+                      validator: (val) =>
+                          val == null || val.trim().isEmpty ? 'Company name is required' : null,
+                    ),
+                    const SizedBox(height: 14),
+                    _buildCustomTextField(
+                      controller: _legalNameController,
+                      label: 'Legal Entity Name',
+                      hintText: 'Acme Solutions Private Limited',
+                      prefixIcon: Icons.business_center_outlined,
+                    ),
+                    const SizedBox(height: 14),
+                    _buildCustomTextField(
+                      controller: _businessEmailController,
+                      label: 'Business Email',
+                      hintText: 'contact@acme.com',
+                      prefixIcon: Icons.email_outlined,
+                      keyboardType: TextInputType.emailAddress,
+                    ),
+                    const SizedBox(height: 14),
+                    _buildCustomTextField(
+                      controller: _businessPhoneController,
+                      label: 'Business Phone',
+                      hintText: '9876543210',
+                      prefixIcon: Icons.phone_outlined,
+                      keyboardType: TextInputType.phone,
+                    ),
+                    const SizedBox(height: 14),
+                    _buildCustomTextField(
+                      controller: _websiteController,
+                      label: 'Website URL',
+                      hintText: 'https://acme.com',
+                      prefixIcon: Icons.language_outlined,
+                      keyboardType: TextInputType.url,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            Card(
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Tax & Registration',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildCustomTextField(
+                            controller: _gstNumberController,
+                            label: 'GSTIN (Tax ID)',
+                            hintText: '27AAPCP6019G1Z5',
+                            prefixIcon: Icons.percent_outlined,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: _buildCustomTextField(
+                            controller: _panNumberController,
+                            label: 'PAN Number',
+                            hintText: 'AAPCP6019G',
+                            prefixIcon: Icons.card_membership_outlined,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            Card(
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Address & Location',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    ),
+                    const SizedBox(height: 16),
+                    _buildCustomTextField(
+                      controller: _addressController,
+                      label: 'Street Address',
+                      hintText: '402 Tech Park, Sector 5',
+                      prefixIcon: Icons.location_on_outlined,
+                    ),
+                    const SizedBox(height: 14),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildCustomTextField(
+                            controller: _cityController,
+                            label: 'City',
+                            hintText: 'Mumbai',
+                            prefixIcon: Icons.location_city_outlined,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: _buildCustomTextField(
+                            controller: _stateController,
+                            label: 'State',
+                            hintText: 'Maharashtra',
+                            prefixIcon: Icons.map_outlined,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildCustomTextField(
+                            controller: _postalCodeController,
+                            label: 'Postal Code',
+                            hintText: '400001',
+                            prefixIcon: Icons.pin_drop_outlined,
+                            keyboardType: TextInputType.number,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: _buildCustomTextField(
+                            controller: _countryController,
+                            label: 'Country',
+                            hintText: 'India',
+                            prefixIcon: Icons.public_outlined,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+                    _buildCustomTextField(
+                      controller: _timezoneController,
+                      label: 'Timezone',
+                      hintText: '(GMT+05:30) India Standard Time',
+                      prefixIcon: Icons.schedule_outlined,
+                      textInputAction: TextInputAction.done,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ).animate().fade(duration: 200.ms),
+      ),
     );
   }
 
@@ -646,223 +1093,50 @@ class _ProfileBusinessSettingsScreenState extends State<ProfileBusinessSettingsS
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile & Business'),
+        title: const Text('Profile & Settings'),
         actions: [
           IconButton(
             icon: const Icon(Icons.check_rounded),
-            onPressed: isSaving ? null : _save,
+            tooltip: 'Save',
+            onPressed: isSaving ? null : _saveAll,
           ),
         ],
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: const [
+            Tab(icon: Icon(Icons.person_rounded, size: 20), text: 'My Profile'),
+            Tab(icon: Icon(Icons.business_rounded, size: 20), text: 'Organization'),
+          ],
+        ),
       ),
       body: settingsProvider.isLoading
           ? const Center(child: CircularProgressIndicator())
-          : Form(
-              key: _formKey,
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Center(
-                      child: _buildImagePickerCard(
-                        title: 'Company Logo',
-                        imageUrl: settingsProvider.companySettings?.companyLogo,
-                        onPick: () => _pickImage(isProfile: false),
-                        onDelete: settingsProvider.companySettings?.companyLogo != null && settingsProvider.companySettings!.companyLogo!.isNotEmpty
-                            ? () => _deleteImage(isProfile: false)
-                            : null,
-                        isLoading: settingsProvider.isSaving,
-                        placeholderIcon: Icons.business_rounded,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-
-                    // Section 1: Account Information (similar to signup page)
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Account Details',
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                            ),
-                            const SizedBox(height: 16),
-                            _buildCustomTextField(
-                              controller: _fullNameController,
-                              label: 'Full Name',
-                              hintText: 'Enter your full name',
-                              prefixIcon: Icons.person_outline_rounded,
-                              validator: (val) =>
-                                  val == null || val.trim().isEmpty ? 'Please enter your name' : null,
-                            ),
-                            const SizedBox(height: 16),
-                            _buildCustomTextField(
-                              controller: _companyNameController,
-                              label: 'Business Name',
-                              hintText: 'e.g. Prabhim One',
-                              prefixIcon: Icons.business_outlined,
-                              validator: (val) =>
-                                  val == null || val.trim().isEmpty ? 'Please enter your business name' : null,
-                            ),
-                            const SizedBox(height: 16),
-                            _buildCustomTextField(
-                              controller: _phoneController,
-                              label: 'Phone Number',
-                              hintText: 'e.g. +1234567890',
-                              prefixIcon: Icons.phone_outlined,
-                              keyboardType: TextInputType.phone,
-                              validator: (val) =>
-                                  val == null || val.trim().isEmpty ? 'Please enter your phone number' : null,
-                            ),
-                            const SizedBox(height: 16),
-                            _buildCustomTextField(
-                              controller: _emailController,
-                              label: 'Email Address',
-                              hintText: 'email@example.com',
-                              prefixIcon: Icons.email_outlined,
-                              keyboardType: TextInputType.emailAddress,
-                              isReadOnly: true,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Section 2: Business Registration & Address
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Business Details & Address',
-                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                            ),
-                            const SizedBox(height: 16),
-                            _buildCustomTextField(
-                              controller: _legalNameController,
-                              label: 'Legal Entity Name',
-                              hintText: 'Legal Name',
-                              prefixIcon: Icons.business_center_outlined,
-                            ),
-                            const SizedBox(height: 16),
-                            _buildCustomTextField(
-                              controller: _websiteController,
-                              label: 'Website URL',
-                              hintText: 'https://example.com',
-                              prefixIcon: Icons.language_outlined,
-                              keyboardType: TextInputType.url,
-                            ),
-                            const SizedBox(height: 16),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: _buildCustomTextField(
-                                    controller: _gstNumberController,
-                                    label: 'GSTIN (Tax ID)',
-                                    hintText: 'GSTIN',
-                                    prefixIcon: Icons.percent_outlined,
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: _buildCustomTextField(
-                                    controller: _panNumberController,
-                                    label: 'PAN Number',
-                                    hintText: 'PAN',
-                                    prefixIcon: Icons.card_membership_outlined,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 16),
-                            _buildCustomTextField(
-                              controller: _addressController,
-                              label: 'Street Address',
-                              hintText: 'Address',
-                              prefixIcon: Icons.location_on_outlined,
-                            ),
-                            const SizedBox(height: 16),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: _buildCustomTextField(
-                                    controller: _cityController,
-                                    label: 'City',
-                                    hintText: 'City',
-                                    prefixIcon: Icons.location_city_outlined,
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: _buildCustomTextField(
-                                    controller: _stateController,
-                                    label: 'State',
-                                    hintText: 'State',
-                                    prefixIcon: Icons.map_outlined,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 16),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: _buildCustomTextField(
-                                    controller: _postalCodeController,
-                                    label: 'Postal Code',
-                                    hintText: 'Postal Code',
-                                    prefixIcon: Icons.pin_drop_outlined,
-                                    keyboardType: TextInputType.number,
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: _buildCustomTextField(
-                                    controller: _countryController,
-                                    label: 'Country',
-                                    hintText: 'Country',
-                                    prefixIcon: Icons.public_outlined,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 16),
-                            _buildCustomTextField(
-                              controller: _timezoneController,
-                              label: 'Timezone *',
-                              hintText: 'UTC',
-                              prefixIcon: Icons.schedule_outlined,
-                              textInputAction: TextInputAction.done,
-                              validator: (val) =>
-                                  val == null || val.trim().isEmpty ? 'Timezone is required' : null,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 32),
-                    ElevatedButton(
-                      onPressed: isSaving ? null : _save,
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size(double.infinity, 50),
-                      ),
-                      child: isSaving
-                          ? const CircularProgressIndicator(color: Colors.white)
-                          : const Text('Save Changes'),
-                    ),
-                  ],
-                ).animate().fade(duration: 200.ms),
-              ),
+          : TabBarView(
+              controller: _tabController,
+              children: [
+                _buildProfileTab(authProvider),
+                _buildBusinessTab(settingsProvider),
+              ],
             ),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+          child: ElevatedButton(
+            onPressed: isSaving ? null : _saveAll,
+            style: ElevatedButton.styleFrom(
+              minimumSize: const Size(double.infinity, 50),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            child: isSaving
+                ? const SizedBox(
+                    width: 22,
+                    height: 22,
+                    child: CircularProgressIndicator(strokeWidth: 2.5, color: Colors.white),
+                  )
+                : const Text('Save Changes', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+          ),
+        ),
+      ),
     );
   }
 }

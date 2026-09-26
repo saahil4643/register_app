@@ -146,6 +146,41 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> with SingleTi
                     }
                   },
                 ),
+                PopupMenuButton<String>(
+                  icon: const Icon(Icons.more_vert_rounded),
+                  onSelected: (val) async {
+                    final provider = context.read<ProductProvider>();
+                    if (val == 'activate') {
+                      final ok = await provider.activateProduct(product.id);
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(ok ? 'Product activated' : (provider.errorMessage ?? 'Failed to activate'))),
+                        );
+                      }
+                    } else if (val == 'deactivate') {
+                      final ok = await provider.deactivateProduct(product.id);
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(ok ? 'Product deactivated' : (provider.errorMessage ?? 'Failed to deactivate'))),
+                        );
+                      }
+                    } else if (val == 'restore') {
+                      final ok = await provider.restoreProduct(product.id);
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(ok ? 'Product restored' : (provider.errorMessage ?? 'Failed to restore'))),
+                        );
+                      }
+                    }
+                  },
+                  itemBuilder: (ctx) => [
+                    if (!product.isActive)
+                      const PopupMenuItem(value: 'activate', child: Text('Activate Product'))
+                    else
+                      const PopupMenuItem(value: 'deactivate', child: Text('Deactivate Product')),
+                    const PopupMenuItem(value: 'restore', child: Text('Restore Product')),
+                  ],
+                ),
               ],
               flexibleSpace: FlexibleSpaceBar(
                 background: SafeArea(

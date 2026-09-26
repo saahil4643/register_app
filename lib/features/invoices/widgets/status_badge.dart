@@ -23,6 +23,10 @@ class InvoiceStatusBadge extends StatelessWidget {
         backgroundColor = const Color(0xFFEFF6FF); // Blue 50
         textColor = const Color(0xFF1D4ED8); // Blue 700
         break;
+      case InvoiceStatus.partially_paid:
+        backgroundColor = const Color(0xFFFEF3C7); // Amber 100
+        textColor = const Color(0xFFD97706); // Amber 700
+        break;
       case InvoiceStatus.paid:
         backgroundColor = const Color(0xFFD1FAE5); // Emerald 100
         textColor = const Color(0xFF047857); // Emerald 700

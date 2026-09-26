@@ -5,6 +5,7 @@ import 'invoice_item.dart';
 enum InvoiceStatus {
   draft,
   sent,
+  partially_paid,
   paid,
   overdue,
   cancelled;
@@ -15,6 +16,8 @@ enum InvoiceStatus {
         return 'Draft';
       case InvoiceStatus.sent:
         return 'Sent';
+      case InvoiceStatus.partially_paid:
+        return 'Partially Paid';
       case InvoiceStatus.paid:
         return 'Paid';
       case InvoiceStatus.overdue:
@@ -36,6 +39,7 @@ class Invoice {
   final String? terms;
   final InvoiceStatus status;
   final List<Payment> payments;
+  final String currency;
 
   // Server calculated fields
   final double? subtotalField;
@@ -56,6 +60,7 @@ class Invoice {
     this.terms,
     required this.status,
     this.payments = const [],
+    this.currency = 'INR',
     this.subtotalField,
     this.totalDiscountField,
     this.totalTaxField,
@@ -68,8 +73,18 @@ class Invoice {
   double get totalDiscount => totalDiscountField ?? items.fold(0.0, (sum, item) => sum + item.discountAmount);
   double get totalTax => totalTaxField ?? items.fold(0.0, (sum, item) => sum + item.taxAmount);
   double get grandTotal => grandTotalField ?? items.fold(0.0, (sum, item) => sum + item.total);
-  double get balanceDue => balanceDueField ?? (grandTotal - paidAmount);
-  double get paidAmount => paidAmountField ?? 0.0;
+  double get paidAmount {
+    if (paidAmountField != null) return paidAmountField!;
+    if (payments.isNotEmpty) {
+      return payments.fold(0.0, (sum, p) => sum + p.amount);
+    }
+    return 0.0;
+  }
+  double get balanceDue {
+    if (balanceDueField != null) return balanceDueField!;
+    final double remaining = grandTotal - paidAmount;
+    return remaining > 0 ? remaining : 0.0;
+  }
 
   factory Invoice.fromJson(Map<String, dynamic> json) {
     Customer customer;
@@ -77,24 +92,25 @@ class Invoice {
     if (customerData is Map<String, dynamic>) {
       customer = Customer.fromJson(customerData);
     } else if (customerData is String) {
+      final custName = (json['customer_name'] ?? json['customerName'] ?? customerData).toString();
       customer = Customer(
-        id: customerData,
-        name: (json['customer_name'] ?? '') as String,
-        email: '',
-        phone: '',
+        id: (json['customer_id'] ?? customerData).toString(),
+        name: custName,
+        email: (json['customer_email'] ?? '').toString(),
+        phone: (json['customer_phone'] ?? '').toString(),
         address: '',
-        company: (json['customer_name'] ?? '') as String,
+        company: custName,
         gstNo: '',
         createdAt: DateTime.now(),
       );
     } else {
       customer = Customer(
-        id: '',
-        name: 'Unknown',
+        id: (json['customer_id'] ?? '').toString(),
+        name: (json['customer_name'] ?? json['customerName'] ?? 'Unknown').toString(),
         email: '',
         phone: '',
         address: '',
-        company: 'Unknown',
+        company: (json['customer_name'] ?? json['customerName'] ?? 'Unknown').toString(),
         gstNo: '',
         createdAt: DateTime.now(),
       );
@@ -107,11 +123,13 @@ class Invoice {
       return null;
     }
 
+    final rawStatus = (json['status'] ?? '').toString().toLowerCase();
+
     return Invoice(
       id: json['id'] as String,
       invoiceNumber: (json['invoice_number'] ?? json['invoiceNumber'] ?? '') as String,
       customer: customer,
-      invoiceDate: DateTime.parse((json['invoice_date'] ?? json['invoiceDate'] ?? DateTime.now().toIso8601String()) as String),
+      invoiceDate: DateTime.parse((json['invoice_date'] ?? json['invoiceDate'] ?? json['date'] ?? DateTime.now().toIso8601String()) as String),
       dueDate: DateTime.parse((json['due_date'] ?? json['dueDate'] ?? DateTime.now().toIso8601String()) as String),
       items: json['items'] != null
           ? (json['items'] as List<dynamic>)
@@ -121,8 +139,8 @@ class Invoice {
       notes: (json['notes'] ?? json['customer_notes']) as String?,
       terms: (json['terms'] ?? json['terms_and_conditions'] ?? json['payment_terms']) as String?,
       status: InvoiceStatus.values.firstWhere(
-        (e) => e.name == json['status'] ||
-               (e.name == InvoiceStatus.sent.name && (json['status'] == 'pending' || json['status'] == 'partially_paid')),
+        (e) => e.name == rawStatus ||
+               (e == InvoiceStatus.partially_paid && (rawStatus == 'partially_paid' || rawStatus == 'partial')),
         orElse: () => InvoiceStatus.draft,
       ),
       payments: json['payments'] != null
@@ -130,12 +148,13 @@ class Invoice {
               .map((p) => Payment.fromJson(p as Map<String, dynamic>))
               .toList()
           : [],
+      currency: (json['currency'] ?? 'INR') as String,
       subtotalField: parseDouble(json['subtotal']),
       totalDiscountField: parseDouble(json['discount_total'] ?? json['discountTotal']),
       totalTaxField: parseDouble(json['tax_total'] ?? json['taxTotal'] ?? json['tax_amount']),
-      grandTotalField: parseDouble(json['grand_total'] ?? json['grandTotal']),
-      balanceDueField: parseDouble(json['balance_due'] ?? json['balanceDue']),
-      paidAmountField: parseDouble(json['paid_amount'] ?? json['paidAmount']),
+      grandTotalField: parseDouble(json['grand_total'] ?? json['grandTotal'] ?? json['amount']),
+      balanceDueField: parseDouble(json['balance_due'] ?? json['balanceDue'] ?? json['balance'] ?? json['due_amount'] ?? json['dueAmount']),
+      paidAmountField: parseDouble(json['amount_paid'] ?? json['amountPaid'] ?? json['paid_amount'] ?? json['paidAmount'] ?? json['amount_received'] ?? json['amountReceived'] ?? json['received_amount'] ?? json['advance_amount'] ?? json['advance'] ?? json['paid']),
     );
   }
 
@@ -150,6 +169,7 @@ class Invoice {
       'customer_notes': notes,
       'terms_and_conditions': terms,
       'status': status.name,
+      'currency': currency,
       'payments': payments.map((p) => p.toJson()).toList(),
     };
   }
@@ -165,6 +185,7 @@ class Invoice {
     String? terms,
     InvoiceStatus? status,
     List<Payment>? payments,
+    String? currency,
     double? subtotalField,
     double? totalDiscountField,
     double? totalTaxField,
@@ -183,6 +204,7 @@ class Invoice {
       terms: terms ?? this.terms,
       status: status ?? this.status,
       payments: payments ?? this.payments,
+      currency: currency ?? this.currency,
       subtotalField: subtotalField ?? this.subtotalField,
       totalDiscountField: totalDiscountField ?? this.totalDiscountField,
       totalTaxField: totalTaxField ?? this.totalTaxField,

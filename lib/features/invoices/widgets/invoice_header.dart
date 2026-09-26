@@ -76,7 +76,7 @@ class InvoiceHeader extends StatelessWidget {
                       Text(
                         currencyFormat.format(invoice.grandTotal),
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 16,
                           fontWeight: FontWeight.w800,
                           color: theme.colorScheme.primary,
                         ),
@@ -89,20 +89,46 @@ class InvoiceHeader extends StatelessWidget {
                   height: 36,
                   color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'OUTSTANDING BALANCE',
+                        'PAID AMOUNT',
+                        style: theme.textTheme.bodySmall?.copyWith(fontSize: 9, fontWeight: FontWeight.bold, letterSpacing: 0.5),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        currencyFormat.format(invoice.paidAmount),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: invoice.paidAmount > 0 ? AppColors.success : (isDark ? Colors.grey[400] : Colors.grey[600]),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
+                  width: 1,
+                  height: 36,
+                  color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'BALANCE DUE',
                         style: theme.textTheme.bodySmall?.copyWith(fontSize: 9, fontWeight: FontWeight.bold, letterSpacing: 0.5),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         currencyFormat.format(outstandingBalance),
                         style: TextStyle(
-                          fontSize: 18,
+                          fontSize: 16,
                           fontWeight: FontWeight.w800,
                           color: outstandingBalance > 0
                               ? (invoice.status == InvoiceStatus.overdue ? AppColors.error : AppColors.warning)

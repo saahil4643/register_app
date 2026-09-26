@@ -43,6 +43,9 @@ class InvoiceCard extends StatelessWidget {
       case InvoiceStatus.sent:
         statusIndicatorColor = AppColors.warning;
         break;
+      case InvoiceStatus.partially_paid:
+        statusIndicatorColor = Colors.amber.shade700;
+        break;
       case InvoiceStatus.paid:
         statusIndicatorColor = AppColors.success;
         break;

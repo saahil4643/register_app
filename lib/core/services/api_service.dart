@@ -53,10 +53,56 @@ class ApiService {
   }
 
   String _resolvePath(String path) {
-    if (path.startsWith('/api/') && !path.startsWith('/api/v1/')) {
-      return path.replaceFirst('/api/', '/api/v1/');
+    var p = path;
+    if (p.startsWith('/api/') && !p.startsWith('/api/v1/')) {
+      p = p.replaceFirst('/api/', '/api/v1/');
     }
-    return path;
+    if (p.length > 1 && p.endsWith('/')) {
+      p = p.substring(0, p.length - 1);
+    }
+    return p;
+  }
+
+  Future<Map<String, dynamic>> postMultipart(
+    String path, {
+    required String fileFieldName,
+    required dynamic file,
+    Map<String, String>? fields,
+  }) async {
+    final resolvedPath = _resolvePath(path);
+    final url = resolvedPath.startsWith('http') ? Uri.parse(resolvedPath) : Uri.parse('${Env.apiBaseUrl}$resolvedPath');
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('access_token');
+
+    final request = http.MultipartRequest('POST', url);
+    if (token != null && token.isNotEmpty) {
+      request.headers['Authorization'] = 'Bearer $token';
+    }
+    request.headers['Accept'] = 'application/json';
+
+    if (fields != null) {
+      request.fields.addAll(fields);
+    }
+
+    if (kIsWeb) {
+      final bytes = await file.readAsBytes();
+      final String filename = file.name ?? 'upload.jpg';
+      request.files.add(http.MultipartFile.fromBytes(
+        fileFieldName,
+        bytes,
+        filename: filename,
+      ));
+    } else {
+      request.files.add(await http.MultipartFile.fromPath(
+        fileFieldName,
+        file.path,
+        filename: file.name,
+      ));
+    }
+
+    final streamedResponse = await request.send();
+    final response = await http.Response.fromStream(streamedResponse);
+    return _processResponse(response);
   }
 
   Future<Map<String, dynamic>> _sendWithRetry(
@@ -156,7 +202,7 @@ class ApiService {
         return false;
       }
 
-      final url = Uri.parse('${Env.apiBaseUrl}/api/v1/auth/token/refresh/');
+      final url = Uri.parse('${Env.apiBaseUrl}/api/v1/auth/token/refresh');
       debugPrint('POST token refresh: $url');
       
       final response = await http.post(

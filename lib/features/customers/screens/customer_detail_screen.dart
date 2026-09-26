@@ -173,6 +173,40 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> with Single
                     }
                   },
                 ),
+                PopupMenuButton<String>(
+                  icon: const Icon(Icons.more_vert_rounded),
+                  onSelected: (val) async {
+                    if (val == 'restore') {
+                      final success = await context.read<CustomerProvider>().restoreCustomer(customer.id);
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(success ? 'Customer restored' : 'Failed to restore customer')),
+                        );
+                      }
+                    } else if (val == 'activate') {
+                      final success = await context.read<CustomerProvider>().activateCustomer(customer.id);
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(success ? 'Customer activated' : 'Failed to activate customer')),
+                        );
+                      }
+                    } else if (val == 'deactivate') {
+                      final success = await context.read<CustomerProvider>().deactivateCustomer(customer.id);
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(success ? 'Customer deactivated' : 'Failed to deactivate customer')),
+                        );
+                      }
+                    }
+                  },
+                  itemBuilder: (ctx) => [
+                    if (customer.status.toLowerCase() != 'active')
+                      const PopupMenuItem(value: 'activate', child: Text('Activate Customer'))
+                    else
+                      const PopupMenuItem(value: 'deactivate', child: Text('Deactivate Customer')),
+                    const PopupMenuItem(value: 'restore', child: Text('Restore Customer')),
+                  ],
+                ),
               ],
               flexibleSpace: FlexibleSpaceBar(
                 background: SafeArea(
@@ -682,6 +716,8 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> with Single
         return StatusChip.paid();
       case InvoiceStatus.sent:
         return StatusChip.pending(label: 'Sent');
+      case InvoiceStatus.partially_paid:
+        return StatusChip.pending(label: 'Partially Paid');
       case InvoiceStatus.overdue:
         return StatusChip.overdue();
       case InvoiceStatus.draft:

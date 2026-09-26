@@ -127,9 +127,15 @@ class InvoiceItemCard extends StatelessWidget {
                                 child: const Icon(Icons.remove_rounded, size: 14),
                               ),
                             ),
-                            Text(
-                              '${item.quantity}',
-                              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                            InkWell(
+                              onTap: () => _showQtyEditDialog(context, item.quantity),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
+                                child: Text(
+                                  '${item.quantity}',
+                                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                                ),
+                              ),
                             ),
                             InkWell(
                               borderRadius: const BorderRadius.horizontal(right: Radius.circular(8)),
@@ -267,6 +273,41 @@ class InvoiceItemCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showQtyEditDialog(BuildContext context, int currentQty) {
+    final controller = TextEditingController(text: currentQty.toString());
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Update Quantity'),
+        content: TextField(
+          controller: controller,
+          keyboardType: TextInputType.number,
+          autofocus: true,
+          decoration: const InputDecoration(
+            labelText: 'Quantity',
+            prefixIcon: Icon(Icons.pin_outlined),
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              final val = int.tryParse(controller.text);
+              if (val != null && val >= 0) {
+                onQtyChanged(val);
+              }
+              Navigator.pop(ctx);
+            },
+            child: const Text('Save'),
+          ),
+        ],
       ),
     );
   }

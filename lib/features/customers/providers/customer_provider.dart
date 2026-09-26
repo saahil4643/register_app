@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import '../models/customer.dart';
-import '../../invoices/models/invoice.dart';
-import '../models/payment.dart';
 import '../../../core/services/api_service.dart';
 
 class CustomerProvider extends ChangeNotifier {
@@ -19,7 +17,7 @@ class CustomerProvider extends ChangeNotifier {
   String _statusFilter = 'All';
   String _sortBy = 'Alphabetical';
   
-  bool _hasMore = true;
+  bool _hasMore = false;
   String? _nextPageUrl;
 
   // Getters
@@ -52,14 +50,13 @@ class CustomerProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Fetch paginated customer list
+  // Fetch customer list (Supports both /api/v1/customers and /api/customers)
   Future<void> fetchCustomers({bool refresh = false}) async {
     if (_isLoading) return;
     if (refresh) {
       _nextPageUrl = null;
       _hasMore = true;
     }
-    if (!_hasMore && !refresh) return;
 
     _isLoading = true;
     _errorMessage = null;
@@ -70,21 +67,35 @@ class CustomerProvider extends ChangeNotifier {
       if (_nextPageUrl != null && !refresh) {
         url = _nextPageUrl!;
       } else {
-        url = '/api/customers/?page=1&page_size=15';
+        final queryParams = <String>[];
         if (_searchQuery.isNotEmpty) {
-          url += '&search=${Uri.encodeComponent(_searchQuery)}';
+          queryParams.add('search=${Uri.encodeComponent(_searchQuery)}');
         }
         if (_statusFilter == 'Active') {
-          url += '&status=active';
+          queryParams.add('status=active');
         } else if (_statusFilter == 'Inactive') {
-          url += '&status=inactive';
+          queryParams.add('status=inactive');
         }
+
+        final qs = queryParams.isNotEmpty ? '?${queryParams.join('&')}' : '';
+        url = '/api/v1/customers$qs';
       }
 
       final response = await ApiService().get(url);
       if (response['success'] == true) {
-        final data = response['data'] ?? {};
-        final results = data['results'] as List<dynamic>? ?? [];
+        final rawData = response['data'];
+        List<dynamic> results = [];
+        
+        if (rawData is List) {
+          results = rawData;
+          _nextPageUrl = null;
+          _hasMore = false;
+        } else if (rawData is Map) {
+          results = rawData['results'] as List<dynamic>? ?? [];
+          _nextPageUrl = rawData['next'] as String?;
+          _hasMore = _nextPageUrl != null;
+        }
+
         final List<Customer> fetched = results
             .map((json) => Customer.fromJson(json as Map<String, dynamic>))
             .toList();
@@ -93,8 +104,6 @@ class CustomerProvider extends ChangeNotifier {
           _customers.clear();
         }
         _customers.addAll(fetched);
-        _nextPageUrl = data['next'] as String?;
-        _hasMore = _nextPageUrl != null;
       } else {
         _errorMessage = response['message'] ?? 'Failed to load customers';
       }
@@ -119,15 +128,15 @@ class CustomerProvider extends ChangeNotifier {
     }
   }
 
-  // Fetch single customer details
+  // Fetch single customer details: GET /api/v1/customers/{id}
   Future<Customer?> fetchCustomerDetails(String id) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
     try {
-      final response = await ApiService().get('/api/customers/$id/');
-      if (response['success'] == true) {
+      final response = await ApiService().get('/api/v1/customers/$id');
+      if (response['success'] == true && response['data'] != null) {
         final customer = Customer.fromJson(response['data'] as Map<String, dynamic>);
         _selectedCustomerDetails = customer;
         
@@ -142,6 +151,29 @@ class CustomerProvider extends ChangeNotifier {
       }
     } catch (e) {
       _errorMessage = 'Error loading customer details: $e';
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+    return null;
+  }
+
+  // Lookup Customer by GST: GET /api/v1/customers/by-gst/{gstNumber}
+  Future<Customer?> fetchCustomerByGst(String gstNumber) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final response = await ApiService().get('/api/v1/customers/by-gst/${Uri.encodeComponent(gstNumber)}');
+      if (response['success'] == true && response['data'] != null) {
+        final customer = Customer.fromJson(response['data'] as Map<String, dynamic>);
+        return customer;
+      } else {
+        _errorMessage = response['message'] ?? 'Customer not found for GST: $gstNumber';
+      }
+    } catch (e) {
+      _errorMessage = 'Error looking up customer by GST: $e';
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -172,7 +204,7 @@ class CustomerProvider extends ChangeNotifier {
     return null;
   }
 
-  // Save/Create Customer
+  // Create Customer: POST /api/v1/customers
   Future<Customer?> createCustomer(Customer customer, {List<Map<String, dynamic>>? contacts, List<String>? tagNames}) async {
     _isSaving = true;
     _errorMessage = null;
@@ -181,31 +213,62 @@ class CustomerProvider extends ChangeNotifier {
 
     try {
       final Map<String, dynamic> payload = {
-        'customer_type': 'business',
-        'display_name': customer.name,
-        if (customer.company.isNotEmpty) 'company_name': customer.company,
+        'customer_type': customer.customerType.isNotEmpty ? customer.customerType : 'business',
+        'display_name': customer.displayName.isNotEmpty ? customer.displayName : customer.name,
+        if (customer.companyName.isNotEmpty) 'company_name': customer.companyName,
+        if (customer.firstName.isNotEmpty) 'first_name': customer.firstName,
+        if (customer.lastName.isNotEmpty) 'last_name': customer.lastName,
         if (customer.email.isNotEmpty) 'email': customer.email,
-        if (customer.phone.isNotEmpty) 'primary_phone': customer.phone,
-        if (customer.address.isNotEmpty) 'billing_address_line_1': customer.address,
-        'shipping_same_as_billing': true,
-        'gst_registered': customer.gstNo.isNotEmpty,
-        if (customer.gstNo.isNotEmpty) 'gst_number': customer.gstNo,
+        'primary_phone': customer.primaryPhone.isNotEmpty ? customer.primaryPhone : customer.phone,
+        if (customer.secondaryPhone.isNotEmpty) 'secondary_phone': customer.secondaryPhone,
+        if (customer.website.isNotEmpty) 'website': customer.website,
+        if (customer.gstNumber.isNotEmpty) 'gst_number': customer.gstNumber,
+        if (customer.panNumber.isNotEmpty) 'pan_number': customer.panNumber,
+        'tax_preference': customer.taxPreference,
+        'currency': customer.currency,
+        'payment_terms': customer.paymentTerms,
         'credit_limit': customer.creditLimit,
-        if (customer.notes.isNotEmpty) 'internal_notes': customer.notes,
+        'status': customer.status,
+        if (customer.billingAttention.isNotEmpty) 'billing_attention': customer.billingAttention,
+        if (customer.billingAddressLine1.isNotEmpty) 'billing_address_line_1': customer.billingAddressLine1,
+        if (customer.billingCity.isNotEmpty) 'billing_city': customer.billingCity,
+        if (customer.billingState.isNotEmpty) 'billing_state': customer.billingState,
+        if (customer.billingPostalCode.isNotEmpty) 'billing_postal_code': customer.billingPostalCode,
+        'billing_country': customer.billingCountry,
+        'shipping_same_as_billing': customer.shippingSameAsBilling,
+        if (!customer.shippingSameAsBilling && customer.shippingAddressLine1.isNotEmpty)
+          'shipping_address_line_1': customer.shippingAddressLine1,
+        if (!customer.shippingSameAsBilling && customer.shippingCity.isNotEmpty)
+          'shipping_city': customer.shippingCity,
+        if (!customer.shippingSameAsBilling && customer.shippingState.isNotEmpty)
+          'shipping_state': customer.shippingState,
+        if (!customer.shippingSameAsBilling && customer.shippingPostalCode.isNotEmpty)
+          'shipping_postal_code': customer.shippingPostalCode,
+        if (!customer.shippingSameAsBilling && customer.shippingCountry.isNotEmpty)
+          'shipping_country': customer.shippingCountry,
+        if (customer.notes.isNotEmpty) 'notes': customer.notes,
         if (contacts != null) 'contacts': contacts,
         if (tagNames != null) 'tag_names': tagNames,
       };
 
-      final response = await ApiService().post('/api/customers/', payload);
+      final response = await ApiService().post('/api/v1/customers', payload);
       if (response['success'] == true) {
-        final newCustomer = Customer.fromJson(response['data'] as Map<String, dynamic>);
-        _customers.add(newCustomer);
-        return newCustomer;
+        final data = response['data'] as Map<String, dynamic>? ?? {};
+        final newCustomer = Customer.fromJson(data);
+        
+        // If response only returned minimal data, fill with sent details
+        final mergedCustomer = customer.copyWith(
+          id: newCustomer.id.isNotEmpty ? newCustomer.id : customer.id,
+          displayName: newCustomer.displayName.isNotEmpty ? newCustomer.displayName : customer.displayName,
+          status: newCustomer.status.isNotEmpty ? newCustomer.status : customer.status,
+        );
+
+        _customers.insert(0, mergedCustomer);
+        return mergedCustomer;
       } else {
         _errorMessage = response['message'] ?? 'Failed to create customer';
         if (response['errors'] is Map<String, dynamic>) {
           _parseFieldErrors(response['errors'] as Map<String, dynamic>);
-          // Build a readable error from field errors
           if (_fieldErrors.isNotEmpty) {
             final details = _fieldErrors.entries.map((e) {
               final fieldName = _friendlyFieldName(e.key);
@@ -224,7 +287,7 @@ class CustomerProvider extends ChangeNotifier {
     return null;
   }
 
-  // Update Customer
+  // Full Update: PUT /api/v1/customers/{id}
   Future<Customer?> updateCustomer(String id, Customer customer, {List<Map<String, dynamic>>? contacts, List<String>? tagNames}) async {
     _isSaving = true;
     _errorMessage = null;
@@ -233,22 +296,49 @@ class CustomerProvider extends ChangeNotifier {
 
     try {
       final Map<String, dynamic> payload = {
-        'display_name': customer.name,
-        if (customer.company.isNotEmpty) 'company_name': customer.company,
+        'customer_type': customer.customerType,
+        'display_name': customer.displayName.isNotEmpty ? customer.displayName : customer.name,
+        if (customer.companyName.isNotEmpty) 'company_name': customer.companyName,
+        if (customer.firstName.isNotEmpty) 'first_name': customer.firstName,
+        if (customer.lastName.isNotEmpty) 'last_name': customer.lastName,
         if (customer.email.isNotEmpty) 'email': customer.email,
-        if (customer.phone.isNotEmpty) 'primary_phone': customer.phone,
-        if (customer.address.isNotEmpty) 'billing_address_line_1': customer.address,
-        'gst_registered': customer.gstNo.isNotEmpty,
-        if (customer.gstNo.isNotEmpty) 'gst_number': customer.gstNo,
+        'primary_phone': customer.primaryPhone.isNotEmpty ? customer.primaryPhone : customer.phone,
+        if (customer.secondaryPhone.isNotEmpty) 'secondary_phone': customer.secondaryPhone,
+        if (customer.website.isNotEmpty) 'website': customer.website,
+        if (customer.gstNumber.isNotEmpty) 'gst_number': customer.gstNumber,
+        if (customer.panNumber.isNotEmpty) 'pan_number': customer.panNumber,
+        'tax_preference': customer.taxPreference,
+        'currency': customer.currency,
+        'payment_terms': customer.paymentTerms,
         'credit_limit': customer.creditLimit,
-        if (customer.notes.isNotEmpty) 'internal_notes': customer.notes,
+        'status': customer.status,
+        if (customer.billingAttention.isNotEmpty) 'billing_attention': customer.billingAttention,
+        if (customer.billingAddressLine1.isNotEmpty) 'billing_address_line_1': customer.billingAddressLine1,
+        if (customer.billingCity.isNotEmpty) 'billing_city': customer.billingCity,
+        if (customer.billingState.isNotEmpty) 'billing_state': customer.billingState,
+        if (customer.billingPostalCode.isNotEmpty) 'billing_postal_code': customer.billingPostalCode,
+        'billing_country': customer.billingCountry,
+        'shipping_same_as_billing': customer.shippingSameAsBilling,
+        if (!customer.shippingSameAsBilling && customer.shippingAddressLine1.isNotEmpty)
+          'shipping_address_line_1': customer.shippingAddressLine1,
+        if (!customer.shippingSameAsBilling && customer.shippingCity.isNotEmpty)
+          'shipping_city': customer.shippingCity,
+        if (!customer.shippingSameAsBilling && customer.shippingState.isNotEmpty)
+          'shipping_state': customer.shippingState,
+        if (!customer.shippingSameAsBilling && customer.shippingPostalCode.isNotEmpty)
+          'shipping_postal_code': customer.shippingPostalCode,
+        if (!customer.shippingSameAsBilling && customer.shippingCountry.isNotEmpty)
+          'shipping_country': customer.shippingCountry,
+        if (customer.notes.isNotEmpty) 'notes': customer.notes,
         if (contacts != null) 'contacts': contacts,
         if (tagNames != null) 'tag_names': tagNames,
       };
 
-      final response = await ApiService().put('/api/customers/$id/', payload);
+      final response = await ApiService().put('/api/v1/customers/$id', payload);
       if (response['success'] == true) {
-        final updated = Customer.fromJson(response['data'] as Map<String, dynamic>);
+        final data = response['data'] as Map<String, dynamic>? ?? {};
+        final updated = data.isNotEmpty ? Customer.fromJson(data) : customer;
+        
         final idx = _customers.indexWhere((c) => c.id == id);
         if (idx >= 0) {
           _customers[idx] = updated;
@@ -272,14 +362,50 @@ class CustomerProvider extends ChangeNotifier {
     return null;
   }
 
-  // Delete Customer (Soft delete)
+  // Partial Update: PATCH /api/v1/customers/{id}
+  Future<Customer?> patchCustomer(String id, Map<String, dynamic> partialData) async {
+    _isSaving = true;
+    _errorMessage = null;
+    _fieldErrors.clear();
+    notifyListeners();
+
+    try {
+      final response = await ApiService().patch('/api/v1/customers/$id', partialData);
+      if (response['success'] == true) {
+        final data = response['data'] as Map<String, dynamic>? ?? {};
+        if (data.isNotEmpty) {
+          final updated = Customer.fromJson(data);
+          final idx = _customers.indexWhere((c) => c.id == id);
+          if (idx >= 0) {
+            _customers[idx] = updated;
+          }
+          if (_selectedCustomerDetails?.id == id) {
+            _selectedCustomerDetails = updated;
+          }
+          return updated;
+        }
+        await fetchCustomerDetails(id);
+        return _selectedCustomerDetails;
+      } else {
+        _errorMessage = response['message'] ?? 'Failed to partially update customer';
+      }
+    } catch (e) {
+      _errorMessage = 'Error partially updating customer: $e';
+    } finally {
+      _isSaving = false;
+      notifyListeners();
+    }
+    return null;
+  }
+
+  // Delete Customer (Soft delete): DELETE /api/v1/customers/{id}
   Future<bool> deleteCustomer(String id) async {
     _isSaving = true;
     _errorMessage = null;
     notifyListeners();
 
     try {
-      final response = await ApiService().delete('/api/customers/$id/');
+      final response = await ApiService().delete('/api/v1/customers/$id');
       if (response['success'] == true) {
         _customers.removeWhere((c) => c.id == id);
         if (_selectedCustomerDetails?.id == id) {
@@ -298,14 +424,14 @@ class CustomerProvider extends ChangeNotifier {
     return false;
   }
 
-  // Restore Customer
+  // Restore Soft-Deleted Customer: POST /api/v1/customers/{id}/restore
   Future<bool> restoreCustomer(String id) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
     try {
-      final response = await ApiService().post('/api/customers/$id/restore/', {});
+      final response = await ApiService().post('/api/v1/customers/$id/restore', {});
       if (response['success'] == true) {
         await fetchCustomers(refresh: true);
         return true;
@@ -324,7 +450,7 @@ class CustomerProvider extends ChangeNotifier {
   // Activate Customer
   Future<bool> activateCustomer(String id) async {
     try {
-      final response = await ApiService().post('/api/customers/$id/activate/', {});
+      final response = await ApiService().post('/api/v1/customers/$id/activate', {});
       if (response['success'] == true) {
         await fetchCustomerDetails(id);
         return true;
@@ -338,7 +464,7 @@ class CustomerProvider extends ChangeNotifier {
   // Deactivate Customer
   Future<bool> deactivateCustomer(String id) async {
     try {
-      final response = await ApiService().post('/api/customers/$id/deactivate/', {});
+      final response = await ApiService().post('/api/v1/customers/$id/deactivate', {});
       if (response['success'] == true) {
         await fetchCustomerDetails(id);
         return true;
@@ -358,7 +484,7 @@ class CustomerProvider extends ChangeNotifier {
       'company_name': 'Company Name',
       'billing_address_line_1': 'Address',
       'credit_limit': 'Credit Limit',
-      'gst_registered': 'GST Registered',
+      'tax_preference': 'Tax Preference',
     };
     return names[key] ?? key.replaceAll('_', ' ').toUpperCase();
   }

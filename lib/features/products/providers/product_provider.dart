@@ -4,8 +4,8 @@ import '../../../core/services/api_service.dart';
 
 class ProductProvider extends ChangeNotifier {
   final List<Product> _products = [];
-  bool _isLoading = false;  // for list fetch operations
-  bool _isSaving = false;   // for create / update / delete operations
+  bool _isLoading = false;        // for list fetch operations
+  bool _isSaving = false;         // for create / update / delete operations
   bool _isLoadingDetails = false; // for single product detail fetch
   String? _errorMessage;
   final Map<String, List<String>> _fieldErrors = {};
@@ -16,8 +16,11 @@ class ProductProvider extends ChangeNotifier {
   String _searchQuery = '';
   String _activeFilter = 'All';
   String _sortBy = 'Newest';
+  int _currentPage = 1;
+  int _totalPages = 1;
+  int _totalCount = 0;
   
-  bool _hasMore = true;
+  bool _hasMore = false;
   String? _nextPageUrl;
 
   // Getters
@@ -33,6 +36,10 @@ class ProductProvider extends ChangeNotifier {
   String get searchQuery => _searchQuery;
   String get activeFilter => _activeFilter;
   String get sortBy => _sortBy;
+  int get totalCount => _totalCount;
+  int get currentPage => _currentPage;
+  int get totalPages => _totalPages;
+  bool get hasMore => _hasMore;
 
   // Setters for UI state
   void setSearchQuery(String val) {
@@ -50,12 +57,23 @@ class ProductProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Fetch paginated products
-  Future<void> fetchProducts({bool refresh = false}) async {
+  // Fetch paginated products: GET /api/v1/products
+  Future<void> fetchProducts({
+    bool refresh = false,
+    String? search,
+    String? productType,
+    String? categoryId,
+    String? brandId,
+    String? status,
+    bool? trackInventory,
+    String? stockAvailability,
+    String? ordering,
+  }) async {
     if (_isLoading) return;
     if (refresh) {
       _nextPageUrl = null;
       _hasMore = true;
+      _currentPage = 1;
     }
     if (!_hasMore && !refresh) return;
 
@@ -68,16 +86,70 @@ class ProductProvider extends ChangeNotifier {
       if (_nextPageUrl != null && !refresh) {
         url = _nextPageUrl!;
       } else {
-        url = '/api/products/?page=1&page_size=15';
-        if (_searchQuery.isNotEmpty) {
-          url += '&search=${Uri.encodeComponent(_searchQuery)}';
+        final queryParams = <String>['page=$_currentPage', 'page_size=15'];
+        
+        final effectiveSearch = search ?? _searchQuery;
+        if (effectiveSearch.isNotEmpty) {
+          queryParams.add('search=${Uri.encodeComponent(effectiveSearch)}');
         }
+
+        if (productType != null && productType.isNotEmpty) {
+          queryParams.add('product_type=$productType');
+        }
+        if (categoryId != null && categoryId.isNotEmpty) {
+          queryParams.add('category=$categoryId');
+        }
+        if (brandId != null && brandId.isNotEmpty) {
+          queryParams.add('brand=$brandId');
+        }
+
+        final effectiveStatus = status ?? (_activeFilter == 'Active' ? 'active' : (_activeFilter == 'Inactive' ? 'inactive' : null));
+        if (effectiveStatus != null) {
+          queryParams.add('status=$effectiveStatus');
+        }
+
+        if (trackInventory != null) {
+          queryParams.add('track_inventory=$trackInventory');
+        }
+
+        final effectiveStock = stockAvailability ?? (
+          _activeFilter == 'Stock Available' ? 'in_stock' :
+          _activeFilter == 'Low Stock' ? 'low_stock' :
+          _activeFilter == 'Out of Stock' ? 'out_of_stock' : null
+        );
+        if (effectiveStock != null) {
+          queryParams.add('stock_availability=$effectiveStock');
+        }
+
+        final effectiveOrdering = ordering ?? (
+          _sortBy == 'Price Low-High' ? 'selling_price' :
+          _sortBy == 'Price High-Low' ? '-selling_price' :
+          _sortBy == 'Name' ? 'name' : '-created_at'
+        );
+        queryParams.add('ordering=$effectiveOrdering');
+
+        url = '/api/v1/products?${queryParams.join('&')}';
       }
 
       final response = await ApiService().get(url);
       if (response['success'] == true) {
-        final data = response['data'] ?? {};
-        final results = data['results'] as List<dynamic>? ?? [];
+        final rawData = response['data'];
+        List<dynamic> results = [];
+
+        if (rawData is Map) {
+          results = rawData['results'] as List<dynamic>? ?? [];
+          _nextPageUrl = rawData['next'] as String?;
+          _hasMore = _nextPageUrl != null;
+          _currentPage = rawData['page'] as int? ?? _currentPage;
+          _totalPages = rawData['total_pages'] as int? ?? 1;
+          _totalCount = rawData['count'] as int? ?? results.length;
+        } else if (rawData is List) {
+          results = rawData;
+          _nextPageUrl = null;
+          _hasMore = false;
+          _totalCount = results.length;
+        }
+
         final List<Product> fetched = results
             .map((json) => Product.fromJson(json as Map<String, dynamic>))
             .toList();
@@ -86,8 +158,6 @@ class ProductProvider extends ChangeNotifier {
           _products.clear();
         }
         _products.addAll(fetched);
-        _nextPageUrl = data['next'] as String?;
-        _hasMore = _nextPageUrl != null;
       } else {
         _errorMessage = response['message'] ?? 'Failed to load products';
       }
@@ -99,20 +169,21 @@ class ProductProvider extends ChangeNotifier {
     }
   }
 
-  // Search products for autocomplete
+  // Fast search products for autocomplete: GET /api/v1/products?search=...
   Future<void> searchProducts(String query) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
     try {
       final String path = query.isEmpty 
-          ? '/api/products/' 
-          : '/api/products/search/?q=${Uri.encodeComponent(query)}';
+          ? '/api/v1/products' 
+          : '/api/v1/products?search=${Uri.encodeComponent(query)}';
       final response = await ApiService().get(path);
       if (response['success'] == true) {
-        final List<dynamic> dataList = response['data'] is List 
-            ? response['data'] 
-            : (response['data']?['results'] ?? []);
+        final data = response['data'];
+        final List<dynamic> dataList = data is List 
+            ? data 
+            : (data is Map && data['results'] is List ? data['results'] as List<dynamic> : []);
         _products.clear();
         _products.addAll(dataList.map((json) => Product.fromJson(json as Map<String, dynamic>)).toList());
         _hasMore = false;
@@ -140,15 +211,15 @@ class ProductProvider extends ChangeNotifier {
     }
   }
 
-  // Fetch single product details
+  // Fetch single product details: GET /api/v1/products/{id}
   Future<Product?> fetchProductDetails(String id) async {
     _isLoadingDetails = true;
     _errorMessage = null;
     notifyListeners();
 
     try {
-      final response = await ApiService().get('/api/products/$id/');
-      if (response['success'] == true) {
+      final response = await ApiService().get('/api/v1/products/$id');
+      if (response['success'] == true && response['data'] != null) {
         final product = Product.fromJson(response['data'] as Map<String, dynamic>);
         _selectedProductDetails = product;
         
@@ -169,7 +240,7 @@ class ProductProvider extends ChangeNotifier {
     return null;
   }
 
-  // Create Product
+  // Create Product: POST /api/v1/products
   Future<Product?> createProduct(Product product) async {
     _isSaving = true;
     _errorMessage = null;
@@ -179,26 +250,37 @@ class ProductProvider extends ChangeNotifier {
     try {
       final Map<String, dynamic> payload = {
         'name': product.name,
-        'sku': product.sku,
-        'barcode': product.barcode,
-        'product_type': product.category == 'Services' || product.category == 'Consulting' ? 'service' : 'goods',
-        'category_name': product.category,
-        'selling_price': double.parse(product.sellingPrice.toStringAsFixed(2)),
-        'purchase_price': double.parse(product.purchasePrice.toStringAsFixed(2)),
-        'mrp': double.parse((product.sellingPrice * 1.1).toStringAsFixed(2)),
-        'track_inventory': product.stock > 0,
-        'opening_stock': product.stock,
-        'reorder_level': product.minStock,
-        'minimum_stock': product.minStock,
-        'maximum_stock': 1000.0,
+        if (product.sku.isNotEmpty) 'sku': product.sku,
+        if (product.barcode.isNotEmpty) 'barcode': product.barcode,
+        'product_type': product.productType.isNotEmpty ? product.productType : 'goods',
+        if (product.category.isNotEmpty) 'category': product.category,
+        if (product.brand.isNotEmpty) 'brand': product.brand,
+        'unit_of_measurement': product.unitOfMeasurement.isNotEmpty ? product.unitOfMeasurement : 'Pieces',
+        'warehouse': product.warehouse.isNotEmpty ? product.warehouse : 'Main Warehouse',
+        if (product.hsnSacCode.isNotEmpty) 'hsn_sac_code': product.hsnSacCode,
         'gst_tax_rate': product.gst,
+        'selling_price': product.sellingPrice,
+        'purchase_price': product.purchasePrice,
+        'track_inventory': product.trackInventory,
+        'opening_stock': product.openingStock > 0 ? product.openingStock : product.stock.toDouble(),
+        'reorder_level': product.minStock,
+        if (product.description.isNotEmpty) 'description': product.description,
       };
 
-      final response = await ApiService().post('/api/products/', payload);
-      if (response['success'] == true) {
-        final newProduct = Product.fromJson(response['data'] as Map<String, dynamic>);
-        _products.add(newProduct);
-        return newProduct;
+      final response = await ApiService().post('/api/v1/products', payload);
+      if (response['success'] == true && response['data'] != null) {
+        final data = response['data'] as Map<String, dynamic>;
+        final newProduct = Product.fromJson(data);
+        
+        // Merge in any client fields if server returned partial
+        final merged = product.copyWith(
+          id: newProduct.id.isNotEmpty ? newProduct.id : product.id,
+          sku: newProduct.sku.isNotEmpty ? newProduct.sku : product.sku,
+          status: newProduct.status.isNotEmpty ? newProduct.status : product.status,
+        );
+
+        _products.insert(0, merged);
+        return merged;
       } else {
         _errorMessage = response['message'] ?? 'Failed to create product';
         if (response['errors'] is Map<String, dynamic>) {
@@ -220,8 +302,8 @@ class ProductProvider extends ChangeNotifier {
     return null;
   }
 
-  // Update Product
-  Future<Product?> updateProduct(String id, Product product) async {
+  // Update Product: PUT /api/v1/products/{id} or PATCH /api/v1/products/{id}
+  Future<Product?> updateProduct(String id, Product product, {bool partial = false}) async {
     _isSaving = true;
     _errorMessage = null;
     _fieldErrors.clear();
@@ -230,22 +312,32 @@ class ProductProvider extends ChangeNotifier {
     try {
       final Map<String, dynamic> payload = {
         'name': product.name,
-        'sku': product.sku,
-        'barcode': product.barcode,
-        'product_type': product.category == 'Services' || product.category == 'Consulting' ? 'service' : 'goods',
-        'category_name': product.category,
+        if (product.sku.isNotEmpty) 'sku': product.sku,
+        if (product.barcode.isNotEmpty) 'barcode': product.barcode,
+        'product_type': product.productType,
+        if (product.category.isNotEmpty) 'category': product.category,
+        if (product.brand.isNotEmpty) 'brand': product.brand,
+        'unit_of_measurement': product.unitOfMeasurement,
+        'warehouse': product.warehouse,
+        if (product.hsnSacCode.isNotEmpty) 'hsn_sac_code': product.hsnSacCode,
+        'gst_tax_rate': product.gst,
         'selling_price': product.sellingPrice,
         'purchase_price': product.purchasePrice,
-        'gst_tax_rate': product.gst,
-        'track_inventory': product.stock > 0,
+        'track_inventory': product.trackInventory,
         'current_stock': product.stock,
         'reorder_level': product.minStock,
-        'minimum_stock': product.minStock,
+        'status': product.status,
+        if (product.description.isNotEmpty) 'description': product.description,
       };
 
-      final response = await ApiService().put('/api/products/$id/', payload);
+      final response = partial
+          ? await ApiService().patch('/api/v1/products/$id', payload)
+          : await ApiService().put('/api/v1/products/$id', payload);
+
       if (response['success'] == true) {
-        final updated = Product.fromJson(response['data'] as Map<String, dynamic>);
+        final data = response['data'] as Map<String, dynamic>? ?? {};
+        final updated = data.isNotEmpty ? Product.fromJson(data) : product;
+        
         final idx = _products.indexWhere((p) => p.id == id);
         if (idx >= 0) {
           _products[idx] = updated;
@@ -258,12 +350,6 @@ class ProductProvider extends ChangeNotifier {
         _errorMessage = response['message'] ?? 'Failed to update product';
         if (response['errors'] is Map<String, dynamic>) {
           _parseFieldErrors(response['errors']);
-          if (_fieldErrors.isNotEmpty) {
-            final details = _fieldErrors.values.expand((element) => element).join(', ');
-            if (details.isNotEmpty) {
-              _errorMessage = details;
-            }
-          }
         }
       }
     } catch (e) {
@@ -275,14 +361,14 @@ class ProductProvider extends ChangeNotifier {
     return null;
   }
 
-  // Delete Product
+  // Delete Product (Soft delete): DELETE /api/v1/products/{id}
   Future<bool> deleteProduct(String id) async {
     _isSaving = true;
     _errorMessage = null;
     notifyListeners();
 
     try {
-      final response = await ApiService().delete('/api/products/$id/');
+      final response = await ApiService().delete('/api/v1/products/$id');
       if (response['success'] == true) {
         _products.removeWhere((p) => p.id == id);
         if (_selectedProductDetails?.id == id) {
@@ -294,6 +380,132 @@ class ProductProvider extends ChangeNotifier {
       }
     } catch (e) {
       _errorMessage = 'Error deleting product: $e';
+    } finally {
+      _isSaving = false;
+      notifyListeners();
+    }
+    return false;
+  }
+
+  // Restore Soft-Deleted Product: POST /api/v1/products/{id}/restore
+  Future<bool> restoreProduct(String id) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final response = await ApiService().post('/api/v1/products/$id/restore', {});
+      if (response['success'] == true) {
+        await fetchProducts(refresh: true);
+        return true;
+      } else {
+        _errorMessage = response['message'] ?? 'Failed to restore product';
+      }
+    } catch (e) {
+      _errorMessage = 'Error restoring product: $e';
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+    return false;
+  }
+
+  // Activate Single Product: POST /api/v1/products/{id}/activate
+  Future<bool> activateProduct(String id) async {
+    try {
+      final response = await ApiService().post('/api/v1/products/$id/activate', {});
+      if (response['success'] == true) {
+        await fetchProductDetails(id);
+        return true;
+      } else {
+        _errorMessage = response['message'] ?? 'Failed to activate product';
+      }
+    } catch (e) {
+      _errorMessage = 'Error activating product: $e';
+    }
+    notifyListeners();
+    return false;
+  }
+
+  // Deactivate Single Product: POST /api/v1/products/{id}/deactivate
+  Future<bool> deactivateProduct(String id) async {
+    try {
+      final response = await ApiService().post('/api/v1/products/$id/deactivate', {});
+      if (response['success'] == true) {
+        await fetchProductDetails(id);
+        return true;
+      } else {
+        _errorMessage = response['message'] ?? 'Failed to deactivate product';
+      }
+    } catch (e) {
+      _errorMessage = 'Error deactivating product: $e';
+    }
+    notifyListeners();
+    return false;
+  }
+
+  // Bulk Delete: POST /api/v1/products/bulk-delete
+  Future<bool> bulkDelete(List<String> ids) async {
+    _isSaving = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final response = await ApiService().post('/api/v1/products/bulk-delete', {'ids': ids});
+      if (response['success'] == true) {
+        _products.removeWhere((p) => ids.contains(p.id));
+        return true;
+      } else {
+        _errorMessage = response['message'] ?? 'Failed to perform bulk delete';
+      }
+    } catch (e) {
+      _errorMessage = 'Error performing bulk delete: $e';
+    } finally {
+      _isSaving = false;
+      notifyListeners();
+    }
+    return false;
+  }
+
+  // Bulk Activate: POST /api/v1/products/bulk-activate
+  Future<bool> bulkActivate(List<String> ids) async {
+    _isSaving = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final response = await ApiService().post('/api/v1/products/bulk-activate', {'ids': ids});
+      if (response['success'] == true) {
+        await fetchProducts(refresh: true);
+        return true;
+      } else {
+        _errorMessage = response['message'] ?? 'Failed to perform bulk activate';
+      }
+    } catch (e) {
+      _errorMessage = 'Error performing bulk activate: $e';
+    } finally {
+      _isSaving = false;
+      notifyListeners();
+    }
+    return false;
+  }
+
+  // Bulk Deactivate: POST /api/v1/products/bulk-deactivate
+  Future<bool> bulkDeactivate(List<String> ids) async {
+    _isSaving = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final response = await ApiService().post('/api/v1/products/bulk-deactivate', {'ids': ids});
+      if (response['success'] == true) {
+        await fetchProducts(refresh: true);
+        return true;
+      } else {
+        _errorMessage = response['message'] ?? 'Failed to perform bulk deactivate';
+      }
+    } catch (e) {
+      _errorMessage = 'Error performing bulk deactivate: $e';
     } finally {
       _isSaving = false;
       notifyListeners();

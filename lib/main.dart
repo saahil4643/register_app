@@ -13,6 +13,7 @@ import 'features/invoices/providers/invoice_provider.dart';
 import 'features/customers/providers/customer_provider.dart';
 import 'features/products/providers/product_provider.dart';
 import 'features/settings/providers/settings_provider.dart';
+import 'features/dashboard/providers/dashboard_provider.dart';
 import 'modules/expenses/providers/expense_provider.dart';
 
 Future<void> main() async {
@@ -23,6 +24,7 @@ Future<void> main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => DashboardProvider()),
         ChangeNotifierProvider(create: (_) => InvoiceProvider()),
         ChangeNotifierProvider(create: (_) => CustomerProvider()),
         ChangeNotifierProvider(create: (_) => ProductProvider()),

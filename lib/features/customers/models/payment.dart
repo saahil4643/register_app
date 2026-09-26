@@ -1,6 +1,8 @@
 class Payment {
   final String id;
+  final String paymentNumber;
   final String customerId;
+  final String customerName;
   final String? invoiceId; // Can be null if it's general account payment
   final double amount;
   final String paymentMode; // e.g. Cash, Bank Transfer, Cheque, UPI
@@ -9,13 +11,18 @@ class Payment {
 
   const Payment({
     required this.id,
-    required this.customerId,
+    this.paymentNumber = '',
+    this.customerId = '',
+    this.customerName = '',
     this.invoiceId,
     required this.amount,
     required this.paymentMode,
     required this.paymentDate,
-    required this.reference,
+    this.reference = '',
   });
+
+  // Backward compatibility getter
+  String get referenceNumber => reference;
 
   factory Payment.fromJson(Map<String, dynamic> json) {
     double toDouble(dynamic val) {
@@ -25,24 +32,29 @@ class Payment {
       return 0.0;
     }
 
+    final dateStr = (json['paymentDate'] ?? json['payment_date'] ?? json['created_at'] ?? '').toString();
+
     return Payment(
-      id: (json['id'] ?? '') as String,
-      customerId: (json['customerId'] ?? json['customer'] ?? '') as String,
-      invoiceId: (json['invoiceId'] ?? json['invoice']?.toString()) as String?,
+      id: (json['id'] ?? '').toString(),
+      paymentNumber: (json['paymentNumber'] ?? json['payment_number'] ?? '').toString(),
+      customerId: (json['customerId'] ?? json['customer_id'] ?? json['customer'] ?? '').toString(),
+      customerName: (json['customerName'] ?? json['customer_name'] ?? '').toString(),
+      invoiceId: (json['invoiceId'] ?? json['invoice_id'] ?? json['invoice'])?.toString(),
       amount: toDouble(json['amount']),
-      paymentMode: (json['paymentMode'] ?? json['payment_method'] ?? 'cash') as String,
-      paymentDate: json['paymentDate'] != null || json['payment_date'] != null
-          ? DateTime.parse((json['paymentDate'] ?? json['payment_date']) as String)
-          : DateTime.now(),
-      reference: (json['reference'] ?? json['reference_number'] ?? '') as String,
+      paymentMode: (json['paymentMode'] ?? json['payment_mode'] ?? json['payment_method'] ?? 'UPI').toString(),
+      paymentDate: dateStr.isNotEmpty ? (DateTime.tryParse(dateStr) ?? DateTime.now()) : DateTime.now(),
+      reference: (json['referenceNumber'] ?? json['reference_number'] ?? json['reference'] ?? '').toString(),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'paymentNumber': paymentNumber,
+      'payment_number': paymentNumber,
       'customerId': customerId,
       'customer': customerId,
+      'customerName': customerName,
       'invoiceId': invoiceId,
       'invoice': invoiceId,
       'amount': amount,
@@ -52,12 +64,15 @@ class Payment {
       'payment_date': paymentDate.toIso8601String().substring(0, 10),
       'reference': reference,
       'reference_number': reference,
+      'referenceNumber': reference,
     };
   }
 
   Payment copyWith({
     String? id,
+    String? paymentNumber,
     String? customerId,
+    String? customerName,
     String? invoiceId,
     double? amount,
     String? paymentMode,
@@ -66,7 +81,9 @@ class Payment {
   }) {
     return Payment(
       id: id ?? this.id,
+      paymentNumber: paymentNumber ?? this.paymentNumber,
       customerId: customerId ?? this.customerId,
+      customerName: customerName ?? this.customerName,
       invoiceId: invoiceId ?? this.invoiceId,
       amount: amount ?? this.amount,
       paymentMode: paymentMode ?? this.paymentMode,

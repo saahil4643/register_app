@@ -353,6 +353,25 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
               color: theme.colorScheme.primary,
               fontSize: 15,
             ),
+            const SizedBox(height: 4),
+            _buildFinancialRow(
+              'Amount Paid',
+              currencyFormat.format(invoice.paidAmount),
+              theme,
+              isBold: true,
+              color: invoice.paidAmount > 0 ? AppColors.success : null,
+              fontSize: 13,
+            ),
+            _buildFinancialRow(
+              'Balance Due',
+              currencyFormat.format(invoice.balanceDue),
+              theme,
+              isBold: true,
+              color: invoice.balanceDue <= 0
+                  ? AppColors.success
+                  : (invoice.status == InvoiceStatus.overdue ? AppColors.error : AppColors.warning),
+              fontSize: 14,
+            ),
           ],
         ),
       ),

@@ -1,5 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../../core/utils/file_helper.dart';
 import '../../customers/models/customer.dart';
 import '../../customers/models/payment.dart';
@@ -22,6 +23,13 @@ class InvoiceProvider extends ChangeNotifier {
   String? _errorMessage;
   Map<String, List<String>> _fieldErrors = {};
 
+  // Pagination & Filtering state
+  int _currentPage = 1;
+  int _totalPages = 1;
+  int _totalCount = 0;
+  DateTime? _startDate;
+  DateTime? _endDate;
+
   // Dashboard Statistics
   Map<String, dynamic> _dashboardStats = {
     'total_invoices': 0,
@@ -37,7 +45,7 @@ class InvoiceProvider extends ChangeNotifier {
 
   // Search & Filter state for Invoices
   String _searchQuery = '';
-  String _statusFilter = 'All'; // 'All', 'Draft', 'Sent', 'Paid', 'Overdue', 'Cancelled'
+  String _statusFilter = 'All'; // 'All', 'Draft', 'Sent', 'Partially Paid', 'Paid', 'Overdue'
   String _sortBy = 'date_desc'; // 'date_desc', 'date_asc', 'amount_desc', 'amount_asc'
 
   // Creation & Editing working state for Invoices
@@ -66,6 +74,12 @@ class InvoiceProvider extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
   Map<String, List<String>> get fieldErrors => _fieldErrors;
   Map<String, dynamic> get dashboardStats => _dashboardStats;
+
+  int get currentPage => _currentPage;
+  int get totalPages => _totalPages;
+  int get totalCount => _totalCount;
+  DateTime? get startDate => _startDate;
+  DateTime? get endDate => _endDate;
 
   String get searchQuery => _searchQuery;
   String get statusFilter => _statusFilter;
@@ -98,6 +112,12 @@ class InvoiceProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setDateRange(DateTime? start, DateTime? end) {
+    _startDate = start;
+    _endDate = end;
+    notifyListeners();
+  }
+
   void setSortBy(String sort) {
     _sortBy = sort;
     notifyListeners();
@@ -118,38 +138,51 @@ class InvoiceProvider extends ChangeNotifier {
     }
   }
 
-  // Fetch invoices from backend
+  // Fetch invoices from backend (Paginated & Filterable)
   Future<void> fetchInvoices({bool refresh = false}) async {
     if (_isLoading) return;
     if (refresh) {
+      _currentPage = 1;
       _nextPageUrl = null;
       _hasMore = true;
+    } else {
+      if (!_hasMore) return;
+      _currentPage++;
     }
-    if (!_hasMore && !refresh) return;
 
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
     try {
-      String url;
-      if (_nextPageUrl != null && !refresh) {
-        url = _nextPageUrl!;
-      } else {
-        final sortingParam = getBackendSorting(_sortBy);
-        url = '/api/invoices/?page=1&page_size=10&sorting=$sortingParam';
-        if (_searchQuery.isNotEmpty) {
-          url += '&search=${Uri.encodeComponent(_searchQuery)}';
-        }
-        if (_statusFilter != 'All') {
-          url += '&status=${_statusFilter.toLowerCase()}';
-        }
+      final queryParams = <String, String>{
+        'page': '$_currentPage',
+        'page_size': '10',
+      };
+      if (_searchQuery.isNotEmpty) {
+        queryParams['search'] = _searchQuery;
+      }
+      if (_statusFilter != 'All') {
+        queryParams['status'] = _statusFilter.toLowerCase().replaceAll(' ', '_');
+      }
+      if (_startDate != null) {
+        queryParams['start_date'] = DateFormat('yyyy-MM-dd').format(_startDate!);
+      }
+      if (_endDate != null) {
+        queryParams['end_date'] = DateFormat('yyyy-MM-dd').format(_endDate!);
       }
 
+      final queryString = queryParams.entries
+          .map((e) => '${e.key}=${Uri.encodeComponent(e.value)}')
+          .join('&');
+
+      final url = '/api/v1/invoices?$queryString';
       final response = await ApiService().get(url);
       if (response['success'] == true) {
         final data = response['data'] ?? {};
-        final results = data['results'] as List<dynamic>? ?? [];
+        final results = (data is Map && data['results'] is List)
+            ? data['results'] as List<dynamic>
+            : (data is List ? data : []);
         
         final List<Invoice> fetchedInvoices = results
             .map((json) => Invoice.fromJson(json as Map<String, dynamic>))
@@ -159,8 +192,16 @@ class InvoiceProvider extends ChangeNotifier {
           _invoices.clear();
         }
         _invoices.addAll(fetchedInvoices);
-        _nextPageUrl = data['next'] as String?;
-        _hasMore = _nextPageUrl != null;
+
+        if (data is Map) {
+          _totalCount = data['count'] is int ? data['count'] as int : _invoices.length;
+          _totalPages = data['total_pages'] is int ? data['total_pages'] as int : 1;
+          _currentPage = data['page'] is int ? data['page'] as int : _currentPage;
+          _nextPageUrl = data['next'] as String?;
+          _hasMore = _nextPageUrl != null || _currentPage < _totalPages;
+        } else {
+          _hasMore = false;
+        }
 
         // Also gather all payments nested within these invoices for payment history compatibility
         final allPayments = <Payment>[];
@@ -172,7 +213,7 @@ class InvoiceProvider extends ChangeNotifier {
         }
         _payments.addAll(allPayments);
 
-        if (data.containsKey('dashboard_summary')) {
+        if (data is Map && data.containsKey('dashboard_summary')) {
           _dashboardStats = Map<String, dynamic>.from(data['dashboard_summary']);
         }
       } else {
@@ -205,9 +246,12 @@ class InvoiceProvider extends ChangeNotifier {
     _errorMessage = null;
     notifyListeners();
     try {
-      final response = await ApiService().get('/api/invoices/$id/');
+      final response = await ApiService().get('/api/v1/invoices/$id');
       if (response['success'] == true) {
-        final invoice = Invoice.fromJson(response['data'] as Map<String, dynamic>);
+        final Map<String, dynamic> data = response['data'] is Map<String, dynamic>
+            ? response['data'] as Map<String, dynamic>
+            : response;
+        final invoice = Invoice.fromJson(data);
         final index = _invoices.indexWhere((inv) => inv.id == id);
         if (index >= 0) {
           _invoices[index] = invoice;
@@ -235,13 +279,14 @@ class InvoiceProvider extends ChangeNotifier {
   Future<void> fetchCustomers({String query = ''}) async {
     try {
       final String path = query.isEmpty 
-          ? '/api/customers/' 
-          : '/api/customers/search/?q=${Uri.encodeComponent(query)}';
+          ? '/api/v1/customers' 
+          : '/api/v1/customers?search=${Uri.encodeComponent(query)}';
       final response = await ApiService().get(path);
       if (response['success'] == true) {
-        final List<dynamic> dataList = response['data'] is List 
-            ? response['data'] 
-            : (response['data']?['results'] ?? []);
+        final data = response['data'];
+        final List<dynamic> dataList = data is List 
+            ? data 
+            : (data is Map && data['results'] is List ? data['results'] as List<dynamic> : []);
         _customers.clear();
         _customers.addAll(dataList.map((json) => Customer.fromJson(json as Map<String, dynamic>)).toList());
         notifyListeners();
@@ -255,13 +300,14 @@ class InvoiceProvider extends ChangeNotifier {
   Future<void> fetchProducts({String query = ''}) async {
     try {
       final String path = query.isEmpty 
-          ? '/api/products/' 
-          : '/api/products/search/?q=${Uri.encodeComponent(query)}';
+          ? '/api/v1/products' 
+          : '/api/v1/products?search=${Uri.encodeComponent(query)}';
       final response = await ApiService().get(path);
       if (response['success'] == true) {
-        final List<dynamic> dataList = response['data'] is List 
-            ? response['data'] 
-            : (response['data']?['results'] ?? []);
+        final data = response['data'];
+        final List<dynamic> dataList = data is List 
+            ? data 
+            : (data is Map && data['results'] is List ? data['results'] as List<dynamic> : []);
         _products.clear();
         _products.addAll(dataList.map((json) => Product.fromJson(json as Map<String, dynamic>)).toList());
         notifyListeners();
@@ -488,7 +534,10 @@ class InvoiceProvider extends ChangeNotifier {
   }
 
   void addProduct(Product product) {
-    final existingIndex = _selectedItems.indexWhere((item) => item.product.id == product.id);
+    final existingIndex = _selectedItems.indexWhere((item) =>
+      (product.id.isNotEmpty && item.product.id.isNotEmpty && item.product.id == product.id) ||
+      (product.name.isNotEmpty && item.product.name.isNotEmpty && item.product.name.trim().toLowerCase() == product.name.trim().toLowerCase())
+    );
     if (existingIndex >= 0) {
       final existingItem = _selectedItems[existingIndex];
       _selectedItems[existingIndex] = existingItem.copyWith(
@@ -510,12 +559,20 @@ class InvoiceProvider extends ChangeNotifier {
   }
 
   void removeProduct(String productId) {
-    _selectedItems.removeWhere((item) => item.product.id == productId);
+    _selectedItems.removeWhere((item) =>
+      item.product.id == productId ||
+      item.id == productId ||
+      item.product.name.trim().toLowerCase() == productId.trim().toLowerCase()
+    );
     notifyListeners();
   }
 
   void updateItemQty(String productId, int newQty) {
-    final index = _selectedItems.indexWhere((item) => item.product.id == productId);
+    final index = _selectedItems.indexWhere((item) =>
+      item.product.id == productId ||
+      item.id == productId ||
+      item.product.name.trim().toLowerCase() == productId.trim().toLowerCase()
+    );
     if (index >= 0) {
       if (newQty <= 0) {
         _selectedItems.removeAt(index);
@@ -527,7 +584,11 @@ class InvoiceProvider extends ChangeNotifier {
   }
 
   void updateItemDiscount(String productId, double discount) {
-    final index = _selectedItems.indexWhere((item) => item.product.id == productId);
+    final index = _selectedItems.indexWhere((item) =>
+      item.product.id == productId ||
+      item.id == productId ||
+      item.product.name.trim().toLowerCase() == productId.trim().toLowerCase()
+    );
     if (index >= 0) {
       _selectedItems[index] = _selectedItems[index].copyWith(discountPercentage: discount);
       notifyListeners();
@@ -535,7 +596,11 @@ class InvoiceProvider extends ChangeNotifier {
   }
 
   void updateItemTax(String productId, double tax) {
-    final index = _selectedItems.indexWhere((item) => item.product.id == productId);
+    final index = _selectedItems.indexWhere((item) =>
+      item.product.id == productId ||
+      item.id == productId ||
+      item.product.name.trim().toLowerCase() == productId.trim().toLowerCase()
+    );
     if (index >= 0) {
       _selectedItems[index] = _selectedItems[index].copyWith(taxPercentage: tax);
       notifyListeners();
@@ -618,34 +683,47 @@ class InvoiceProvider extends ChangeNotifier {
     String? referenceNumber,
     String? salesperson,
     String currency = 'INR',
+    double amountReceived = 0.0,
+    String paymentMode = 'UPI',
   }) {
+    final customerVal = (_selectedCustomer?.id != null && _selectedCustomer!.id.isNotEmpty)
+        ? _selectedCustomer!.id
+        : (_selectedCustomer?.name ?? '');
+
     final Map<String, dynamic> payload = {
-      'customer': _selectedCustomer?.id,
+      'customer': customerVal,
       'invoice_date': _invoiceDate.toIso8601String().substring(0, 10),
       'due_date': _dueDate.toIso8601String().substring(0, 10),
+      'currency': currency.contains('USD') ? 'USD' : (currency.contains('EUR') ? 'EUR' : (currency.contains('GBP') ? 'GBP' : 'INR')),
       'notes': _notes,
       'terms_and_conditions': _terms,
-      'shipping_charges': shippingCharges,
-      'adjustment': adjustment,
-      'payment_terms': paymentTerms ?? 'Due on Receipt',
-      'reference_number': referenceNumber ?? '',
-      'salesperson': salesperson ?? '',
-      'currency': currency.contains('USD') ? 'USD' : (currency.contains('EUR') ? 'EUR' : (currency.contains('GBP') ? 'GBP' : 'INR')),
       'items': _selectedItems.map((item) => {
-        'product': item.product.id,
+        'product': item.product.id.isNotEmpty ? item.product.id : item.product.name,
+        'description': item.description.isNotEmpty ? item.description : item.product.name,
         'quantity': item.quantity,
         'unit_price': item.unitPrice,
-        'discount': item.discountPercentage,
-        'discount_type': 'percentage',
-        'tax_percentage': item.taxPercentage,
+        'tax': item.taxPercentage,
+        'discount': item.discountAmount > 0 ? item.discountAmount : item.discountPercentage,
       }).toList(),
     };
+
+    final double totalAmount = (grandTotal + shippingCharges + adjustment).roundToDouble();
+    final double effectivePaid = _isPaid ? totalAmount : amountReceived;
+    final double remainingBalance = (totalAmount - effectivePaid).clamp(0.0, double.infinity);
+
+    if (effectivePaid > 0 || _isPaid) {
+      payload['amount_received'] = effectivePaid;
+      payload['payment_mode'] = paymentMode;
+    }
+    payload['balance_due'] = remainingBalance;
 
     if (_invoiceNumber.isNotEmpty && _invoiceNumber != 'Auto-Generated') {
       payload['invoice_number'] = _invoiceNumber;
     }
-    if (_isPaid) {
+    if (_isPaid || (effectivePaid >= totalAmount && totalAmount > 0)) {
       payload['status'] = 'paid';
+    } else if (effectivePaid > 0) {
+      payload['status'] = 'partially_paid';
     }
     return payload;
   }
@@ -669,7 +747,7 @@ class InvoiceProvider extends ChangeNotifier {
     });
   }
 
-  // Save invoice to database (calls POST or PUT on API)
+  // Save invoice to database (calls POST /api/v1/invoices or PUT /api/v1/invoices/{id})
   Future<bool> saveInvoice({
     double shippingCharges = 0.0,
     double adjustment = 0.0,
@@ -677,6 +755,8 @@ class InvoiceProvider extends ChangeNotifier {
     String? referenceNumber,
     String? salesperson,
     String currency = 'INR',
+    double amountReceived = 0.0,
+    String paymentMode = 'UPI',
   }) async {
     if (_selectedCustomer == null || _selectedItems.isEmpty) {
       _errorMessage = 'Please select a customer and add at least one line item.';
@@ -684,8 +764,6 @@ class InvoiceProvider extends ChangeNotifier {
       return false;
     }
 
-    // The API only permits changes to drafts. Keep this rule on the client as
-    // well so users get a clear message instead of an avoidable failed request.
     if (_editingInvoice != null && _editingInvoice!.status != InvoiceStatus.draft) {
       _fieldErrors.clear();
       _errorMessage = 'Only draft invoices can be updated. Create a new invoice instead.';
@@ -706,16 +784,21 @@ class InvoiceProvider extends ChangeNotifier {
         referenceNumber: referenceNumber,
         salesperson: salesperson,
         currency: currency,
+        amountReceived: amountReceived,
+        paymentMode: paymentMode,
       );
       Map<String, dynamic> response;
       if (_editingInvoice != null) {
-        response = await ApiService().put('/api/invoices/${_editingInvoice!.id}/', payload);
+        response = await ApiService().put('/api/v1/invoices/${_editingInvoice!.id}', payload);
       } else {
-        response = await ApiService().post('/api/invoices/', payload);
+        response = await ApiService().post('/api/v1/invoices', payload);
       }
 
       if (response['success'] == true) {
-        final savedInvoice = Invoice.fromJson(response['data'] as Map<String, dynamic>);
+        final Map<String, dynamic> data = response['data'] is Map<String, dynamic>
+            ? response['data'] as Map<String, dynamic>
+            : response;
+        final savedInvoice = Invoice.fromJson(data);
         if (_editingInvoice != null) {
           final index = _invoices.indexWhere((inv) => inv.id == _editingInvoice!.id);
           if (index >= 0) {
@@ -753,13 +836,44 @@ class InvoiceProvider extends ChangeNotifier {
     }
   }
 
-  // Delete invoice (calls DELETE on API)
+  // Update invoice (calls PATCH /api/v1/invoices/{id})
+  Future<bool> updateInvoice(String id, Map<String, dynamic> updateData) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final response = await ApiService().patch('/api/v1/invoices/$id', updateData);
+      if (response['success'] == true) {
+        if (response['data'] is Map<String, dynamic>) {
+          final updated = Invoice.fromJson(response['data'] as Map<String, dynamic>);
+          final idx = _invoices.indexWhere((inv) => inv.id == id);
+          if (idx >= 0) {
+            _invoices[idx] = updated;
+          }
+        }
+        _isLoading = false;
+        notifyListeners();
+        return true;
+      } else {
+        _errorMessage = response['message'] ?? 'Failed to update invoice';
+      }
+    } catch (e) {
+      _errorMessage = 'Error updating invoice: $e';
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+    return false;
+  }
+
+  // Delete invoice (calls DELETE /api/v1/invoices/{id})
   Future<bool> deleteInvoice(String invoiceId) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
     try {
-      final response = await ApiService().delete('/api/invoices/$invoiceId/');
+      final response = await ApiService().delete('/api/v1/invoices/$invoiceId');
       if (response['success'] == true) {
         _invoices.removeWhere((inv) => inv.id == invoiceId);
         _payments.removeWhere((p) => p.invoiceId == invoiceId);
@@ -778,15 +892,26 @@ class InvoiceProvider extends ChangeNotifier {
     return false;
   }
 
-  // Duplicate invoice (calls POST duplicate on API)
+  // Duplicate invoice
   Future<bool> duplicateInvoice(Invoice invoice) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
     try {
-      final response = await ApiService().post('/api/invoices/${invoice.id}/duplicate/', {});
+      final response = await ApiService().post('/api/v1/invoices', {
+        'customer': invoice.customer.id.isNotEmpty ? invoice.customer.id : invoice.customer.name,
+        'invoice_date': DateTime.now().toIso8601String().substring(0, 10),
+        'due_date': DateTime.now().add(const Duration(days: 15)).toIso8601String().substring(0, 10),
+        'currency': invoice.currency,
+        'notes': invoice.notes ?? '',
+        'terms_and_conditions': invoice.terms ?? '',
+        'items': invoice.items.map((item) => item.toJson()).toList(),
+      });
       if (response['success'] == true) {
-        final newInvoice = Invoice.fromJson(response['data'] as Map<String, dynamic>);
+        final Map<String, dynamic> data = response['data'] is Map<String, dynamic>
+            ? response['data'] as Map<String, dynamic>
+            : response;
+        final newInvoice = Invoice.fromJson(data);
         _invoices.add(newInvoice);
         _isLoading = false;
         notifyListeners();
@@ -803,18 +928,21 @@ class InvoiceProvider extends ChangeNotifier {
     return false;
   }
 
-  // Mark invoice as sent (calls POST send on API)
+  // Mark invoice as sent (calls POST /api/v1/invoices/{id}/mark-sent)
   Future<bool> markAsSent(String invoiceId) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
     try {
-      final response = await ApiService().post('/api/invoices/$invoiceId/send/', {});
+      final response = await ApiService().post('/api/v1/invoices/$invoiceId/mark-sent', {});
       if (response['success'] == true) {
-        final updatedInvoice = Invoice.fromJson(response['data'] as Map<String, dynamic>);
         final index = _invoices.indexWhere((inv) => inv.id == invoiceId);
         if (index >= 0) {
-          _invoices[index] = updatedInvoice;
+          if (response['data'] is Map<String, dynamic>) {
+            _invoices[index] = Invoice.fromJson(response['data'] as Map<String, dynamic>);
+          } else {
+            _invoices[index] = _invoices[index].copyWith(status: InvoiceStatus.sent);
+          }
         }
         _isLoading = false;
         notifyListeners();

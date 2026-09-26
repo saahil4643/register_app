@@ -509,7 +509,7 @@ class _InvoiceListScreenState extends State<InvoiceListScreen> {
   }
 
   Widget _buildFilterChips(InvoiceProvider provider) {
-    final statuses = ['All', 'Paid', 'Sent', 'Draft', 'Overdue', 'Cancelled'];
+    final statuses = ['All', 'Draft', 'Sent', 'Partially Paid', 'Paid', 'Overdue'];
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 

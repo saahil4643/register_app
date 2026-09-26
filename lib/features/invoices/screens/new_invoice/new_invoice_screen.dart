@@ -37,6 +37,7 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
   String _selectedPaymentMethod = 'Bank Transfer';
   String _selectedPaymentTerms = 'Due on Receipt';
   String _selectedCurrency = 'INR (₹)';
+  double _amountReceived = 0.0;
 
   Timer? _autosaveTimer;
   bool _hasUnsavedChanges = false;
@@ -51,6 +52,8 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
     // screen issue a PUT request instead of creating a new draft.
     if (!widget.isEditing && provider.editingInvoice != null) {
       provider.startNewInvoice();
+    } else if (widget.isEditing && provider.editingInvoice != null) {
+      _amountReceived = provider.editingInvoice!.paidAmount;
     }
 
     _notesController = TextEditingController(text: provider.notes);
@@ -92,6 +95,7 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
         referenceNumber: _referenceController.text,
         salesperson: _salespersonController.text,
         currency: _selectedCurrency,
+        amountReceived: provider.isPaid ? provider.grandTotal : _amountReceived,
       );
       if (success) {
         setState(() {
@@ -312,9 +316,19 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
                           shipping: _shipping,
                           adjustment: _adjustment,
                           isPaid: provider.isPaid,
+                          amountReceived: _amountReceived,
+                          onAmountReceivedChanged: (val) {
+                            setState(() {
+                              _amountReceived = val;
+                              _markChanged();
+                            });
+                          },
                           onPaidChanged: (val) {
                             provider.updateIsPaid(val);
-                            _markChanged();
+                            setState(() {
+                              _amountReceived = val ? provider.grandTotal : 0.0;
+                              _markChanged();
+                            });
                           },
                           onShippingChanged: (val) {
                             setState(() {
@@ -652,6 +666,7 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
                 itemBuilder: (context, index) {
                   final item = provider.selectedItems[index];
                   return InvoiceItemCard(
+                    key: ValueKey(item.product.id.isNotEmpty ? item.product.id : item.id),
                     item: item,
                     onQtyChanged: (newQty) {
                       provider.updateItemQty(item.product.id, newQty);
@@ -797,6 +812,7 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
                           referenceNumber: _referenceController.text,
                           salesperson: _salespersonController.text,
                           currency: _selectedCurrency,
+                          amountReceived: provider.isPaid ? provider.grandTotal : _amountReceived,
                         );
                         if (!mounted) return;
                         if (success) {
@@ -837,6 +853,7 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
                           referenceNumber: _referenceController.text,
                           salesperson: _salespersonController.text,
                           currency: _selectedCurrency,
+                          amountReceived: provider.isPaid ? provider.grandTotal : _amountReceived,
                         );
                         if (success) {
                           final savedId = provider.editingInvoice?.id ?? (provider.invoices.isNotEmpty ? provider.invoices.last.id : '');

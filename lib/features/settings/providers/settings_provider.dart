@@ -1,10 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
-import '../../../core/config/env.dart';
 import '../../../core/services/api_service.dart';
 import '../models/settings_models.dart';
 import '../../../services/update_service.dart';
@@ -116,25 +113,31 @@ class SettingsProvider extends ChangeNotifier {
         _logoMatrix = Matrix4.identity();
       }
       
-      final response = await _apiService.get('/api/settings/');
+      final response = await _apiService.get('/api/v1/settings');
       if (response['success'] != false) {
-        if (response.containsKey('company')) {
-          _companySettings = CompanySettings.fromJson(response['company'] as Map<String, dynamic>);
+        final orgMap = response['organization'] ?? response['company'];
+        if (orgMap is Map<String, dynamic>) {
+          _companySettings = CompanySettings.fromJson(orgMap);
         }
-        if (response.containsKey('financial')) {
-          _financialSettings = FinancialSettings.fromJson(response['financial'] as Map<String, dynamic>);
+        final invMap = response['invoices'] ?? response['financial'];
+        if (invMap is Map<String, dynamic>) {
+          _financialSettings = FinancialSettings.fromJson(invMap);
         }
-        if (response.containsKey('tax')) {
-          _taxSettings = TaxSettings.fromJson(response['tax'] as Map<String, dynamic>);
+        final taxMap = response['tax'];
+        if (taxMap is Map<String, dynamic>) {
+          _taxSettings = TaxSettings.fromJson(taxMap);
         }
-        if (response.containsKey('email')) {
-          _emailSettings = EmailSettings.fromJson(response['email'] as Map<String, dynamic>);
+        final emailMap = response['email'];
+        if (emailMap is Map<String, dynamic>) {
+          _emailSettings = EmailSettings.fromJson(emailMap);
         }
-        if (response.containsKey('integrations')) {
-          _integrationSettings = IntegrationSettings.fromJson(response['integrations'] as Map<String, dynamic>);
+        final intMap = response['integrations'];
+        if (intMap is Map<String, dynamic>) {
+          _integrationSettings = IntegrationSettings.fromJson(intMap);
         }
-        if (response.containsKey('system')) {
-          _systemPreferences = SystemPreferences.fromJson(response['system'] as Map<String, dynamic>);
+        final prefMap = response['preferences'] ?? response['system'];
+        if (prefMap is Map<String, dynamic>) {
+          _systemPreferences = SystemPreferences.fromJson(prefMap);
         }
       } else {
         _errorMessage = response['message'] ?? 'Failed to load settings';
@@ -147,6 +150,101 @@ class SettingsProvider extends ChangeNotifier {
     }
   }
 
+  // Get Organization / Company Settings Only
+  Future<CompanySettings?> fetchOrganization() async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final response = await _apiService.get('/api/v1/settings/organization');
+      if (response['success'] != false) {
+        _companySettings = CompanySettings.fromJson(response);
+        notifyListeners();
+        return _companySettings;
+      } else {
+        _errorMessage = response['message'] ?? 'Failed to fetch organization settings';
+      }
+    } catch (e) {
+      _errorMessage = 'Error loading organization settings: $e';
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+    return null;
+  }
+
+  // Update Organization / Company Settings Only
+  Future<bool> updateOrganization(Map<String, dynamic> data) async {
+    _isSaving = true;
+    _errorMessage = null;
+    _fieldErrors.clear();
+    notifyListeners();
+
+    try {
+      final response = await _apiService.put('/api/v1/settings/organization', data);
+      if (response['success'] != false) {
+        if (_companySettings != null) {
+          final merged = Map<String, dynamic>.from(_companySettings!.toJson())..addAll(data);
+          _companySettings = CompanySettings.fromJson(merged);
+        } else {
+          _companySettings = CompanySettings.fromJson(data);
+        }
+        notifyListeners();
+        return true;
+      } else {
+        _errorMessage = response['message'] ?? 'Failed to update organization settings';
+        if (response['details'] is Map<String, dynamic>) {
+          _parseFieldErrors(response['details']);
+        }
+        return false;
+      }
+    } catch (e) {
+      _errorMessage = 'Error updating organization settings: $e';
+      return false;
+    } finally {
+      _isSaving = false;
+      notifyListeners();
+    }
+  }
+
+  // Update All Settings (Full or Partial Sections)
+  Future<bool> updateAllSettings(Map<String, dynamic> sections) async {
+    _isSaving = true;
+    _errorMessage = null;
+    _fieldErrors.clear();
+    notifyListeners();
+
+    try {
+      final response = await _apiService.put('/api/v1/settings', sections);
+      if (response['success'] != false) {
+        if (sections.containsKey('organization')) {
+          final orgData = sections['organization'] as Map<String, dynamic>;
+          if (_companySettings != null) {
+            final merged = Map<String, dynamic>.from(_companySettings!.toJson())..addAll(orgData);
+            _companySettings = CompanySettings.fromJson(merged);
+          } else {
+            _companySettings = CompanySettings.fromJson(orgData);
+          }
+        }
+        notifyListeners();
+        return true;
+      } else {
+        _errorMessage = response['message'] ?? 'Failed to update settings';
+        if (response['details'] is Map<String, dynamic>) {
+          _parseFieldErrors(response['details']);
+        }
+        return false;
+      }
+    } catch (e) {
+      _errorMessage = 'Error updating settings: $e';
+      return false;
+    } finally {
+      _isSaving = false;
+      notifyListeners();
+    }
+  }
+
   // Update Company Settings
   Future<bool> updateCompany(CompanySettings settings) async {
     _isSaving = true;
@@ -155,14 +253,16 @@ class SettingsProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await _apiService.put('/api/settings/company/', settings.toJson());
+      final response = await _apiService.put('/api/v1/settings/organization', settings.toOrganizationJson());
       if (response['success'] != false) {
-        final Map<String, dynamic> data = response.containsKey('data') ? response['data'] : response;
-        _companySettings = CompanySettings.fromJson(data);
+        _companySettings = settings;
+        notifyListeners();
         return true;
       } else {
         _errorMessage = response['message'] ?? 'Failed to update company settings';
-        if (response['errors'] is Map<String, dynamic>) {
+        if (response['details'] is Map<String, dynamic>) {
+          _parseFieldErrors(response['details']);
+        } else if (response['errors'] is Map<String, dynamic>) {
           _parseFieldErrors(response['errors']);
         }
         return false;
@@ -420,33 +520,9 @@ class SettingsProvider extends ChangeNotifier {
 
   // --- Mobile Redesigned Settings Endpoints API Integration ---
 
-  // Profile - using redesigned Profile endpoint
+  // Profile - delegates to updateCompany for backwards compatibility
   Future<bool> updateProfile(CompanySettings settings) async {
-    _isSaving = true;
-    _errorMessage = null;
-    _fieldErrors.clear();
-    notifyListeners();
-
-    try {
-      final response = await _apiService.put('/api/settings/profile/', settings.toJson());
-      if (response['success'] != false) {
-        final Map<String, dynamic> data = response.containsKey('data') ? response['data'] : response;
-        _companySettings = CompanySettings.fromJson(data);
-        return true;
-      } else {
-        _errorMessage = response['message'] ?? 'Failed to update company profile';
-        if (response['errors'] is Map<String, dynamic>) {
-          _parseFieldErrors(response['errors']);
-        }
-        return false;
-      }
-    } catch (e) {
-      _errorMessage = 'Error updating company profile: $e';
-      return false;
-    } finally {
-      _isSaving = false;
-      notifyListeners();
-    }
+    return updateCompany(settings);
   }
 
   Future<bool> uploadCompanyLogo(XFile file) async {
@@ -455,51 +531,17 @@ class SettingsProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-      final String? token = prefs.getString('access_token');
-      
-      final Uri url = Uri.parse('${Env.apiBaseUrl}/api/v1/settings/profile/');
-      final request = http.MultipartRequest('PUT', url);
-      
-      if (token != null) {
-        request.headers['Authorization'] = 'Bearer $token';
-      }
-      
-      if (kIsWeb) {
-        request.files.add(http.MultipartFile.fromBytes(
-          'logo',
-          await file.readAsBytes(),
-          filename: file.name,
-        ));
-      } else {
-        request.files.add(await http.MultipartFile.fromPath(
-          'logo',
-          file.path,
-        ));
-      }
-      
-      final streamedResponse = await request.send();
-      final response = await http.Response.fromStream(streamedResponse);
-      
-      final Map<String, dynamic> responseData = jsonDecode(response.body);
+      final bytes = await file.readAsBytes();
+      final ext = file.name.split('.').last.toLowerCase();
+      final mime = ext == 'jpg' || ext == 'jpeg'
+          ? 'image/jpeg'
+          : (ext == 'webp' ? 'image/webp' : 'image/png');
+      final base64String = 'data:$mime;base64,${base64Encode(bytes)}';
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final success = responseData['success'] ?? true;
-        if (success != false) {
-          final data = responseData.containsKey('data') ? responseData['data'] : responseData;
-          _companySettings = CompanySettings.fromJson(data);
-          notifyListeners();
-          return true;
-        } else {
-          _errorMessage = responseData['message'] ?? 'Failed to upload logo.';
-          return false;
-        }
-      } else {
-        _errorMessage = responseData['message'] ?? 'Server error. Status: ${response.statusCode}';
-        return false;
-      }
+      final success = await updateOrganization({'companyLogo': base64String});
+      return success;
     } catch (e) {
-      _errorMessage = 'Connection error: $e';
+      _errorMessage = 'Error uploading company logo: $e';
       return false;
     } finally {
       _isSaving = false;
@@ -513,17 +555,8 @@ class SettingsProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await _apiService.put('/api/settings/profile/', {
-        'logo': null,
-      });
-      if (response['success'] != false) {
-        final Map<String, dynamic> data = response.containsKey('data') ? response['data'] : response;
-        _companySettings = CompanySettings.fromJson(data);
-        return true;
-      } else {
-        _errorMessage = response['message'] ?? 'Failed to delete company logo';
-        return false;
-      }
+      final success = await updateOrganization({'companyLogo': ''});
+      return success;
     } catch (e) {
       _errorMessage = 'Error deleting company logo: $e';
       return false;

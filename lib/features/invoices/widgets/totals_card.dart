@@ -12,6 +12,8 @@ class TotalsCard extends StatelessWidget {
   final ValueChanged<double>? onAdjustmentChanged;
   final bool isPaid;
   final ValueChanged<bool>? onPaidChanged;
+  final double amountReceived;
+  final ValueChanged<double>? onAmountReceivedChanged;
 
   const TotalsCard({
     super.key,
@@ -24,6 +26,8 @@ class TotalsCard extends StatelessWidget {
     this.onAdjustmentChanged,
     this.isPaid = false,
     this.onPaidChanged,
+    this.amountReceived = 0.0,
+    this.onAmountReceivedChanged,
   });
 
   @override
@@ -168,38 +172,191 @@ class TotalsCard extends StatelessWidget {
                 ),
               ],
             ),
-            if (onPaidChanged != null) ...[
-              const SizedBox(height: 12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Text(
-                    'Mark as fully paid',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w500,
-                      fontSize: 13,
-                      color: isDark ? Colors.grey[300] : Colors.grey[700],
+            const SizedBox(height: 14),
+            // Payment and Automatic Balance Left calculation panel
+            Builder(
+              builder: (context) {
+                final double effectivePaid = isPaid ? grandTotal : amountReceived;
+                final double balanceDue = (grandTotal - effectivePaid).clamp(0.0, double.infinity);
+
+                return Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: isDark ? AppColors.darkBackground.withOpacity(0.5) : Colors.white.withOpacity(0.85),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: isDark ? AppColors.darkBorder : const Color(0xFFE5E7EB),
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  SizedBox(
-                    height: 24,
-                    width: 24,
-                    child: Checkbox(
-                      value: isPaid,
-                      onChanged: (val) {
-                        if (val != null) {
-                          onPaidChanged!(val);
-                        }
-                      },
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'PAYMENT & BALANCE',
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 0.5,
+                              color: theme.colorScheme.primary,
+                            ),
+                          ),
+                          if (onPaidChanged != null)
+                            InkWell(
+                              onTap: () {
+                                final next = !isPaid;
+                                onPaidChanged!(next);
+                                if (onAmountReceivedChanged != null) {
+                                  onAmountReceivedChanged!(next ? grandTotal : 0.0);
+                                }
+                              },
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    'Mark Fully Paid',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.w600,
+                                      color: isPaid ? AppColors.success : (isDark ? Colors.grey[400] : Colors.grey[600]),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: Checkbox(
+                                      value: isPaid,
+                                      activeColor: AppColors.success,
+                                      onChanged: (val) {
+                                        if (val != null) {
+                                          onPaidChanged!(val);
+                                          if (onAmountReceivedChanged != null) {
+                                            onAmountReceivedChanged!(val ? grandTotal : 0.0);
+                                          }
+                                        }
+                                      },
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(4),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                        ],
                       ),
-                    ),
+                      const SizedBox(height: 12),
+                      // If Mark Fully Paid is unchecked: show inline amount paid input box
+                      if (!isPaid) ...[
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Text(
+                                  'Amount Paid',
+                                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                                ),
+                                if (effectivePaid > 0)
+                                  Text(
+                                    currencyFormat.format(effectivePaid),
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.success,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                            const SizedBox(height: 6),
+                            _PaidAmountInputField(
+                              amount: amountReceived,
+                              maxAmount: grandTotal,
+                              onChanged: (val) {
+                                final clamped = val.clamp(0.0, grandTotal);
+                                onAmountReceivedChanged?.call(clamped);
+                                if (clamped >= grandTotal && grandTotal > 0) {
+                                  onPaidChanged?.call(true);
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                      ] else ...[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(Icons.check_circle_rounded, size: 16, color: AppColors.success),
+                                const SizedBox(width: 6),
+                                const Text(
+                                  'Amount Paid (Full)',
+                                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                                ),
+                              ],
+                            ),
+                            Text(
+                              currencyFormat.format(grandTotal),
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.success,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                      const SizedBox(height: 8),
+                      const Divider(height: 14),
+                      // Balance Due / Left Row (automatic)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Balance Left',
+                                style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                balanceDue == 0
+                                    ? 'Fully Paid (No Dues)'
+                                    : (effectivePaid > 0
+                                        ? 'Partially Paid (${currencyFormat.format(balanceDue)} left)'
+                                        : 'Unpaid (Full Amount Pending)'),
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: balanceDue == 0
+                                      ? AppColors.success
+                                      : (effectivePaid > 0 ? AppColors.warning : (isDark ? Colors.grey[400] : Colors.grey[600])),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Text(
+                            currencyFormat.format(balanceDue),
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w800,
+                              color: balanceDue == 0
+                                  ? AppColors.success
+                                  : (effectivePaid > 0 ? AppColors.warning : AppColors.error),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ],
+                );
+              },
+            ),
           ],
         ),
       ),
@@ -267,6 +424,115 @@ class TotalsCard extends StatelessWidget {
             child: const Text('Update'),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _PaidAmountInputField extends StatefulWidget {
+  final double amount;
+  final double maxAmount;
+  final ValueChanged<double> onChanged;
+
+  const _PaidAmountInputField({
+    required this.amount,
+    required this.maxAmount,
+    required this.onChanged,
+  });
+
+  @override
+  State<_PaidAmountInputField> createState() => _PaidAmountInputFieldState();
+}
+
+class _PaidAmountInputFieldState extends State<_PaidAmountInputField> {
+  late TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(
+      text: widget.amount > 0
+          ? (widget.amount % 1 == 0 ? widget.amount.toInt().toString() : widget.amount.toStringAsFixed(2))
+          : '',
+    );
+  }
+
+  @override
+  void didUpdateWidget(covariant _PaidAmountInputField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.amount != widget.amount) {
+      final currentVal = double.tryParse(_controller.text.trim()) ?? 0.0;
+      if ((currentVal - widget.amount).abs() > 0.001) {
+        _controller.text = widget.amount > 0
+            ? (widget.amount % 1 == 0 ? widget.amount.toInt().toString() : widget.amount.toStringAsFixed(2))
+            : '';
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    return Container(
+      height: 44,
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.darkBackground : Colors.white,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: TextField(
+        controller: _controller,
+        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+        decoration: InputDecoration(
+          prefixIcon: const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+            child: Text(
+              '₹',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+            ),
+          ),
+          prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
+          hintText: 'Enter paid amount (e.g. 1000)',
+          hintStyle: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.normal,
+            color: isDark ? Colors.grey[500] : Colors.grey[400],
+          ),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: isDark ? AppColors.darkBorder : const Color(0xFFD1D5DB),
+              width: 1.2,
+            ),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: isDark ? AppColors.darkBorder : const Color(0xFFD1D5DB),
+              width: 1.2,
+            ),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10),
+            borderSide: BorderSide(
+              color: theme.colorScheme.primary,
+              width: 1.8,
+            ),
+          ),
+        ),
+        onChanged: (val) {
+          final parsed = double.tryParse(val.trim()) ?? 0.0;
+          widget.onChanged(parsed);
+        },
       ),
     );
   }

@@ -169,14 +169,17 @@ class _ProductSearchFieldState extends State<ProductSearchField> {
   Future<void> _search(String query) async {
     if (query.isEmpty) return;
     try {
-      final String path = '/api/products/search/?q=${Uri.encodeComponent(query)}';
+      final String path = '/api/v1/products?search=${Uri.encodeComponent(query)}';
       final response = await ApiService().get(path);
       if (!mounted) return;
 
       if (response['success'] == true) {
-        final List<dynamic> dataList = response['data'] is List
-            ? response['data']
-            : (response['data']?['results'] ?? []);
+        final data = response['data'];
+        final List<dynamic> dataList = data is List
+            ? data
+            : (data is Map && data['results'] is List
+                ? data['results'] as List<dynamic>
+                : []);
         setState(() {
           _suggestions = dataList
               .map((json) => Product.fromJson(json as Map<String, dynamic>))

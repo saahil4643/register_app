@@ -50,7 +50,7 @@
     "semantic_hash": ""
   },
   "ios/Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage/Package.swift": {
-    "mtime": 1790401315.3306558,
+    "mtime": 1790408035.7909894,
     "ast_hash": "63bc00d19466662a75b7492ac07d5a97",
     "semantic_hash": ""
   },
@@ -125,8 +125,8 @@
     "semantic_hash": ""
   },
   "lib/core/services/api_service.dart": {
-    "mtime": 1784830591.3896031,
-    "ast_hash": "1da479c7d48ffe031f3bcc15215aa521",
+    "mtime": 1790402459.476771,
+    "ast_hash": "13ef654d1eeb790b88fd6709b9074bf1",
     "semantic_hash": ""
   },
   "lib/core/theme/app_theme.dart": {
@@ -165,8 +165,8 @@
     "semantic_hash": ""
   },
   "lib/features/authentication/providers/auth_provider.dart": {
-    "mtime": 1790401288.6011915,
-    "ast_hash": "56e05b74ba26227f5b4d3db901e58f3c",
+    "mtime": 1790402508.0597894,
+    "ast_hash": "3f20c5916b885c511a0ee3561fab2465",
     "semantic_hash": ""
   },
   "lib/features/authentication/screens/forgot_password_screen.dart": {
@@ -210,28 +210,28 @@
     "semantic_hash": ""
   },
   "lib/features/customers/models/customer.dart": {
-    "mtime": 1784298523.1734536,
-    "ast_hash": "1d093cc2271c14f89d763ce736a7146e",
+    "mtime": 1790408978.302379,
+    "ast_hash": "b4d2ae1bb601a531485bd835083b6937",
     "semantic_hash": ""
   },
   "lib/features/customers/models/payment.dart": {
-    "mtime": 1783949517.7596552,
-    "ast_hash": "c1984fcec6c7670fd43d3092a5bed779",
+    "mtime": 1790412637.295091,
+    "ast_hash": "f182e0c5ccb29e11e0aa8cbbb97172c0",
     "semantic_hash": ""
   },
   "lib/features/customers/providers/customer_provider.dart": {
-    "mtime": 1784971993.1555834,
-    "ast_hash": "89977f66c0b6036a3e4ba1f591cae95c",
+    "mtime": 1790407867.515191,
+    "ast_hash": "0f33ac6850c429f38ea7406d762d78ea",
     "semantic_hash": ""
   },
   "lib/features/customers/screens/create_customer_screen.dart": {
-    "mtime": 1783954503.6197958,
-    "ast_hash": "8d4d500d2e3cd86250b24c5031a243e7",
+    "mtime": 1790407912.6697192,
+    "ast_hash": "70ae0798f1971159bf2bb95cb2d5fa93",
     "semantic_hash": ""
   },
   "lib/features/customers/screens/customer_detail_screen.dart": {
-    "mtime": 1783951837.3073742,
-    "ast_hash": "1b2ec5f639f3cb41d6ee7d583f35896b",
+    "mtime": 1790408002.8503377,
+    "ast_hash": "29cc3d0fff80cfafaf17decf15500b5b",
     "semantic_hash": ""
   },
   "lib/features/customers/screens/customers_list_screen.dart": {
@@ -240,23 +240,23 @@
     "semantic_hash": ""
   },
   "lib/features/dashboard/screens/dashboard_screen.dart": {
-    "mtime": 1784897798.4139712,
-    "ast_hash": "7c0be2e30582f93cf8a727b3f29e7948",
+    "mtime": 1790412874.5404806,
+    "ast_hash": "f60f5b9811129c82ba7f4779b832fb01",
     "semantic_hash": ""
   },
   "lib/features/invoices/models/invoice.dart": {
-    "mtime": 1783950062.3674011,
-    "ast_hash": "8fae7207f6e97ec422f67f616e80ab06",
+    "mtime": 1790405423.0581534,
+    "ast_hash": "92ba3cf24b8f10e3bda1f08e6d02122e",
     "semantic_hash": ""
   },
   "lib/features/invoices/models/invoice_item.dart": {
-    "mtime": 1783949329.7455597,
-    "ast_hash": "d9761a9c5bc70a1f4eda6f778dbed1c0",
+    "mtime": 1790405392.8552966,
+    "ast_hash": "24bb7f9ccd5223aa8dfb33af880fd324",
     "semantic_hash": ""
   },
   "lib/features/invoices/providers/invoice_provider.dart": {
-    "mtime": 1784975735.889289,
-    "ast_hash": "529af12e8b4dc8572d81b694269028bf",
+    "mtime": 1790405511.633598,
+    "ast_hash": "78092ccc288adb8ae93bb73fc818671e",
     "semantic_hash": ""
   },
   "lib/features/invoices/screens/create_invoice_screen.dart": {
@@ -270,13 +270,13 @@
     "semantic_hash": ""
   },
   "lib/features/invoices/screens/invoice_details/invoice_details_screen.dart": {
-    "mtime": 1784128141.4911826,
-    "ast_hash": "846a112514b2a22d1e8d132a886ce3ec",
+    "mtime": 1790405595.9008763,
+    "ast_hash": "3172c38a724ad7460d8c305169a9511d",
     "semantic_hash": ""
   },
   "lib/features/invoices/screens/invoice_list/invoice_list_screen.dart": {
-    "mtime": 1784966624.2712073,
-    "ast_hash": "499f169ede9fb60bd8305bdf58070700",
+    "mtime": 1790403815.7671256,
+    "ast_hash": "d36b649f1992164ed51019de8190e6da",
     "semantic_hash": ""
   },
   "lib/features/invoices/screens/invoice_preview_screen.dart": {
@@ -285,8 +285,8 @@
     "semantic_hash": ""
   },
   "lib/features/invoices/screens/new_invoice/new_invoice_screen.dart": {
-    "mtime": 1784975731.4578621,
-    "ast_hash": "ead343a86851fcd4bd7e85a49637eefb",
+    "mtime": 1790405579.7514637,
+    "ast_hash": "9312789dfca0eac0d1e8c57d7802efa9",
     "semantic_hash": ""
   },
   "lib/features/invoices/screens/product_picker_screen.dart": {
@@ -310,18 +310,18 @@
     "semantic_hash": ""
   },
   "lib/features/invoices/widgets/invoice_card.dart": {
-    "mtime": 1784975961.010563,
-    "ast_hash": "963853211a3f01e3358880347532dc25",
+    "mtime": 1790403635.0693555,
+    "ast_hash": "3b8a43befc611bc00bdfb1d1f5950966",
     "semantic_hash": ""
   },
   "lib/features/invoices/widgets/invoice_header.dart": {
-    "mtime": 1783944945.7001643,
-    "ast_hash": "6f58436daf1e9b1b23ff8cf818eacfa9",
+    "mtime": 1790405610.352706,
+    "ast_hash": "0c77771e504cbf7c2726ed7501055b01",
     "semantic_hash": ""
   },
   "lib/features/invoices/widgets/invoice_item_card.dart": {
-    "mtime": 1784967418.397627,
-    "ast_hash": "062234d6e8183fec1cac626ef5da551c",
+    "mtime": 1790405477.1981497,
+    "ast_hash": "8ee4510014e56d33cf92da36684b1166",
     "semantic_hash": ""
   },
   "lib/features/invoices/widgets/invoice_item_row.dart": {
@@ -340,18 +340,18 @@
     "semantic_hash": ""
   },
   "lib/features/invoices/widgets/status_badge.dart": {
-    "mtime": 1783608815.9665277,
-    "ast_hash": "ce1941f8af1422f4c80fbf791522457c",
+    "mtime": 1790403604.4233243,
+    "ast_hash": "46329572dfa2d11d3585221f05f8ec44",
     "semantic_hash": ""
   },
   "lib/features/invoices/widgets/status_chip.dart": {
-    "mtime": 1783944901.6996224,
-    "ast_hash": "13d312b621e1760e5626af1b1e955f9c",
+    "mtime": 1790403618.4661772,
+    "ast_hash": "3b56d47d96f31047314e01dea66644e7",
     "semantic_hash": ""
   },
   "lib/features/invoices/widgets/totals_card.dart": {
-    "mtime": 1784974923.917521,
-    "ast_hash": "99736c3a56969f18d4d8c302dcb702b7",
+    "mtime": 1790406170.5125134,
+    "ast_hash": "d016590f2806578b451ed1e45c15cd31",
     "semantic_hash": ""
   },
   "lib/features/navigation/navigation_shell.dart": {
@@ -360,23 +360,23 @@
     "semantic_hash": ""
   },
   "lib/features/products/models/product.dart": {
-    "mtime": 1783956277.8003347,
-    "ast_hash": "253579631420af43c747e6a8fa0d476a",
+    "mtime": 1790408995.2097337,
+    "ast_hash": "b836097aff2d85c2a2580a33b96bbd3b",
     "semantic_hash": ""
   },
   "lib/features/products/providers/product_provider.dart": {
-    "mtime": 1784970514.909692,
-    "ast_hash": "1ccd6fc97a8cc44e94883ff4360c5dc4",
+    "mtime": 1790407899.3586502,
+    "ast_hash": "d815e22469dc40f4353e38afaa89a4fd",
     "semantic_hash": ""
   },
   "lib/features/products/screens/create_product_screen.dart": {
-    "mtime": 1784898551.9471006,
-    "ast_hash": "3567335a7ee3ffa283945d4b17efb5b3",
+    "mtime": 1790407968.934942,
+    "ast_hash": "e7e77186b6769cd3ce94f6dc200e1544",
     "semantic_hash": ""
   },
   "lib/features/products/screens/product_detail_screen.dart": {
-    "mtime": 1784722497.5916045,
-    "ast_hash": "62a911c286d81692dd00e272071a39f9",
+    "mtime": 1790408013.9034686,
+    "ast_hash": "5996f07f9dc8d18474f3b7b69f9b8433",
     "semantic_hash": ""
   },
   "lib/features/products/screens/products_list_screen.dart": {
@@ -385,13 +385,13 @@
     "semantic_hash": ""
   },
   "lib/features/settings/models/settings_models.dart": {
-    "mtime": 1784367255.601643,
-    "ast_hash": "896de00625c2cebedf8b6194cf0dbd13",
+    "mtime": 1790402568.4642968,
+    "ast_hash": "557f02c5438ba2f5f8544125e8143e09",
     "semantic_hash": ""
   },
   "lib/features/settings/providers/settings_provider.dart": {
-    "mtime": 1785161683.4934058,
-    "ast_hash": "ee0da723d7c3d4cc7389c89141ec50d1",
+    "mtime": 1790402862.8576913,
+    "ast_hash": "668f9b9a2f47dcaee0ab7f719a3c1999",
     "semantic_hash": ""
   },
   "lib/features/settings/screens/about_us_settings_screen.dart": {
@@ -425,8 +425,8 @@
     "semantic_hash": ""
   },
   "lib/features/settings/screens/profile_business_settings_screen.dart": {
-    "mtime": 1784970130.5681686,
-    "ast_hash": "6bb114b43be0a1d310c4d94832dce9c4",
+    "mtime": 1790402942.8609657,
+    "ast_hash": "9449407ed6864519cb14054473e2f329",
     "semantic_hash": ""
   },
   "lib/features/settings/screens/settings_screen.dart": {
@@ -450,8 +450,8 @@
     "semantic_hash": ""
   },
   "lib/main.dart": {
-    "mtime": 1785246360.6501763,
-    "ast_hash": "de50a6d677d88634b919b21257690f49",
+    "mtime": 1790412683.106273,
+    "ast_hash": "2abb8122901a2d8dc4564273ed1befa0",
     "semantic_hash": ""
   },
   "linux/flutter/generated_plugin_registrant.cc": {
@@ -485,7 +485,7 @@
     "semantic_hash": ""
   },
   "macos/Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage/Package.swift": {
-    "mtime": 1790401315.3372936,
+    "mtime": 1790408035.8462327,
     "ast_hash": "61d013e6c93b3d917c4f6178b9f6c9cb",
     "semantic_hash": ""
   },
@@ -895,13 +895,13 @@
     "semantic_hash": ""
   },
   "lib/features/invoices/widgets/customer_autocomplete.dart": {
-    "mtime": 1784965822.6884227,
-    "ast_hash": "e199848ae9ca87f4c8d6fb2296507255",
+    "mtime": 1790404256.3190782,
+    "ast_hash": "1e1b67b473997289b15b4bdb8b5c9484",
     "semantic_hash": ""
   },
   "lib/features/customers/widgets/add_customer_dialog.dart": {
-    "mtime": 1784972038.3399465,
-    "ast_hash": "d7b327f0afcebff043d6c1e264798381",
+    "mtime": 1790407937.9682415,
+    "ast_hash": "5a6b2c8d55c6a2a40559071b1e60152e",
     "semantic_hash": ""
   },
   "lib/features/customers/widgets/customer_credentials_dialog.dart": {
@@ -910,8 +910,8 @@
     "semantic_hash": ""
   },
   "lib/features/invoices/screens/new_invoice/add_customer_overlay_screen.dart": {
-    "mtime": 1784972010.8279667,
-    "ast_hash": "66175a225aff3c449c46046283d112d8",
+    "mtime": 1790407954.2422676,
+    "ast_hash": "fba1c02ea792a902aef4e1d70966a71e",
     "semantic_hash": ""
   },
   "lib/features/settings/screens/invoice_settings_screen.dart": {
@@ -920,8 +920,8 @@
     "semantic_hash": ""
   },
   "lib/features/invoices/widgets/product_autocomplete.dart": {
-    "mtime": 1784970532.7269497,
-    "ast_hash": "fb55f00aee1a6b929ec714d908780f7a",
+    "mtime": 1790404265.4404204,
+    "ast_hash": "ee7e2cfc497d520862f44222428c0f07",
     "semantic_hash": ""
   },
   "lib/core/utils/number_to_words.dart": {
@@ -1107,6 +1107,51 @@
   "ios/Runner/Assets.xcassets/AppIcon.appiconset/Icon-App-72x72@2x.png": {
     "mtime": 1784825379.4529653,
     "ast_hash": "5660fd3b2fdd4b1aff30ea0afb2d1c13",
+    "semantic_hash": ""
+  },
+  "lib/features/dashboard/models/dashboard_reports.dart": {
+    "mtime": 1790412656.2186186,
+    "ast_hash": "3de460e694d26ee6863fdcc5d3f35a93",
+    "semantic_hash": ""
+  },
+  "lib/features/dashboard/providers/dashboard_provider.dart": {
+    "mtime": 1790412670.7646909,
+    "ast_hash": "70fb7b75158d2e60c2aca166bc61536b",
+    "semantic_hash": ""
+  },
+  "lib/features/dashboard/widgets/dashboard_header.dart": {
+    "mtime": 1790412698.286911,
+    "ast_hash": "948e42c10021c98e80ecd5e0e35bf88d",
+    "semantic_hash": ""
+  },
+  "lib/features/dashboard/widgets/expense_breakdown_card.dart": {
+    "mtime": 1790412740.1400225,
+    "ast_hash": "53eb99966900f3dfdf368db16ffaa2b9",
+    "semantic_hash": ""
+  },
+  "lib/features/dashboard/widgets/kpi_summary_grid.dart": {
+    "mtime": 1790412773.5004847,
+    "ast_hash": "59bd123934f6023beeeae8d4334134f9",
+    "semantic_hash": ""
+  },
+  "lib/features/dashboard/widgets/receivables_card.dart": {
+    "mtime": 1790412712.1737137,
+    "ast_hash": "d53367c0cde8f37a10281180d72118ac",
+    "semantic_hash": ""
+  },
+  "lib/features/dashboard/widgets/recent_payments_widget.dart": {
+    "mtime": 1790412760.2410128,
+    "ast_hash": "c1a5504b034833374656686b50d73c7f",
+    "semantic_hash": ""
+  },
+  "lib/features/dashboard/widgets/sales_trend_card.dart": {
+    "mtime": 1790412852.9838107,
+    "ast_hash": "c29bc5154c134b97aba6f0b0836f900c",
+    "semantic_hash": ""
+  },
+  "lib/features/dashboard/widgets/top_customers_widget.dart": {
+    "mtime": 1790412748.3953283,
+    "ast_hash": "be040742a360743d1c78c95e103a2494",
     "semantic_hash": ""
   }
 }

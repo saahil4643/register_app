@@ -105,12 +105,12 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
       final cp = context.read<CustomerProvider>();
       final draft = Customer(
         id: '',
-        name: _nameCtrl.text.trim(),
-        company: _companyCtrl.text.trim(),
-        phone: _phoneCtrl.text.trim(),
+        displayName: _nameCtrl.text.trim(),
+        companyName: _companyCtrl.text.trim(),
+        primaryPhone: _phoneCtrl.text.trim(),
         email: _emailCtrl.text.trim(),
-        address: _addressCtrl.text.trim(),
-        gstNo: _gstCtrl.text.trim(),
+        billingAddressLine1: _addressCtrl.text.trim(),
+        gstNumber: _gstCtrl.text.trim(),
         creditLimit: 50000.0,
         outstanding: 0.0,
         notes: '',

@@ -26,9 +26,14 @@ class StatusChip extends StatelessWidget {
         icon = Icons.drafts_outlined;
         break;
       case InvoiceStatus.sent: // equivalent to Pending
-        backgroundColor = const Color(0xFFFFF7ED); // Amber/Orange 50
-        textColor = const Color(0xFFD97706); // Amber/Orange 600
+        backgroundColor = const Color(0xFFEFF6FF); // Blue 50
+        textColor = const Color(0xFF1D4ED8); // Blue 700
         icon = Icons.hourglass_empty_rounded;
+        break;
+      case InvoiceStatus.partially_paid:
+        backgroundColor = const Color(0xFFFFFBEB); // Amber 50
+        textColor = const Color(0xFFB45309); // Amber 700
+        icon = Icons.pie_chart_outline_rounded;
         break;
       case InvoiceStatus.paid:
         backgroundColor = const Color(0xFFECFDF5); // Emerald/Green 50

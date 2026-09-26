@@ -15,10 +15,19 @@ class AuthProvider extends ChangeNotifier {
   bool _isAuthenticated = false;
   bool _isLoading = false;
   String? _errorMessage;
+  String? _currentUserId;
+  String? _currentUserName;
   String? _currentUserEmail;
   String? _currentUserFirstName;
   String? _currentUserLastName;
+  String? _currentUserPhone;
+  String? _currentUserRole;
+  String? _currentUserDesignation;
+  String? _currentUserAvatar;
   String? _currentUserProfileImage;
+  String? _currentUserTimeZone;
+  String? _currentUserTheme;
+  String? _accountStatus;
 
   // Temp storage during signup/recovery flows
   String? _tempEmail;
@@ -34,10 +43,19 @@ class AuthProvider extends ChangeNotifier {
   bool get isAuthenticated => _isAuthenticated;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
+  String? get currentUserId => _currentUserId;
+  String? get currentUserName => _currentUserName;
   String? get currentUserEmail => _currentUserEmail;
   String? get currentUserFirstName => _currentUserFirstName;
   String? get currentUserLastName => _currentUserLastName;
+  String? get currentUserPhone => _currentUserPhone;
+  String? get currentUserRole => _currentUserRole;
+  String? get currentUserDesignation => _currentUserDesignation;
+  String? get currentUserAvatar => _currentUserAvatar;
   String? get currentUserProfileImage => _currentUserProfileImage;
+  String? get currentUserTimeZone => _currentUserTimeZone;
+  String? get currentUserTheme => _currentUserTheme;
+  String? get accountStatus => _accountStatus;
   String? get tempEmail => _tempEmail;
   String? get pendingVerificationEmail => _pendingVerificationEmail;
   bool get isEmailUnverified => _isEmailUnverified;
@@ -565,10 +583,80 @@ class AuthProvider extends ChangeNotifier {
     return null;
   }
 
-  Future<bool> updateUserProfile({
-    required String firstName,
-    required String lastName,
-    required String phone,
+  Future<Map<String, dynamic>?> getProfile() async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('access_token');
+      if (token == null || token.isEmpty) {
+        _isLoading = false;
+        notifyListeners();
+        return null;
+      }
+
+      final url = Uri.parse('${Env.apiBaseUrl}/api/v1/profile');
+      final response = await http.get(
+        url,
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      final dynamic responseData = jsonDecode(response.body);
+
+      if (response.statusCode == 200) {
+        final data = (responseData is Map && responseData['data'] != null)
+            ? responseData['data']
+            : responseData;
+
+        if (data is Map) {
+          _currentUserId = data['id']?.toString() ?? _currentUserId;
+          _currentUserName = data['name']?.toString() ?? data['fullName']?.toString() ?? _currentUserName;
+          _currentUserFirstName = data['firstName']?.toString() ?? data['first_name']?.toString() ?? _currentUserFirstName;
+          _currentUserLastName = data['lastName']?.toString() ?? data['last_name']?.toString() ?? _currentUserLastName;
+          _currentUserEmail = data['email']?.toString() ?? _currentUserEmail;
+          _currentUserPhone = data['phone']?.toString() ?? data['phoneNumber']?.toString() ?? _currentUserPhone;
+          _currentUserRole = data['role']?.toString() ?? _currentUserRole;
+          _currentUserDesignation = data['designation']?.toString() ?? _currentUserDesignation;
+          _currentUserAvatar = data['avatar']?.toString() ?? _currentUserAvatar;
+          _currentUserProfileImage = data['profilePic']?.toString() ?? data['profile_pic']?.toString() ?? data['profileImage']?.toString() ?? data['avatarUrl']?.toString() ?? _currentUserProfileImage;
+          _currentUserTimeZone = data['timeZone']?.toString() ?? data['time_zone']?.toString() ?? _currentUserTimeZone;
+          _currentUserTheme = data['theme']?.toString() ?? _currentUserTheme;
+          _accountStatus = data['accountStatus']?.toString() ?? _accountStatus;
+
+          if (_currentUserEmail != null) await prefs.setString(_userEmailKey, _currentUserEmail!);
+          if (_currentUserFirstName != null) await prefs.setString(_userFirstNameKey, _currentUserFirstName!);
+          if (_currentUserLastName != null) await prefs.setString(_userLastNameKey, _currentUserLastName!);
+          if (_currentUserProfileImage != null) await prefs.setString(_userProfileImageKey, _currentUserProfileImage!);
+
+          _isLoading = false;
+          notifyListeners();
+          return Map<String, dynamic>.from(data);
+        }
+      } else {
+        _errorMessage = _extractErrorMessage(responseData, response.statusCode);
+      }
+    } catch (e) {
+      _errorMessage = 'Error fetching profile: $e';
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+    return null;
+  }
+
+  Future<bool> updateProfile({
+    String? name,
+    String? email,
+    String? phone,
+    String? designation,
+    String? avatar,
+    String? timeZone,
+    String? theme,
   }) async {
     _isLoading = true;
     _errorMessage = null;
@@ -577,8 +665,17 @@ class AuthProvider extends ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('access_token');
-      
-      final url = Uri.parse('${Env.apiBaseUrl}/api/v1/auth/profile/');
+
+      final url = Uri.parse('${Env.apiBaseUrl}/api/v1/profile');
+      final Map<String, dynamic> body = {};
+      if (name != null && name.isNotEmpty) body['name'] = name;
+      if (email != null && email.isNotEmpty) body['email'] = email;
+      if (phone != null && phone.isNotEmpty) body['phone'] = phone;
+      if (designation != null && designation.isNotEmpty) body['designation'] = designation;
+      if (avatar != null && avatar.isNotEmpty) body['avatar'] = avatar;
+      if (timeZone != null && timeZone.isNotEmpty) body['timeZone'] = timeZone;
+      if (theme != null && theme.isNotEmpty) body['theme'] = theme;
+
       final response = await http.put(
         url,
         headers: {
@@ -586,55 +683,122 @@ class AuthProvider extends ChangeNotifier {
           'Accept': 'application/json',
           if (token != null) 'Authorization': 'Bearer $token',
         },
+        body: jsonEncode(body),
+      );
+
+      final dynamic responseData = jsonDecode(response.body);
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final bool isSuccess = (responseData is Map && responseData['success'] == true) || response.statusCode == 200;
+        if (isSuccess) {
+          final data = (responseData is Map && responseData['data'] != null)
+              ? responseData['data']
+              : (responseData is Map && responseData['profile'] != null ? responseData['profile'] : responseData);
+
+          if (data is Map) {
+            _currentUserName = data['name']?.toString() ?? name ?? _currentUserName;
+            _currentUserEmail = data['email']?.toString() ?? email ?? _currentUserEmail;
+            _currentUserPhone = data['phone']?.toString() ?? phone ?? _currentUserPhone;
+            _currentUserDesignation = data['designation']?.toString() ?? designation ?? _currentUserDesignation;
+            _currentUserAvatar = data['avatar']?.toString() ?? avatar ?? _currentUserAvatar;
+            _currentUserTheme = data['theme']?.toString() ?? theme ?? _currentUserTheme;
+
+            if (_currentUserEmail != null) await prefs.setString(_userEmailKey, _currentUserEmail!);
+          }
+          _isLoading = false;
+          notifyListeners();
+          return true;
+        } else {
+          _errorMessage = _extractErrorMessage(responseData, response.statusCode);
+          _isLoading = false;
+          notifyListeners();
+          return false;
+        }
+      } else {
+        _errorMessage = _extractErrorMessage(responseData, response.statusCode);
+        _isLoading = false;
+        notifyListeners();
+        return false;
+      }
+    } catch (e) {
+      _errorMessage = 'Error updating profile: $e';
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> changePassword({
+    required String oldPassword,
+    required String newPassword,
+    required String confirmPassword,
+  }) async {
+    _isLoading = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    if (newPassword.length < 8) {
+      _errorMessage = 'Password must be at least 8 characters long.';
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+
+    if (newPassword != confirmPassword) {
+      _errorMessage = 'New password and confirm password do not match.';
+      _isLoading = false;
+      notifyListeners();
+      return false;
+    }
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('access_token');
+
+      final url = Uri.parse('${Env.apiBaseUrl}/api/v1/profile/change-password');
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          if (token != null) 'Authorization': 'Bearer $token',
+        },
         body: jsonEncode({
-          'first_name': firstName,
-          'last_name': lastName,
-          'phone': phone,
+          'oldPassword': oldPassword,
+          'newPassword': newPassword,
+          'confirmPassword': confirmPassword,
         }),
       );
 
-      final Map<String, dynamic> responseData = jsonDecode(response.body);
+      final dynamic responseData = jsonDecode(response.body);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final success = responseData['success'] ?? false;
-        if (success) {
-          final data = responseData['data'] ?? {};
-          final userFirstName = data['first_name'] ?? firstName;
-          final userLastName = data['last_name'] ?? lastName;
-          final userProfileImage = data['profile_image'] ?? '';
-
-          _currentUserFirstName = userFirstName;
-          _currentUserLastName = userLastName;
-          _currentUserProfileImage = userProfileImage;
-          
-          await prefs.setString(_userFirstNameKey, userFirstName);
-          await prefs.setString(_userLastNameKey, userLastName);
-          await prefs.setString(_userProfileImageKey, userProfileImage);
-          
+        final bool isSuccess = (responseData is Map && responseData['success'] == true) || response.statusCode == 200;
+        if (isSuccess) {
           _isLoading = false;
           notifyListeners();
           return true;
         } else {
-          _errorMessage = responseData['message'] ?? 'Failed to update profile.';
+          _errorMessage = _extractErrorMessage(responseData, response.statusCode);
           _isLoading = false;
           notifyListeners();
           return false;
         }
       } else {
-        _errorMessage = responseData['message'] ?? 'Server error. Status: ${response.statusCode}';
+        _errorMessage = _extractErrorMessage(responseData, response.statusCode);
         _isLoading = false;
         notifyListeners();
         return false;
       }
     } catch (e) {
-      _errorMessage = 'Connection error: $e';
+      _errorMessage = 'Error changing password: $e';
       _isLoading = false;
       notifyListeners();
       return false;
     }
   }
 
-  Future<bool> uploadProfileImage(XFile file) async {
+  Future<bool> uploadProfilePicture(XFile file) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
@@ -642,65 +806,81 @@ class AuthProvider extends ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('access_token');
-      
-      final url = Uri.parse('${Env.apiBaseUrl}/api/v1/auth/profile/image/');
+
+      final url = Uri.parse('${Env.apiBaseUrl}/api/v1/profile/upload-picture');
       final request = http.MultipartRequest('POST', url);
-      
-      if (token != null) {
+
+      if (token != null && token.isNotEmpty) {
         request.headers['Authorization'] = 'Bearer $token';
       }
-      
+      request.headers['Accept'] = 'application/json';
+
       if (kIsWeb) {
+        final bytes = await file.readAsBytes();
+        if (bytes.lengthInBytes > 2 * 1024 * 1024) {
+          _errorMessage = 'File too large. Maximum allowed size is 2MB.';
+          _isLoading = false;
+          notifyListeners();
+          return false;
+        }
         request.files.add(http.MultipartFile.fromBytes(
-          'profile_image',
-          await file.readAsBytes(),
+          'profilePic',
+          bytes,
           filename: file.name,
         ));
       } else {
+        final bytes = await file.readAsBytes();
+        if (bytes.lengthInBytes > 2 * 1024 * 1024) {
+          _errorMessage = 'File too large. Maximum allowed size is 2MB.';
+          _isLoading = false;
+          notifyListeners();
+          return false;
+        }
         request.files.add(await http.MultipartFile.fromPath(
-          'profile_image',
+          'profilePic',
           file.path,
+          filename: file.name,
         ));
       }
-      
+
       final streamedResponse = await request.send();
       final response = await http.Response.fromStream(streamedResponse);
-      
-      final Map<String, dynamic> responseData = jsonDecode(response.body);
+      final dynamic responseData = jsonDecode(response.body);
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final success = responseData['success'] ?? false;
-        if (success) {
-          final data = responseData['data'] ?? {};
-          final userProfileImage = data['profile_image'] ?? '';
+        final bool isSuccess = (responseData is Map && responseData['success'] == true) || response.statusCode == 200;
+        if (isSuccess) {
+          final String? picUrl = responseData['profilePicUrl'] ??
+              (responseData['data'] != null ? responseData['data']['profilePicUrl'] : null);
 
-          _currentUserProfileImage = userProfileImage;
-          await prefs.setString(_userProfileImageKey, userProfileImage);
-          
+          if (picUrl != null) {
+            _currentUserProfileImage = picUrl;
+            await prefs.setString(_userProfileImageKey, picUrl);
+          }
           _isLoading = false;
           notifyListeners();
           return true;
         } else {
-          _errorMessage = responseData['message'] ?? 'Failed to upload profile image.';
+          _errorMessage = _extractErrorMessage(responseData, response.statusCode);
           _isLoading = false;
           notifyListeners();
           return false;
         }
       } else {
-        _errorMessage = responseData['message'] ?? 'Server error. Status: ${response.statusCode}';
+        _errorMessage = _extractErrorMessage(responseData, response.statusCode);
         _isLoading = false;
         notifyListeners();
         return false;
       }
     } catch (e) {
-      _errorMessage = 'Connection error: $e';
+      _errorMessage = 'Error uploading picture: $e';
       _isLoading = false;
       notifyListeners();
       return false;
     }
   }
 
-  Future<bool> deleteProfileImage() async {
+  Future<bool> deleteProfilePicture() async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
@@ -708,8 +888,8 @@ class AuthProvider extends ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('access_token');
-      
-      final url = Uri.parse('${Env.apiBaseUrl}/api/v1/auth/profile/image/');
+
+      final url = Uri.parse('${Env.apiBaseUrl}/api/v1/profile/picture');
       final response = await http.delete(
         url,
         headers: {
@@ -718,35 +898,52 @@ class AuthProvider extends ChangeNotifier {
         },
       );
 
-      final Map<String, dynamic> responseData = jsonDecode(response.body);
+      final dynamic responseData = jsonDecode(response.body);
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final success = responseData['success'] ?? false;
-        if (success) {
-          _currentUserProfileImage = null;
-          await prefs.remove(_userProfileImageKey);
-          
-          _isLoading = false;
-          notifyListeners();
-          return true;
-        } else {
-          _errorMessage = responseData['message'] ?? 'Failed to delete profile image.';
-          _isLoading = false;
-          notifyListeners();
-          return false;
-        }
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        _currentUserProfileImage = null;
+        await prefs.remove(_userProfileImageKey);
+        _isLoading = false;
+        notifyListeners();
+        return true;
       } else {
-        _errorMessage = responseData['message'] ?? 'Server error. Status: ${response.statusCode}';
+        _errorMessage = _extractErrorMessage(responseData, response.statusCode);
         _isLoading = false;
         notifyListeners();
         return false;
       }
     } catch (e) {
-      _errorMessage = 'Connection error: $e';
+      _errorMessage = 'Error deleting profile picture: $e';
       _isLoading = false;
       notifyListeners();
       return false;
     }
+  }
+
+  // Backward compatibility aliases
+  Future<bool> updateUserProfile({
+    required String firstName,
+    required String lastName,
+    required String phone,
+  }) async {
+    final name = '$firstName $lastName'.trim();
+    return updateProfile(
+      name: name,
+      phone: phone,
+    );
+  }
+
+  Future<bool> uploadProfileImage(XFile file) async {
+    return uploadProfilePicture(file);
+  }
+
+  Future<bool> deleteProfileImage() async {
+    return deleteProfilePicture();
+  }
+
+  String getProfilePictureUrl([String? userId]) {
+    final id = userId ?? _currentUserId ?? '';
+    return '${Env.apiBaseUrl}/api/v1/profile/picture/$id';
   }
 
   void clearError() {

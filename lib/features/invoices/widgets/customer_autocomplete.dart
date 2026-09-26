@@ -195,14 +195,17 @@ class _CustomerSearchFieldState extends State<CustomerSearchField> {
   Future<void> _search(String query) async {
     if (query.length < 2) return;
     try {
-      final String path = '/api/customers/search/?q=${Uri.encodeComponent(query)}';
+      final String path = '/api/v1/customers?search=${Uri.encodeComponent(query)}';
       final response = await ApiService().get(path);
       if (!mounted) return;
 
       if (response['success'] == true) {
-        final List<dynamic> dataList = response['data'] is List
-            ? response['data']
-            : (response['data']?['results'] ?? []);
+        final data = response['data'];
+        final List<dynamic> dataList = data is List
+            ? data
+            : (data is Map && data['results'] is List
+                ? data['results'] as List<dynamic>
+                : []);
         setState(() {
           _suggestions = dataList
               .map((json) => Customer.fromJson(json as Map<String, dynamic>))

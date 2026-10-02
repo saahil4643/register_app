@@ -21,7 +21,7 @@ class InvoiceProvider extends ChangeNotifier {
   String? _nextPageUrl;
   bool _hasMore = true;
   String? _errorMessage;
-  Map<String, List<String>> _fieldErrors = {};
+  final Map<String, List<String>> _fieldErrors = {};
 
   // Pagination & Filtering state
   int _currentPage = 1;
@@ -607,6 +607,94 @@ class InvoiceProvider extends ChangeNotifier {
     }
   }
 
+  void updateItemPrice(String itemId, double price) {
+    final index = _selectedItems.indexWhere((item) =>
+      item.id == itemId ||
+      item.product.id == itemId ||
+      item.product.name.trim().toLowerCase() == itemId.trim().toLowerCase()
+    );
+    if (index >= 0) {
+      _selectedItems[index] = _selectedItems[index].copyWith(unitPrice: price);
+      notifyListeners();
+    }
+  }
+
+  void updateItemName(String itemId, String name) {
+    final index = _selectedItems.indexWhere((item) =>
+      item.id == itemId ||
+      item.product.id == itemId ||
+      item.product.name.trim().toLowerCase() == itemId.trim().toLowerCase()
+    );
+    if (index >= 0) {
+      final oldProduct = _selectedItems[index].product;
+      _selectedItems[index] = _selectedItems[index].copyWith(
+        product: oldProduct.copyWith(name: name),
+        description: name,
+      );
+      notifyListeners();
+    }
+  }
+
+  void updateItemHsn(String itemId, String hsn) {
+    final index = _selectedItems.indexWhere((item) =>
+      item.id == itemId ||
+      item.product.id == itemId ||
+      item.product.name.trim().toLowerCase() == itemId.trim().toLowerCase()
+    );
+    if (index >= 0) {
+      final oldProduct = _selectedItems[index].product;
+      _selectedItems[index] = _selectedItems[index].copyWith(
+        product: oldProduct.copyWith(hsnSacCode: hsn),
+      );
+      notifyListeners();
+    }
+  }
+
+  void updateItemUnit(String itemId, String unit) {
+    final index = _selectedItems.indexWhere((item) =>
+      item.id == itemId ||
+      item.product.id == itemId ||
+      item.product.name.trim().toLowerCase() == itemId.trim().toLowerCase()
+    );
+    if (index >= 0) {
+      final oldProduct = _selectedItems[index].product;
+      _selectedItems[index] = _selectedItems[index].copyWith(
+        product: oldProduct.copyWith(unitAbbreviation: unit),
+      );
+      notifyListeners();
+    }
+  }
+
+  void addNewEmptyItem() {
+    final newItemId = 'item_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(100)}';
+    final product = Product(
+      id: '',
+      name: '',
+      sku: '',
+      category: 'General',
+      brand: 'General',
+      stock: 999,
+      minStock: 0,
+      unitAbbreviation: 'Nos',
+      unitOfMeasurement: 'Numbers',
+      hsnSacCode: '',
+      sellingPrice: 0.0,
+      gst: 18.0,
+      createdAt: DateTime.now(),
+    );
+    _selectedItems.add(
+      InvoiceItem(
+        id: newItemId,
+        product: product,
+        quantity: 1,
+        unitPrice: 0.0,
+        discountPercentage: 0.0,
+        taxPercentage: 18.0,
+      ),
+    );
+    notifyListeners();
+  }
+
   void updateInvoiceDate(DateTime date) {
     _invoiceDate = date;
     if (_dueDate.isBefore(_invoiceDate)) {
@@ -719,6 +807,15 @@ class InvoiceProvider extends ChangeNotifier {
 
     if (_invoiceNumber.isNotEmpty && _invoiceNumber != 'Auto-Generated') {
       payload['invoice_number'] = _invoiceNumber;
+    }
+    if (referenceNumber != null && referenceNumber.isNotEmpty) {
+      payload['reference_number'] = referenceNumber;
+    }
+    if (salesperson != null && salesperson.isNotEmpty) {
+      payload['salesperson'] = salesperson;
+    }
+    if (paymentTerms != null && paymentTerms.isNotEmpty) {
+      payload['payment_terms'] = paymentTerms;
     }
     if (_isPaid || (effectivePaid >= totalAmount && totalAmount > 0)) {
       payload['status'] = 'paid';
@@ -1022,11 +1119,5 @@ class InvoiceProvider extends ChangeNotifier {
       notifyListeners();
     }
     return false;
-  }
-
-  String _randomString(int length) {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    final rand = Random();
-    return List.generate(length, (index) => chars[rand.nextInt(chars.length)]).join();
   }
 }

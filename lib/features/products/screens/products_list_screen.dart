@@ -387,6 +387,7 @@ class _ProductsListScreenState extends State<ProductsListScreen> {
     final theme = Theme.of(context);
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(24),
@@ -394,22 +395,24 @@ class _ProductsListScreenState extends State<ProductsListScreen> {
         ),
       ),
       builder: (context) {
-        return Container(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Sort Products By',
-                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, fontSize: 16),
-              ),
-              const SizedBox(height: 12),
-              _buildSortOption('Newest', Icons.calendar_today_rounded),
-              _buildSortOption('Price Low-High', Icons.arrow_upward_rounded),
-              _buildSortOption('Price High-Low', Icons.arrow_downward_rounded),
-              _buildSortOption('Name', Icons.sort_by_alpha_rounded),
-            ],
+        return SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Sort Products By',
+                  style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+                const SizedBox(height: 12),
+                _buildSortOption('Newest', Icons.calendar_today_rounded),
+                _buildSortOption('Price Low-High', Icons.arrow_upward_rounded),
+                _buildSortOption('Price High-Low', Icons.arrow_downward_rounded),
+                _buildSortOption('Name', Icons.sort_by_alpha_rounded),
+              ],
+            ),
           ),
         );
       },

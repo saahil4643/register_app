@@ -215,7 +215,10 @@ class CustomerProvider extends ChangeNotifier {
       final Map<String, dynamic> payload = {
         'customer_type': customer.customerType.isNotEmpty ? customer.customerType : 'business',
         'display_name': customer.displayName.isNotEmpty ? customer.displayName : customer.name,
-        if (customer.companyName.isNotEmpty) 'company_name': customer.companyName,
+        if (customer.companyName.isNotEmpty)
+          'company_name': customer.companyName
+        else if (customer.customerType != 'individual' && (customer.displayName.isNotEmpty || customer.name.isNotEmpty))
+          'company_name': customer.displayName.isNotEmpty ? customer.displayName : customer.name,
         if (customer.firstName.isNotEmpty) 'first_name': customer.firstName,
         if (customer.lastName.isNotEmpty) 'last_name': customer.lastName,
         if (customer.email.isNotEmpty) 'email': customer.email,
@@ -296,9 +299,12 @@ class CustomerProvider extends ChangeNotifier {
 
     try {
       final Map<String, dynamic> payload = {
-        'customer_type': customer.customerType,
+        'customer_type': customer.customerType.isNotEmpty ? customer.customerType : 'business',
         'display_name': customer.displayName.isNotEmpty ? customer.displayName : customer.name,
-        if (customer.companyName.isNotEmpty) 'company_name': customer.companyName,
+        if (customer.companyName.isNotEmpty)
+          'company_name': customer.companyName
+        else if (customer.customerType != 'individual' && (customer.displayName.isNotEmpty || customer.name.isNotEmpty))
+          'company_name': customer.displayName.isNotEmpty ? customer.displayName : customer.name,
         if (customer.firstName.isNotEmpty) 'first_name': customer.firstName,
         if (customer.lastName.isNotEmpty) 'last_name': customer.lastName,
         if (customer.email.isNotEmpty) 'email': customer.email,

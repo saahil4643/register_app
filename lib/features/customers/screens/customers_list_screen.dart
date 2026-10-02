@@ -383,6 +383,7 @@ class _CustomersListScreenState extends State<CustomersListScreen> {
     final theme = Theme.of(context);
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(24),
@@ -390,21 +391,23 @@ class _CustomersListScreenState extends State<CustomersListScreen> {
         ),
       ),
       builder: (context) {
-        return Container(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Sort Customers By',
-                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, fontSize: 16),
-              ),
-              const SizedBox(height: 12),
-              _buildSortOption('Alphabetical', Icons.sort_by_alpha_rounded),
-              _buildSortOption('Outstanding', Icons.account_balance_wallet_rounded),
-              _buildSortOption('Recently Added', Icons.calendar_today_rounded),
-            ],
+        return SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Sort Customers By',
+                  style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+                const SizedBox(height: 12),
+                _buildSortOption('Alphabetical', Icons.sort_by_alpha_rounded),
+                _buildSortOption('Outstanding', Icons.account_balance_wallet_rounded),
+                _buildSortOption('Recently Added', Icons.calendar_today_rounded),
+              ],
+            ),
           ),
         );
       },

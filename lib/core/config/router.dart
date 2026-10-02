@@ -24,6 +24,14 @@ import '../../features/customers/screens/customers_list_screen.dart';
 import '../../features/products/screens/products_list_screen.dart';
 import '../../features/invoices/screens/new_invoice/add_customer_overlay_screen.dart';
 import '../../modules/expenses/screens/add_expense_screen.dart';
+import '../../features/vendors/screens/vendors_list_screen.dart';
+import '../../features/vendors/screens/new_vendor_screen.dart';
+import '../../features/purchase_orders/screens/purchase_orders_list_screen.dart';
+import '../../features/purchase_orders/screens/new_purchase_order_screen.dart';
+import '../../features/purchase_orders/models/purchase_order.dart';
+import '../../features/bills/screens/bills_list_screen.dart';
+import '../../features/bills/screens/new_bill_screen.dart';
+import '../../features/bills/models/bill.dart';
 
 class AppRouter {
   static final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -260,6 +268,100 @@ class AppRouter {
             title: 'Financial Reports',
             description: 'View balance sheets, general ledgers, cash flow statements, and tax summary tables.',
             icon: Icons.bar_chart_outlined,
+          ),
+        ),
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
+          path: '/sales/quotations',
+          builder: (context, state) => const PlaceholderScreen(
+            title: 'Quotations',
+            description: 'Create, send, and track price estimates and quotation proposals for prospective clients.',
+            icon: Icons.request_quote_rounded,
+          ),
+        ),
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
+          path: '/sales/credit-notes',
+          builder: (context, state) => const PlaceholderScreen(
+            title: 'Credit Notes',
+            description: 'Issue credit notes for sales returns, invoice discounts, or customer adjustments.',
+            icon: Icons.assignment_return_rounded,
+          ),
+        ),
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
+          path: '/sales/proforma-invoices',
+          builder: (context, state) => const PlaceholderScreen(
+            title: 'Proforma Invoices',
+            description: 'Draft and send preliminary invoices to clients prior to delivery or work commencement.',
+            icon: Icons.description_rounded,
+          ),
+        ),
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
+          path: '/purchases',
+          builder: (context, state) => const PlaceholderScreen(
+            title: 'Purchases',
+            description: 'Manage procurement, purchase orders, vendor contacts, and payable supplier bills.',
+            icon: Icons.shopping_bag_rounded,
+          ),
+        ),
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
+          path: '/purchases/vendors',
+          builder: (context, state) => const VendorsListScreen(),
+        ),
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
+          path: '/purchases/vendors/new',
+          builder: (context, state) {
+            final initialName = state.extra as String?;
+            return NewVendorScreen(initialName: initialName);
+          },
+        ),
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
+          path: '/purchases/purchase-orders',
+          builder: (context, state) => const PurchaseOrdersListScreen(),
+        ),
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
+          path: '/purchases/purchase-orders/new',
+          builder: (context, state) => const NewPurchaseOrderScreen(isEditing: false),
+        ),
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
+          path: '/purchases/purchase-orders/edit',
+          builder: (context, state) {
+            final order = state.extra as PurchaseOrder?;
+            return NewPurchaseOrderScreen(initialOrder: order, isEditing: true);
+          },
+        ),
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
+          path: '/purchases/bills',
+          builder: (context, state) => const BillsListScreen(),
+        ),
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
+          path: '/purchases/bills/new',
+          builder: (context, state) => const NewBillScreen(isEditing: false),
+        ),
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
+          path: '/purchases/bills/edit',
+          builder: (context, state) {
+            final bill = state.extra as Bill?;
+            return NewBillScreen(initialBill: bill, isEditing: true);
+          },
+        ),
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
+          path: '/payments',
+          builder: (context, state) => const PlaceholderScreen(
+            title: 'Payments',
+            description: 'Record customer payment receipts, bank transactions, and payout settlements.',
+            icon: Icons.payments_rounded,
           ),
         ),
         GoRoute(

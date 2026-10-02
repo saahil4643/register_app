@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../invoices/providers/invoice_provider.dart';
 import '../models/customer.dart';
 import '../providers/customer_provider.dart';
 
@@ -18,6 +17,9 @@ class CreateCustomerScreen extends StatefulWidget {
 class _CreateCustomerScreenState extends State<CreateCustomerScreen> with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   late TabController _tabController;
+
+  // Customer Type
+  String _customerType = 'business';
 
   // Form Fields - Basic
   late TextEditingController _nameController;
@@ -42,6 +44,7 @@ class _CreateCustomerScreenState extends State<CreateCustomerScreen> with Single
     _tabController = TabController(length: 2, vsync: this);
 
     final c = widget.customer;
+    _customerType = (c != null && c.customerType.isNotEmpty) ? c.customerType : 'business';
     _nameController = TextEditingController(text: c?.name ?? '');
     _companyController = TextEditingController(text: c?.company ?? '');
     _phoneController = TextEditingController(text: c?.phone ?? '');
@@ -114,13 +117,18 @@ class _CreateCustomerScreenState extends State<CreateCustomerScreen> with Single
     final navigator = Navigator.of(context, rootNavigator: false);
     final messenger = ScaffoldMessenger.of(context);
 
-    final fullAddress = '${_addressController.text.trim()}, ${_cityController.text.trim()}, ${_stateController.text.trim()} - ${_pincodeController.text.trim()}'
-        .replaceAll(RegExp(r'^[,\s]+|[,\s]+$'), ''); // trim leading/trailing commas
+    final enteredCompany = _companyController.text.trim();
+    final displayName = _nameController.text.trim();
+    // For business, if company name is empty, fallback to displayName so API never complains
+    final companyName = _customerType == 'individual'
+        ? ''
+        : (enteredCompany.isNotEmpty ? enteredCompany : displayName);
 
     final customer = Customer(
       id: widget.customer?.id ?? '',
-      displayName: _nameController.text.trim(),
-      companyName: _companyController.text.trim(),
+      customerType: _customerType,
+      displayName: displayName,
+      companyName: companyName,
       primaryPhone: _phoneController.text.trim(),
       email: _emailController.text.trim(),
       billingAddressLine1: _addressController.text.trim(),
@@ -217,6 +225,67 @@ class _CreateCustomerScreenState extends State<CreateCustomerScreen> with Single
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  _buildSectionHeader(theme, 'Customer Type'),
+                  const SizedBox(height: 8),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: isDark ? theme.colorScheme.surface : Colors.grey.shade50,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+                      ),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: InkWell(
+                            onTap: () => setState(() => _customerType = 'business'),
+                            borderRadius: BorderRadius.circular(8),
+                            child: Row(
+                              children: [
+                                Radio<String>(
+                                  value: 'business',
+                                  groupValue: _customerType,
+                                  activeColor: theme.colorScheme.primary,
+                                  onChanged: (val) {
+                                    if (val != null) setState(() => _customerType = val);
+                                  },
+                                ),
+                                const Text(
+                                  'Business',
+                                  style: TextStyle(fontWeight: FontWeight.w600),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: InkWell(
+                            onTap: () => setState(() => _customerType = 'individual'),
+                            borderRadius: BorderRadius.circular(8),
+                            child: Row(
+                              children: [
+                                Radio<String>(
+                                  value: 'individual',
+                                  groupValue: _customerType,
+                                  activeColor: theme.colorScheme.primary,
+                                  onChanged: (val) {
+                                    if (val != null) setState(() => _customerType = val);
+                                  },
+                                ),
+                                const Text(
+                                  'Individual',
+                                  style: TextStyle(fontWeight: FontWeight.w600),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
                   _buildSectionHeader(theme, 'Contact Details'),
                   const SizedBox(height: 12),
                   TextFormField(
@@ -227,41 +296,34 @@ class _CreateCustomerScreenState extends State<CreateCustomerScreen> with Single
                     ),
                     validator: (val) => val == null || val.trim().isEmpty ? 'Please enter contact name' : null,
                   ),
+                  if (_customerType == 'business') ...[
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: _companyController,
+                      decoration: const InputDecoration(
+                        labelText: 'Company Name (Optional)',
+                        prefixIcon: Icon(Icons.business_rounded),
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 12),
                   TextFormField(
-                    controller: _companyController,
+                    controller: _phoneController,
+                    keyboardType: TextInputType.phone,
                     decoration: const InputDecoration(
-                      labelText: 'Company Name *',
-                      prefixIcon: Icon(Icons.business_rounded),
+                      labelText: 'Phone Number *',
+                      prefixIcon: Icon(Icons.phone_rounded),
                     ),
-                    validator: (val) => val == null || val.trim().isEmpty ? 'Please enter company name' : null,
+                    validator: (val) => val == null || val.trim().isEmpty ? 'Enter phone number' : null,
                   ),
                   const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextFormField(
-                          controller: _phoneController,
-                          keyboardType: TextInputType.phone,
-                          decoration: const InputDecoration(
-                            labelText: 'Phone Number *',
-                            prefixIcon: Icon(Icons.phone_rounded),
-                          ),
-                          validator: (val) => val == null || val.trim().isEmpty ? 'Enter phone number' : null,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: TextFormField(
-                          controller: _emailController,
-                          keyboardType: TextInputType.emailAddress,
-                          decoration: const InputDecoration(
-                            labelText: 'Email Address',
-                            prefixIcon: Icon(Icons.email_rounded),
-                          ),
-                        ),
-                      ),
-                    ],
+                  TextFormField(
+                    controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: const InputDecoration(
+                      labelText: 'Email Address',
+                      prefixIcon: Icon(Icons.email_rounded),
+                    ),
                   ),
                   const SizedBox(height: 12),
                   TextFormField(
@@ -283,36 +345,29 @@ class _CreateCustomerScreenState extends State<CreateCustomerScreen> with Single
                     ),
                   ),
                   const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextFormField(
-                          controller: _cityController,
-                          decoration: const InputDecoration(
-                            labelText: 'City',
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: TextFormField(
-                          controller: _stateController,
-                          decoration: const InputDecoration(
-                            labelText: 'State',
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: TextFormField(
-                          controller: _pincodeController,
-                          keyboardType: TextInputType.number,
-                          decoration: const InputDecoration(
-                            labelText: 'Pincode',
-                          ),
-                        ),
-                      ),
-                    ],
+                  TextFormField(
+                    controller: _cityController,
+                    decoration: const InputDecoration(
+                      labelText: 'City',
+                      prefixIcon: Icon(Icons.location_city_rounded),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: _stateController,
+                    decoration: const InputDecoration(
+                      labelText: 'State',
+                      prefixIcon: Icon(Icons.map_rounded),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: _pincodeController,
+                    keyboardType: TextInputType.number,
+                    decoration: const InputDecoration(
+                      labelText: 'Pincode',
+                      prefixIcon: Icon(Icons.pin_drop_rounded),
+                    ),
                   ),
                 ],
               ).animate().fade(duration: 200.ms),

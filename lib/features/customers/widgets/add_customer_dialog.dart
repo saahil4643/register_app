@@ -21,6 +21,7 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
   final _formKey = GlobalKey<FormState>();
   bool _showAdvanced = false;
   bool _isLoading = false;
+  String _customerType = 'business';
 
   // Controllers - Basic Info
   late TextEditingController _nameController;
@@ -100,10 +101,17 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
       fullAddress = parts.join(', ');
     }
 
+    final enteredCompany = _companyController.text.trim();
+    final displayName = _nameController.text.trim();
+    final companyName = _customerType == 'individual'
+        ? ''
+        : (enteredCompany.isNotEmpty ? enteredCompany : displayName);
+
     final customer = Customer(
       id: '',
-      displayName: _nameController.text.trim(),
-      companyName: _companyController.text.trim(),
+      customerType: _customerType,
+      displayName: displayName,
+      companyName: companyName,
       primaryPhone: _phoneController.text.trim(),
       email: _emailController.text.trim(),
       billingAddressLine1: street.isNotEmpty ? street : fullAddress,
@@ -258,6 +266,62 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          _buildSectionHeader(theme, 'CUSTOMER TYPE'),
+                          const SizedBox(height: 8),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: theme.brightness == Brightness.dark ? theme.colorScheme.surface : Colors.grey.shade50,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: theme.brightness == Brightness.dark ? AppColors.darkBorder : AppColors.lightBorder,
+                              ),
+                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: InkWell(
+                                    onTap: () => setState(() => _customerType = 'business'),
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: Row(
+                                      children: [
+                                        Radio<String>(
+                                          value: 'business',
+                                          groupValue: _customerType,
+                                          activeColor: theme.colorScheme.primary,
+                                          onChanged: (val) {
+                                            if (val != null) setState(() => _customerType = val);
+                                          },
+                                        ),
+                                        const Text('Business', style: TextStyle(fontWeight: FontWeight.w600)),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: InkWell(
+                                    onTap: () => setState(() => _customerType = 'individual'),
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: Row(
+                                      children: [
+                                        Radio<String>(
+                                          value: 'individual',
+                                          groupValue: _customerType,
+                                          activeColor: theme.colorScheme.primary,
+                                          onChanged: (val) {
+                                            if (val != null) setState(() => _customerType = val);
+                                          },
+                                        ),
+                                        const Text('Individual', style: TextStyle(fontWeight: FontWeight.w600)),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+
                           _buildSectionHeader(theme, 'CONTACT INFORMATION'),
                           const SizedBox(height: 12),
 
@@ -352,18 +416,21 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
                           ),
                           const SizedBox(height: 14),
 
-                          // Company Field
-                          TextFormField(
-                            controller: _companyController,
-                            decoration: const InputDecoration(
-                              labelText: 'Company Name (Optional)',
-                              hintText: 'e.g. Acme Corp',
-                              prefixIcon: Icon(Icons.business_outlined),
+                          // Company Field (only for business)
+                          if (_customerType == 'business') ...[
+                            TextFormField(
+                              controller: _companyController,
+                              decoration: const InputDecoration(
+                                labelText: 'Company Name (Optional)',
+                                hintText: 'e.g. Acme Corp',
+                                prefixIcon: Icon(Icons.business_outlined),
+                              ),
+                              textCapitalization: TextCapitalization.words,
                             ),
-                            textCapitalization: TextCapitalization.words,
-                          ),
+                            const SizedBox(height: 14),
+                          ],
 
-                          const SizedBox(height: 20),
+                          const SizedBox(height: 10),
 
                           _buildSectionHeader(theme, 'BILLING ADDRESS'),
                           const SizedBox(height: 12),
@@ -390,32 +457,26 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
                           ),
                           const SizedBox(height: 14),
 
-                          // State and Pincode Row (these are short enough for 2-col)
-                          Row(
-                            children: [
-                              Expanded(
-                                flex: 3,
-                                child: TextFormField(
-                                  controller: _stateController,
-                                  decoration: const InputDecoration(
-                                    labelText: 'State',
-                                    hintText: 'Enter state',
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                flex: 2,
-                                child: TextFormField(
-                                  controller: _pincodeController,
-                                  keyboardType: TextInputType.number,
-                                  decoration: const InputDecoration(
-                                    labelText: 'Pincode',
-                                    hintText: '6-digit PIN',
-                                  ),
-                                ),
-                              ),
-                            ],
+                          // State Field
+                          TextFormField(
+                            controller: _stateController,
+                            decoration: const InputDecoration(
+                              labelText: 'State',
+                              hintText: 'Enter state name',
+                              prefixIcon: Icon(Icons.map_outlined),
+                            ),
+                          ),
+                          const SizedBox(height: 14),
+
+                          // Pincode Field
+                          TextFormField(
+                            controller: _pincodeController,
+                            keyboardType: TextInputType.number,
+                            decoration: const InputDecoration(
+                              labelText: 'Pincode',
+                              hintText: '6-digit PIN',
+                              prefixIcon: Icon(Icons.pin_drop_outlined),
+                            ),
                           ),
                           const SizedBox(height: 16),
 

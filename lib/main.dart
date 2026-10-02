@@ -14,6 +14,9 @@ import 'features/customers/providers/customer_provider.dart';
 import 'features/products/providers/product_provider.dart';
 import 'features/settings/providers/settings_provider.dart';
 import 'features/dashboard/providers/dashboard_provider.dart';
+import 'features/vendors/providers/vendor_provider.dart';
+import 'features/purchase_orders/providers/purchase_order_provider.dart';
+import 'features/bills/providers/bill_provider.dart';
 import 'modules/expenses/providers/expense_provider.dart';
 
 Future<void> main() async {
@@ -30,6 +33,9 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => ProductProvider()),
         ChangeNotifierProvider(create: (_) => SettingsProvider()),
         ChangeNotifierProvider(create: (_) => ExpenseProvider()),
+        ChangeNotifierProvider(create: (_) => VendorProvider()),
+        ChangeNotifierProvider(create: (_) => PurchaseOrderProvider()),
+        ChangeNotifierProvider(create: (_) => BillProvider()),
       ],
       child: const MyApp(),
     ),

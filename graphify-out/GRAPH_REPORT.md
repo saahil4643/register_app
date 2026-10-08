@@ -1,16 +1,16 @@
-# Graph Report - app  (2026-10-02)
+# Graph Report - app  (2026-10-08)
 
 ## Corpus Check
-- 185 files · ~177,248 words
+- 198 files · ~219,429 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 3016 nodes · 4344 edges · 156 communities (138 shown, 18 thin omitted)
+- 3787 nodes · 5345 edges · 179 communities (156 shown, 23 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 18 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `72ef7e53`
+- Built from commit: `8403828b`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -141,42 +141,65 @@
 - [[_COMMUNITY_sales_trend_card.dart|sales_trend_card.dart]]
 - [[_COMMUNITY_@acme|@acme]]
 - [[_COMMUNITY_List|List]]
-- [[_COMMUNITY_dashboard_header.dart|dashboard_header.dart]]
+- [[_COMMUNITY_quotation_provider.dart|quotation_provider.dart]]
 - [[_COMMUNITY_VoidCallback|VoidCallback]]
 - [[_COMMUNITY_bills_list_screen.dart|bills_list_screen.dart]]
 - [[_COMMUNITY_State|State]]
 - [[_COMMUNITY__AddCustomerInlinePanelState|_AddCustomerInlinePanelState]]
 - [[_COMMUNITY_CustomerSearchField|CustomerSearchField]]
-- [[_COMMUNITY_splash_screen.dart|splash_screen.dart]]
+- [[_COMMUNITY_List|List]]
 - [[_COMMUNITY_navigation_shell.dart|navigation_shell.dart]]
-- [[_COMMUNITY_..coreservicesapi_service.dart|../core/services/api_service.dart]]
+- [[_COMMUNITY_......coreconstantsapp_colors.dart|../../../core/constants/app_colors.dart]]
 - [[_COMMUNITY_MaterialPageRoute|MaterialPageRoute]]
 - [[_COMMUNITY_bill_provider.dart|bill_provider.dart]]
 - [[_COMMUNITY_RegisterPlugins|RegisterPlugins]]
 - [[_COMMUNITY_build|build]]
-- [[_COMMUNITY_navigation_shell.dart|navigation_shell.dart]]
+- [[_COMMUNITY_invoice_card.dart|invoice_card.dart]]
 - [[_COMMUNITY_placeholder_screen.dart|placeholder_screen.dart]]
-- [[_COMMUNITY_packageflutter_animateflutter_animate.dart|package:flutter_animate/flutter_animate.dart]]
+- [[_COMMUNITY_BillProvider|BillProvider]]
 - [[_COMMUNITY__buildProductsSection|_buildProductsSection]]
-- [[_COMMUNITY_PurchaseOrderProvider|PurchaseOrderProvider]]
-- [[_COMMUNITY_CustomerSearchField|CustomerSearchField]]
+- [[_COMMUNITY_customer_card.dart|customer_card.dart]]
+- [[_COMMUNITY_splash_screen.dart|splash_screen.dart]]
 - [[_COMMUNITY__NewVendorScreenState|_NewVendorScreenState]]
 - [[_COMMUNITY_dashboard_card.dart|dashboard_card.dart]]
+- [[_COMMUNITY_VoidCallback|VoidCallback]]
+- [[_COMMUNITY_MaterialPageRoute|MaterialPageRoute]]
+- [[_COMMUNITY_..coreservicesapi_service.dart|../core/services/api_service.dart]]
+- [[_COMMUNITY_financial_overview_cards.dart|financial_overview_cards.dart]]
+- [[_COMMUNITY_ValueChanged|ValueChanged]]
+- [[_COMMUNITY_credit_notes_list_screen.dart|credit_notes_list_screen.dart]]
+- [[_COMMUNITY_credit_note_provider.dart|credit_note_provider.dart]]
+- [[_COMMUNITY__SliverAppBarDelegate|_SliverAppBarDelegate]]
+- [[_COMMUNITY_action_buttons.dart|action_buttons.dart]]
+- [[_COMMUNITY_List|List]]
+- [[_COMMUNITY_reset_password_screen.dart|reset_password_screen.dart]]
+- [[_COMMUNITY_forgot_password_screen.dart|forgot_password_screen.dart]]
+- [[_COMMUNITY_VoidCallback|VoidCallback]]
+- [[_COMMUNITY_MaterialPageRoute|MaterialPageRoute]]
+- [[_COMMUNITY_packageflutterservices.dart|package:flutter/services.dart]]
+- [[_COMMUNITY_..modelsexpense_model.dart|../models/expense_model.dart]]
+- [[_COMMUNITY__NewCreditNoteScreenState|_NewCreditNoteScreenState]]
+- [[_COMMUNITY__NewVendorScreenState|_NewVendorScreenState]]
+- [[_COMMUNITY__NewPurchaseOrderScreenState|_NewPurchaseOrderScreenState]]
+- [[_COMMUNITY__NewQuotationScreenState|_NewQuotationScreenState]]
+- [[_COMMUNITY_splash_screen.dart|splash_screen.dart]]
+- [[_COMMUNITY_placeholder_screen.dart|placeholder_screen.dart]]
+- [[_COMMUNITY_kpi_summary_grid.dart|kpi_summary_grid.dart]]
+- [[_COMMUNITY_expense_breakdown_card.dart|expense_breakdown_card.dart]]
 - [[_COMMUNITY_build|build]]
-- [[_COMMUNITY__NewBillScreenState|_NewBillScreenState]]
-- [[_COMMUNITY_@gmail|@gmail]]
+- [[_COMMUNITY_..modelsexpense_model.dart|../models/expense_model.dart]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `SettingsProvider` - 74 edges
-2. `InvoiceProvider` - 66 edges
+1. `SettingsProvider` - 80 edges
+2. `InvoiceProvider` - 72 edges
 3. `AuthProvider` - 49 edges
-4. `CustomerProvider` - 33 edges
-5. `ProductProvider` - 28 edges
+4. `ProductProvider` - 40 edges
+5. `CustomerProvider` - 39 edges
 6. `Win32Window` - 22 edges
 7. `ExpenseProvider` - 18 edges
-8. `VendorProvider` - 15 edges
-9. `build` - 13 edges
-10. `BillProvider` - 12 edges
+8. `Customer` - 16 edges
+9. `VendorProvider` - 16 edges
+10. `build` - 13 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `build` --references--> `AuthProvider`  [EXTRACTED]
@@ -193,7 +216,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (156 total, 18 thin omitted)
+## Communities (179 total, 23 thin omitted)
 
 ### Community 0 - "Win32Window"
 Cohesion: 0.18
@@ -213,11 +236,11 @@ Nodes (32): Any, Cocoa, file_selector_macos, Flutter, FlutterAppDelegate, Flutte
 
 ### Community 4 - "main.dart"
 Cohesion: 0.02
-Nodes (94): ../../../core/utils/file_helper.dart, DateTime? get, Invoice? get, addCustomer, addNewEmptyItem, addPayment, addProduct, addProductItem (+86 more)
+Nodes (99): ../../../core/utils/file_helper.dart, Invoice? get, addCustomer, addItem, addNewEmptyItem, addPayment, addProduct, addProductItem (+91 more)
 
 ### Community 5 - "AppDelegate"
-Cohesion: 0.06
-Nodes (32): ../../features/authentication/screens/forgot_password_screen.dart, ../../features/authentication/screens/login_screen.dart, ../../features/authentication/screens/otp_verification_screen.dart, ../../features/authentication/screens/reset_password_screen.dart, ../../features/authentication/screens/signup_screen.dart, ../../features/authentication/screens/splash_screen.dart, ../../features/authentication/screens/success_screen.dart, ../../features/authentication/screens/welcome_screen.dart (+24 more)
+Cohesion: 0.05
+Nodes (39): ../../features/authentication/screens/forgot_password_screen.dart, ../../features/authentication/screens/login_screen.dart, ../../features/authentication/screens/otp_verification_screen.dart, ../../features/authentication/screens/reset_password_screen.dart, ../../features/authentication/screens/signup_screen.dart, ../../features/authentication/screens/splash_screen.dart, ../../features/authentication/screens/success_screen.dart, ../../features/authentication/screens/welcome_screen.dart (+31 more)
 
 ### Community 6 - "Flutter"
 Cohesion: 0.04
@@ -264,16 +287,16 @@ Cohesion: 0.50
 Nodes (3): For --cluster-only, For --update (incremental re-extraction), graphify reference: incremental update and cluster-only
 
 ### Community 17 - "RegisterPlugins"
-Cohesion: 0.09
-Nodes (21): amount, build, changePercentage, description, icon, iconBackgroundColor, iconColor, InformationCard (+13 more)
+Cohesion: 0.27
+Nodes (10): CustomerSearchField, _CustomerSearchFieldState, NavigationShell, _NavigationShellState, BackupSyncSettingsScreen, _BackupSyncSettingsScreenState, PaymentMethodsSettingsScreen, _PaymentMethodsSettingsScreenState (+2 more)
 
 ### Community 34 - "custom_inputs.dart"
 Cohesion: 0.09
-Nodes (23): build, controller, createState, CustomDropdown, CustomEmailField, CustomPasswordField, _CustomPasswordFieldState, CustomSearchField (+15 more)
+Nodes (23): build, controller, createState, CustomDropdown, CustomEmailField, CustomNumberField, CustomPasswordField, _CustomPasswordFieldState (+15 more)
 
 ### Community 35 - "custom_states.dart"
-Cohesion: 0.08
-Nodes (23): actionLabel, backgroundColor, borderRadius, build, color, description, draft, height (+15 more)
+Cohesion: 0.14
+Nodes (14): _populateFromCreditNote, CustomerProvider, _saveCustomer, build, _buildInvoicesTab, _buildPaymentsTab, _buildTransactionsTab, _confirmDeleteCustomer (+6 more)
 
 ### Community 36 - "dashboard_screen.dart"
 Cohesion: 0.08
@@ -293,7 +316,7 @@ Nodes (14): dart:async, arguments, _controllers, createState, dispose, _focusNod
 
 ### Community 40 - "custom_buttons.dart"
 Cohesion: 0.03
-Nodes (60): _addItem, _attachedFiles, baseAmount, _billDate, _BillItemFormEntry, _billNumberController, build, _buildAttachmentsCard (+52 more)
+Nodes (65): _addItem, _addProductItem, _attachedFiles, baseAmount, _billDate, _BillItemFormEntry, _billNumberController, build (+57 more)
 
 ### Community 41 - "StatelessWidget"
 Cohesion: 0.02
@@ -308,12 +331,12 @@ Cohesion: 0.10
 Nodes (26): AppRouter, router, AuthProvider, _handleSubmit, build, _handleLogin, build, _handleVerify (+18 more)
 
 ### Community 44 - "signup_screen.dart"
-Cohesion: 0.11
-Nodes (17): double get, copyWith, description, discountAmount, discountPercentage, fromJson, id, product (+9 more)
+Cohesion: 0.10
+Nodes (20): copyWith, description, discountPercentage, discountType, discountValue, fromJson, hsnSac, id (+12 more)
 
 ### Community 45 - "login_screen.dart"
 Cohesion: 0.10
-Nodes (21): ../../../customers/providers/customer_provider.dart, FocusNode, AddCustomerForm, _AddCustomerFormState, AddCustomerOverlayScreen, _addressCtrl, build, _companyCtrl (+13 more)
+Nodes (21): ../../customers/providers/customer_provider.dart, FocusNode, AddCustomerForm, _AddCustomerFormState, AddCustomerOverlayScreen, _addressCtrl, build, _companyCtrl (+13 more)
 
 ### Community 46 - "reset_password_screen.dart"
 Cohesion: 0.09
@@ -321,19 +344,19 @@ Nodes (23): build, _buildCustomerSection, _buildInvoiceMetadataSection, _buildNo
 
 ### Community 47 - "splash_screen.dart"
 Cohesion: 0.05
-Nodes (36): build, _buildDropdownBody, _controller, createState, customer, _customerSearchGroupId, _debounce, didUpdateWidget (+28 more)
+Nodes (42): InputDecoration?, build, _buildDropdownBody, controller, createState, customer, _customerSearchGroupId, _debounce (+34 more)
 
 ### Community 48 - "InvoiceProvider"
-Cohesion: 0.18
-Nodes (10): build, FinancialOverviewCards, onOverdueBillsTap, onOverdueInvoicesTap, onPayablesTap, onReceivablesTap, overdueBillsCount, overdueInvoicesCount (+2 more)
+Cohesion: 0.02
+Nodes (89): _addNewItem, _billingAddressController, build, _buildCustomerAutocompleteField, _buildCustomerCard, _buildDateDisplayBox, _buildEstimateDetailsCard, _buildFieldLabel (+81 more)
 
 ### Community 51 - "action_buttons.dart"
 Cohesion: 0.06
-Nodes (35): LayerLink, build, _buildDropdownBody, _controller, createState, _debounce, dispose, _errorMessage (+27 more)
+Nodes (36): LayerLink, build, _buildDropdownBody, _controller, createState, _debounce, dispose, _errorMessage (+28 more)
 
 ### Community 53 - "settings_screen.dart"
-Cohesion: 0.06
-Nodes (32): _amountController, backgroundColor, _buildDetailRow, _buildInfoRow, _buildNotesTab, _buildProductsTab, _buildStatTile, createState (+24 more)
+Cohesion: 0.07
+Nodes (29): _amountController, backgroundColor, _buildDetailRow, _buildInfoRow, _buildNotesTab, _buildProductsTab, _buildStatTile, createState (+21 more)
 
 ### Community 54 - "package:go_router/go_router.dart"
 Cohesion: 0.03
@@ -345,31 +368,31 @@ Nodes (16): about_us_settings_screen.dart, app_preferences_settings_screen.dart,
 
 ### Community 56 - "invoice_detail_screen.dart"
 Cohesion: 0.06
-Nodes (34): ImageSource, _addressController, _avatarOptions, _buildBusinessTab, _buildCustomTextField, _buildImageWidget, _buildPhotoCard, _buildProfileTab (+26 more)
+Nodes (36): ImageSource, _addressController, _avatarOptions, _buildBusinessTab, _buildCustomTextField, _buildImageWidget, _buildPhotoCard, _buildProfileTab (+28 more)
 
 ### Community 57 - "product_picker_screen.dart"
 Cohesion: 0.10
 Nodes (24): build, _buildCategoryTabs, _buildStickyBottomBar, createState, _debounce, dispose, _getCategoryColor, _getCategoryIcon (+16 more)
 
 ### Community 58 - "package:flutter/material.dart"
-Cohesion: 0.10
-Nodes (22): ../../customers/widgets/add_customer_dialog.dart, ../../customers/widgets/customer_credentials_dialog.dart, InvoiceProvider, build, initState, _onCustomerSelected, _onWillPop, _selectDueDate (+14 more)
+Cohesion: 0.09
+Nodes (26): ../../customers/widgets/add_customer_dialog.dart, ../../customers/widgets/customer_credentials_dialog.dart, _buildCreditNoteDetailsCard, InvoiceProvider, build, initState, NewInvoiceScreen, _NewInvoiceScreenState (+18 more)
 
 ### Community 59 - "create_customer_screen.dart"
-Cohesion: 0.09
-Nodes (22): _addressController, build, _buildSectionHeader, _cityController, _companyController, createState, _creditLimitController, customer (+14 more)
+Cohesion: 0.08
+Nodes (25): _addressController, build, _buildSectionHeader, _cityController, _companyController, CreateCustomerScreen, _CreateCustomerScreenState, createState (+17 more)
 
 ### Community 60 - "invoice_card.dart"
 Cohesion: 0.11
-Nodes (18): AppPreferencesSettingsScreen, _AppPreferencesSettingsScreenState, createState, _defaultPagination, dispose, _encryptionType, initState, _replyEmailController (+10 more)
+Nodes (19): core/theme/theme_provider.dart, AppPreferencesSettingsScreen, _AppPreferencesSettingsScreenState, createState, _defaultPagination, dispose, _encryptionType, initState (+11 more)
 
 ### Community 61 - "product_detail_screen.dart"
-Cohesion: 0.11
-Nodes (19): ../../customers/screens/customer_detail_screen.dart, backgroundColor, _buildDetailRow, _buildOverviewTab, _buildSalesTab, _buildStatTile, _buildStockHistoryTab, createState (+11 more)
+Cohesion: 0.09
+Nodes (23): ../../customers/screens/customer_detail_screen.dart, double get, _SliverAppBarDelegate, backgroundColor, _buildDetailRow, _buildOverviewTab, _buildSalesTab, _buildStatTile (+15 more)
 
 ### Community 62 - "main.dart"
 Cohesion: 0.02
-Nodes (84): _AddCustomerInlinePanel, _AddCustomerInlinePanelState, _addressCtrl, _adjustment, _amountReceivedController, _attachments, _autosaveTimer, _billingAddressController (+76 more)
+Nodes (85): _AddCustomerInlinePanel, _AddCustomerInlinePanelState, _addressCtrl, _adjustment, _amountReceivedController, _attachments, _autosaveTimer, _billingAddressController (+77 more)
 
 ### Community 63 - "products_list_screen.dart"
 Cohesion: 0.12
@@ -392,8 +415,8 @@ Cohesion: 0.12
 Nodes (16): create_product_screen.dart, _activeFilter, _buildFilterChip, _buildSortOption, _buildStatusBadge, createState, dispose, initState (+8 more)
 
 ### Community 68 - "package:flutter/material.dart"
-Cohesion: 0.11
-Nodes (16): app_colors.dart, ../constants/app_colors.dart, _apiBaseUrl, Env, init, AppTextStyles, bodyLarge, bodyMedium (+8 more)
+Cohesion: 0.22
+Nodes (8): app_colors.dart, AppTextStyles, bodyLarge, bodyMedium, bodySmall, labelBold, titleLarge, titleMedium
 
 ### Community 69 - "State"
 Cohesion: 0.12
@@ -405,15 +428,15 @@ Nodes (35): int get, activateProduct, _activeFilter, bulkActivate, bulkDeactivat
 
 ### Community 71 - "invoice_item_row.dart"
 Cohesion: 0.03
-Nodes (64): ../../../features/customers/models/customer.dart, ../../../features/products/models/product.dart, ../../../features/vendors/models/vendor.dart, amount, _amountController, _availableTags, controller, createState (+56 more)
+Nodes (63): ../../../features/customers/models/customer.dart, ../../../features/products/models/product.dart, amount, _amountController, _availableTags, controller, createState, _customerController (+55 more)
 
 ### Community 72 - "payment.dart"
-Cohesion: 0.22
-Nodes (8): build, _buildLegendItem, _buildPeriodTab, onPeriodChanged, profitLoss, salesSummary, SalesTrendCard, selectedPeriod
+Cohesion: 0.12
+Nodes (17): build, createState, _customController, didUpdateWidget, dispose, _getPercentage, GstDropdown, _GstDropdownState (+9 more)
 
 ### Community 73 - "theme_provider.dart"
 Cohesion: 0.03
-Nodes (59): _addItem, _attachedFiles, baseAmount, build, _buildAttachmentsCard, _buildItemRow, _buildItemsCard, _buildSummaryAndActionCard (+51 more)
+Nodes (63): ../../invoices/widgets/product_autocomplete.dart, _addItem, _addProductItem, _attachedFiles, baseAmount, build, _buildAttachmentsCard, _buildItemRow (+55 more)
 
 ### Community 74 - "InvoiceProvider"
 Cohesion: 0.04
@@ -429,19 +452,19 @@ Nodes (11): EdgeInsets, InvoiceStatus, build, InvoiceStatusBadge, status, build,
 
 ### Community 77 - "invoice_item_row.dart"
 Cohesion: 0.10
-Nodes (20): build, _buildPaymentGatewayCard, createState, _deleteMethod, dispose, _formKey, initState, _paypalClientIdController (+12 more)
+Nodes (19): build, _buildPaymentGatewayCard, createState, _deleteMethod, dispose, _formKey, initState, _paypalClientIdController (+11 more)
 
 ### Community 78 - "MaterialPageRoute"
 Cohesion: 0.17
 Nodes (12): ../features/settings/providers/settings_provider.dart, build, createState, _handleCheckForUpdates, initState, IntegrateUpdateButton, _IntegrateUpdateButtonState, _loadCurrentVersion (+4 more)
 
 ### Community 79 - "_buildOverviewTab"
-Cohesion: 0.12
-Nodes (17): build, createState, _customController, didUpdateWidget, dispose, _getPercentage, GstDropdown, _GstDropdownState (+9 more)
+Cohesion: 0.22
+Nodes (8): build, _buildLegendItem, _buildPeriodTab, onPeriodChanged, profitLoss, salesSummary, SalesTrendCard, selectedPeriod
 
 ### Community 80 - "invoice_details_screen.dart"
-Cohesion: 0.11
-Nodes (17): ../../../core/utils/number_to_words.dart, build, _buildClassicTemplateContent, _buildCompanyLogo, _buildDefaultBranding, _buildElegantMetaItem, _buildElegantTemplateContent, _buildElegantTotalRow (+9 more)
+Cohesion: 0.10
+Nodes (20): core/config/env.dart, ../../../core/utils/number_to_words.dart, build, _buildClassicTemplateContent, _buildCompanyLogo, _buildDefaultBranding, _buildElegantMetaItem, _buildElegantTemplateContent (+12 more)
 
 ### Community 81 - "expense_form.dart"
 Cohesion: 0.04
@@ -456,32 +479,32 @@ Cohesion: 0.13
 Nodes (13): unique_ptr, DartProject, HWND, LPARAM, LRESULT, UINT, WPARAM, FlutterWindow (+5 more)
 
 ### Community 84 - "reset_password_screen.dart"
-Cohesion: 0.16
-Nodes (20): SettingsProvider, BackupSyncSettingsScreen, _BackupSyncSettingsScreenState, build, _createNewBackup, createState, _formatSize, initState (+12 more)
+Cohesion: 0.17
+Nodes (18): SettingsProvider, build, _createNewBackup, createState, _formatSize, initState, _restoreBackupDialog, _showResultSnackbar (+10 more)
 
 ### Community 85 - "../../../core/constants/app_colors.dart"
 Cohesion: 0.11
-Nodes (18): build, createState, _defaultTax, _deleteTaxRate, dispose, _formKey, _hsnEnabled, initState (+10 more)
+Nodes (19): build, createState, _defaultTax, _deleteTaxRate, dispose, _formKey, _hsnEnabled, initState (+11 more)
 
 ### Community 86 - "invoice_preview_screen.dart"
-Cohesion: 0.11
-Nodes (20): ../../../core/widgets/custom_dialogs.dart, ../../../core/widgets/custom_inputs.dart, FormState, build, createState, dispose, _emailController, ForgotPasswordScreen (+12 more)
+Cohesion: 0.15
+Nodes (13): ExpenseProvider, AddExpenseScreen, _AddExpenseScreenState, _DynamicVendorSearchField, _DynamicVendorSearchFieldState, _handleSave, initState, onChanged (+5 more)
 
 ### Community 87 - "State"
 Cohesion: 0.12
 Nodes (16): CustomPainter, build, CashFlowCard, _CashFlowCardState, _CashFlowPainter, createState, _filterOptions, isDark (+8 more)
 
 ### Community 88 - "FlutterWindow"
-Cohesion: 0.11
-Nodes (16): ../../customers/models/customer.dart, Customer, build, _buildActionItem, onNewBill, onNewCustomer, onNewExpense, onNewInvoice (+8 more)
+Cohesion: 0.08
+Nodes (23): actionLabel, backgroundColor, borderRadius, build, color, description, draft, ErrorState (+15 more)
 
 ### Community 89 - "app_spacing.dart"
 Cohesion: 0.06
 Nodes (30): AppDimensions, buttonHeight, cardElevation, mobileBreakpoint, radiusL, radiusM, radiusS, radiusXL (+22 more)
 
 ### Community 90 - "_SliverAppBarDelegate"
-Cohesion: 0.17
-Nodes (11): build, invoice, InvoiceCard, onDelete, onDownloadPdf, onDuplicate, onEdit, onRecordPayment (+3 more)
+Cohesion: 0.02
+Nodes (89): ../../invoices/widgets/customer_autocomplete.dart, _addNewItem, _billingAddressController, build, _buildCustomerAutocompleteField, _buildCustomerCard, _buildDateDisplayBox, _buildFieldLabel (+81 more)
 
 ### Community 91 - "build"
 Cohesion: 0.10
@@ -492,28 +515,28 @@ Cohesion: 0.12
 Nodes (16): dart:math, _buildFinancialRow, _buildItemsPreviewCard, _buildTermsNotesPreviewCard, createState, _fetchDetails, initState, InvoiceDetailsScreen (+8 more)
 
 ### Community 93 - "package:flutter_animate/flutter_animate.dart"
-Cohesion: 0.12
-Nodes (15): DateTime, amount, copyWith, customerId, customerName, fromJson, id, invoiceId (+7 more)
+Cohesion: 0.09
+Nodes (25): ../../../core/widgets/custom_buttons.dart, ../../../core/widgets/custom_inputs.dart, FormState, build, createState, dispose, _emailController, ForgotPasswordScreen (+17 more)
 
 ### Community 94 - "forgot_password_screen.dart"
 Cohesion: 0.12
 Nodes (17): _autoNumberGeneration, build, _buildMiniatureTemplatePreview, _buildTemplateOptionCard, createState, dispose, _formKey, _getPreviewText (+9 more)
 
 ### Community 95 - "signup_screen.dart"
-Cohesion: 0.18
-Nodes (11): _agreeTerms, _businessNameController, createState, dispose, _emailController, _formKey, _nameController, _passwordController (+3 more)
+Cohesion: 0.22
+Nodes (8): ../data/mock_expenses.dart, deleteExpense, _expenses, getExpenses, _instance, MockExpenseService, saveExpense, static final MockExpenseService
 
 ### Community 96 - "invoice_detail_screen.dart"
 Cohesion: 0.22
 Nodes (7): dart:html, dart:typed_data, saveAndOpenFile, anchor, blob, saveAndOpenFile, url
 
 ### Community 98 - "reset_password_screen.dart"
-Cohesion: 0.10
-Nodes (21): ../../../core/widgets/custom_buttons.dart, arguments, build, _confirmPasswordController, createState, dispose, _emailController, _formKey (+13 more)
+Cohesion: 0.18
+Nodes (11): _agreeTerms, _businessNameController, createState, dispose, _emailController, _formKey, _nameController, _passwordController (+3 more)
 
 ### Community 99 - "add_expense_screen.dart"
-Cohesion: 0.15
-Nodes (13): ExpenseProvider, AddExpenseScreen, _AddExpenseScreenState, _DynamicVendorSearchField, _DynamicVendorSearchFieldState, _handleSave, initState, onChanged (+5 more)
+Cohesion: 0.10
+Nodes (23): ChangeNotifier, ../../invoices/models/invoice.dart, ../../invoices/providers/invoice_provider.dart, ../../invoices/widgets/status_chip.dart, DashboardProvider, build, _buildAgingRow, _buildAnnouncementsView (+15 more)
 
 ### Community 100 - "file_helper_mobile.dart"
 Cohesion: 0.18
@@ -521,23 +544,19 @@ Nodes (10): dart:io, dir, file, filePath, openResult, saveAndOpenFile, writeAsBy
 
 ### Community 101 - "build"
 Cohesion: 0.05
-Nodes (38): attachments, balanceDue, baseAmount, billDate, BillItem, billNumber, category, copyWith (+30 more)
+Nodes (40): attachments, balanceDue, baseAmount, billDate, BillItem, billNumber, category, copyWith (+32 more)
 
 ### Community 102 - "_NewInvoiceScreenState"
-Cohesion: 0.07
-Nodes (27): _billingAddressController, _billingCityController, _billingPincodeController, build, _buildFieldLabel, _buildOutlineInput, _companyNameController, createState (+19 more)
+Cohesion: 0.04
+Nodes (49): ../../../core/services/gst_service.dart, _applyLocalGstinFallback, _billingCityController, _billingPincodeController, _billingStreetController, build, _buildAlignedRow, _buildDropdown (+41 more)
 
 ### Community 103 - "theme_provider.dart"
 Cohesion: 0.25
 Nodes (7): _loadTheme, setThemeMode, _themeKey, _themeMode, package:shared_preferences/shared_preferences.dart, ThemeMode, ThemeMode get
 
 ### Community 104 - "invoice_detail_screen.dart"
-Cohesion: 0.09
-Nodes (23): _showReceivablesBreakdown, _buildStickyBottomBar, build, _buildActionBottomBar, _buildClientCard, _buildDetailSummaryRow, _buildHeaderCard, _buildItemsCard (+15 more)
-
-### Community 105 - "_ProductSearchFieldState"
-Cohesion: 0.15
-Nodes (12): ActionButtons, build, _buildIconButton, invoice, onDelete, onDownloadPdf, onDuplicate, onEdit (+4 more)
+Cohesion: 0.10
+Nodes (20): _showReceivablesBreakdown, build, _buildActionBottomBar, _buildClientCard, _buildDetailSummaryRow, _buildHeaderCard, _buildItemsCard, _buildNotesTermsCard (+12 more)
 
 ### Community 106 - "number_to_words.dart"
 Cohesion: 0.29
@@ -545,7 +564,7 @@ Nodes (6): convert, _convertInteger, NumberToWords, _tens, _units, static const 
 
 ### Community 107 - "env.dart"
 Cohesion: 0.13
-Nodes (15): ../../../core/constants/app_colors.dart, ../../customers/models/payment.dart, ReceivablesReport, build, _buildBucketItem, ReceivablesCard, report, build (+7 more)
+Nodes (15): ../../../core/constants/app_spacing.dart, ../../../core/widgets/custom_states.dart, ExpenseModel, build, createState, expense, ExpenseCard, _ExpenseCardState (+7 more)
 
 ### Community 108 - "expense_repository.dart"
 Cohesion: 0.10
@@ -565,27 +584,27 @@ Nodes (19): build, createState, customer, CustomerCredentialsDialog, _CustomerCr
 
 ### Community 113 - "expense_model.dart"
 Cohesion: 0.10
-Nodes (19): amount, billNumber, category, copyWith, dueDate, expenseDate, fromMap, gstAmount (+11 more)
+Nodes (20): DateTime, amount, billNumber, category, copyWith, dueDate, expenseDate, fromMap (+12 more)
 
 ### Community 114 - "upload_widget.dart"
 Cohesion: 0.11
 Nodes (18): ../../../core/constants/app_constants.dart, ImagePicker, build, createState, didUpdateWidget, _fileName, _fileSize, initialFileName (+10 more)
 
 ### Community 115 - "update_service.dart"
-Cohesion: 0.18
-Nodes (10): Dio, checkForUpdate, _dio, downloadApk, getCurrentVersionInfo, _isNewerVersion, _repository, UpdateService (+2 more)
+Cohesion: 0.17
+Nodes (11): Dio, checkForUpdate, _dio, downloadApk, getCurrentVersionInfo, _isNewerVersion, _repository, UpdateService (+3 more)
 
 ### Community 116 - "expense_api_service.dart"
 Cohesion: 0.12
 Nodes (15): ../../../core/config/api_config.dart, createExpense, deleteExpense, _dio, ExpenseApiService, fetchCategories, fetchDashboard, fetchExpenseDetails (+7 more)
 
 ### Community 117 - "expense_card.dart"
-Cohesion: 0.05
-Nodes (43): accountsPayable, billingAddressLine1, billingAttention, billingCity, billingCountry, billingPostalCode, billingState, companyName (+35 more)
+Cohesion: 0.03
+Nodes (57): accountsPayable, billingAddressLine1, billingAddressLine2, billingAttention, billingCity, billingCountry, billingPostalCode, billingState (+49 more)
 
 ### Community 118 - "mock_expense_service.dart"
-Cohesion: 0.22
-Nodes (8): ../data/mock_expenses.dart, deleteExpense, _expenses, getExpenses, _instance, MockExpenseService, saveExpense, static final MockExpenseService
+Cohesion: 0.04
+Nodes (51): billingAddress, businessName, converted, copyWith, createdAt, currency, customer, customerId (+43 more)
 
 ### Community 119 - "app_version.dart"
 Cohesion: 0.20
@@ -608,137 +627,213 @@ Cohesion: 0.40
 Nodes (4): env.dart, ApiConfig, baseUrl, static String get
 
 ### Community 124 - "_SliverAppBarDelegate"
-Cohesion: 0.14
-Nodes (12): FormFieldValidator, build, _buildTab, DashboardSubTabs, onTabSelected, selectedIndex, build, initialValue (+4 more)
+Cohesion: 0.08
+Nodes (23): api_service.dart, address, constitutionOfBusiness, fetchedAt, fetchTaxpayer, fromJson, getStateFromCode, gstin (+15 more)
 
 ### Community 125 - "MaterialPageRoute"
-Cohesion: 0.10
-Nodes (25): ChangeNotifier, ../customers/screens/create_customer_screen.dart, ../../invoices/models/invoice.dart, ../../invoices/widgets/status_chip.dart, _buildOverviewTab, DashboardProvider, build, _buildAgingRow (+17 more)
+Cohesion: 0.25
+Nodes (8): VendorProvider, _handleSave, NewVendorScreen, _NewVendorScreenState, build, _confirmDeleteVendor, initState, Route /purchases/vendors/new
 
 ### Community 126 - "dashboard_provider.dart"
 Cohesion: 0.08
 Nodes (24): CompanySettings? get, _apiService, _errorMessage, fetchDashboardData, _fetchOrganization, _fetchProfitLoss, _fetchReceivables, _fetchRecentInvoices (+16 more)
 
 ### Community 127 - "StatelessWidget"
-Cohesion: 0.09
-Nodes (25): double?, build, color, CustomOutlinedButton, CustomPrimaryButton, CustomSecondaryButton, CustomTextButton, icon (+17 more)
+Cohesion: 0.10
+Nodes (25): _buildOverviewTab, QuotationProvider, _buildSummaryAndStatusCard, _loadInitialData, build, _buildActionMenu, _buildEmptyState, _buildFilterBar (+17 more)
 
 ### Community 128 - "../core/services/api_service.dart"
 Cohesion: 0.67
 Nodes (3): CustomClipper, _ReceiptTicketClipper, Path
 
 ### Community 129 - "sales_trend_card.dart"
-Cohesion: 0.29
-Nodes (6): SalesSummaryReport, build, _buildKpiCard, KpiSummaryGrid, profitLoss, salesSummary
+Cohesion: 0.12
+Nodes (15): amount, copyWith, customerId, customerName, fromJson, id, invoiceId, Payment (+7 more)
 
 ### Community 131 - "List"
-Cohesion: 0.06
-Nodes (35): attachments, baseAmount, category, copyWith, createdAt, discount, discountType, fromJson (+27 more)
+Cohesion: 0.05
+Nodes (42): attachments, baseAmount, category, convertedBillId, copyWith, createdAt, discount, discountType (+34 more)
 
-### Community 132 - "dashboard_header.dart"
-Cohesion: 0.18
-Nodes (10): dart:convert, build, DashboardHeader, _getTimeGreeting, onOpenDrawer, organization, userProfile, CompanySettings (+2 more)
+### Community 132 - "quotation_provider.dart"
+Cohesion: 0.05
+Nodes (37): DateTime? get, ../../invoices/models/invoice_item.dart, Quotation, acceptedCount, acceptedValue, convertedCount, _currentPage, deleteQuotation (+29 more)
 
 ### Community 133 - "VoidCallback"
 Cohesion: 0.09
-Nodes (24): core/config/env.dart, core/config/router.dart, core/theme/app_theme.dart, core/theme/theme_provider.dart, features/authentication/providers/auth_provider.dart, features/bills/providers/bill_provider.dart, ../../../features/customers/providers/customer_provider.dart, features/dashboard/providers/dashboard_provider.dart (+16 more)
+Nodes (25): core/config/router.dart, core/theme/app_theme.dart, features/authentication/providers/auth_provider.dart, features/bills/providers/bill_provider.dart, features/credit_notes/providers/credit_note_provider.dart, ../../../features/customers/providers/customer_provider.dart, features/dashboard/providers/dashboard_provider.dart, features/invoices/providers/invoice_provider.dart (+17 more)
 
 ### Community 134 - "bills_list_screen.dart"
-Cohesion: 0.13
-Nodes (19): Bill, BillProvider, bill, _BillCard, BillsListScreen, _BillsListScreenState, build, createState (+11 more)
+Cohesion: 0.10
+Nodes (23): Bill, BillProvider, bill, _BillCard, BillsListScreen, _BillsListScreenState, build, createState (+15 more)
 
 ### Community 135 - "State"
-Cohesion: 0.11
-Nodes (19): CustomerProvider, _saveCustomer, build, _buildInvoicesTab, _buildPaymentsTab, _buildTransactionsTab, _confirmDeleteCustomer, initState (+11 more)
+Cohesion: 0.09
+Nodes (26): ../../authentication/providers/auth_provider.dart, ../../../core/widgets/custom_dialogs.dart, ../customers/screens/create_customer_screen.dart, _buildHelpView, build, _buildModalMenuItem, _calculateBottomNavIndex, createState (+18 more)
 
 ### Community 136 - "_AddCustomerInlinePanelState"
-Cohesion: 0.13
-Nodes (18): initState, NewBillScreen, _NewBillScreenState, Vendor, VendorProvider, _handleSave, build, createState (+10 more)
+Cohesion: 0.12
+Nodes (16): Vendor, _buildDetailRow, _buildDetailSectionTitle, createState, dispose, onDelete, onEdit, onTap (+8 more)
 
 ### Community 137 - "CustomerSearchField"
 Cohesion: 0.36
 Nodes (10): HWND, LPARAM, LRESULT, UINT, WPARAM, EnableFullDpiSupportIfAvailable(), GetHandle, GetThisFromHandle (+2 more)
 
-### Community 138 - "splash_screen.dart"
-Cohesion: 0.29
-Nodes (7): build, createState, initState, SplashScreen, _SplashScreenState, package:provider/provider.dart, ../providers/auth_provider.dart
+### Community 138 - "List"
+Cohesion: 0.03
+Nodes (58): billingAddress, businessName, cancelled, copyWith, createdAt, currency, customer, customerId (+50 more)
 
 ### Community 139 - "navigation_shell.dart"
-Cohesion: 0.12
-Nodes (13): IconData, build, _buildFaqTile, HelpSupportSettingsScreen, build, description, icon, PlaceholderScreen (+5 more)
+Cohesion: 0.09
+Nodes (21): amount, build, changePercentage, description, icon, iconBackgroundColor, iconColor, InformationCard (+13 more)
 
-### Community 140 - "../core/services/api_service.dart"
-Cohesion: 0.29
-Nodes (6): ../core/services/api_service.dart, ApiService, _apiService, fetchLatestVersion, UpdateRepository, ../models/app_version.dart
+### Community 140 - "../../../core/constants/app_colors.dart"
+Cohesion: 0.02
+Nodes (87): _addNewItem, _billingAddressController, build, _buildCustomerCard, _buildDateDisplayBox, _buildFieldLabel, _buildLabel, _buildMobileItemList (+79 more)
 
 ### Community 141 - "MaterialPageRoute"
-Cohesion: 0.14
-Nodes (13): bool get, createVendor, deleteVendor, _errorMessage, fetchVendors, _isLoading, _isSaving, _populateDefaultVendors (+5 more)
+Cohesion: 0.13
+Nodes (14): bool get, createVendor, deleteVendor, _errorMessage, fetchVendors, getVendorById, _isLoading, _isSaving (+6 more)
 
 ### Community 142 - "bill_provider.dart"
-Cohesion: 0.12
-Nodes (15): _bills, createBill, deleteBill, _errorMessage, fetchBills, getNextBillNumber, _isLoading, _isSaving (+7 more)
+Cohesion: 0.13
+Nodes (14): _bills, createBill, deleteBill, _errorMessage, fetchBills, getNextBillNumber, _isLoading, _isSaving (+6 more)
 
-### Community 144 - "build"
-Cohesion: 0.29
-Nodes (6): Invoice, build, invoice, InvoiceHeader, outstandingBalance, status_chip.dart
-
-### Community 145 - "navigation_shell.dart"
-Cohesion: 0.10
-Nodes (24): ../../authentication/providers/auth_provider.dart, ../../invoices/providers/invoice_provider.dart, _buildHelpView, build, _buildModalMenuItem, _calculateBottomNavIndex, createState, initState (+16 more)
+### Community 145 - "invoice_card.dart"
+Cohesion: 0.17
+Nodes (11): build, invoice, InvoiceCard, onDelete, onDownloadPdf, onDuplicate, onEdit, onRecordPayment (+3 more)
 
 ### Community 146 - "placeholder_screen.dart"
 Cohesion: 0.22
 Nodes (8): build, gradientColors, icon, StatisticsCard, subtitle, title, value, List
 
-### Community 147 - "package:flutter_animate/flutter_animate.dart"
+### Community 147 - "BillProvider"
+Cohesion: 0.03
+Nodes (57): billingAddress, copyWith, createdAt, creditNoteDate, CreditNoteItem, creditNoteNumber, CreditNoteStatus, currency (+49 more)
+
+### Community 148 - "_buildProductsSection"
+Cohesion: 0.12
+Nodes (20): PurchaseOrder, PurchaseOrderProvider, _buildPurchaseOrderDetailsCard, _handleSave, initState, build, createState, dispose (+12 more)
+
+### Community 149 - "customer_card.dart"
+Cohesion: 0.22
+Nodes (8): ../../customers/models/customer.dart, Customer, build, _buildInfoLabel, customer, CustomerCard, onAddCustomerTap, onSelectTap
+
+### Community 150 - "splash_screen.dart"
+Cohesion: 0.18
+Nodes (10): build, FinancialOverviewCards, onOverdueBillsTap, onOverdueInvoicesTap, onPayablesTap, onReceivablesTap, overdueBillsCount, overdueInvoicesCount (+2 more)
+
+### Community 151 - "_NewVendorScreenState"
+Cohesion: 0.10
+Nodes (19): cancelOrder, convertToBill, createOrder, deleteOrder, _errorMessage, fetchOrders, getNextPoNumber, getPurchaseOrderById (+11 more)
+
+### Community 152 - "dashboard_card.dart"
+Cohesion: 0.17
+Nodes (12): ../../../core/constants/app_dimensions.dart, amount, backgroundColor, build, createState, DashboardCard, _DashboardCardState, icon (+4 more)
+
+### Community 153 - "VoidCallback"
+Cohesion: 0.04
+Nodes (46): ProformaInvoice, clearDateRange, convertToInvoice, createProformaInvoice, _currentPage, _debounceTimer, deleteProformaInvoice, dispose (+38 more)
+
+### Community 155 - "../core/services/api_service.dart"
+Cohesion: 0.10
+Nodes (24): ProformaInvoiceProvider, _loadInitialData, build, _buildActionMenu, _buildEmptyState, _buildFilterBar, _buildMobileCardsList, _buildPaginationFooter (+16 more)
+
+### Community 156 - "financial_overview_cards.dart"
+Cohesion: 0.08
+Nodes (27): double?, build, color, CustomOutlinedButton, CustomPrimaryButton, CustomSecondaryButton, CustomTextButton, icon (+19 more)
+
+### Community 157 - "ValueChanged"
+Cohesion: 0.14
+Nodes (12): FormFieldValidator, build, _buildTab, DashboardSubTabs, onTabSelected, selectedIndex, build, initialValue (+4 more)
+
+### Community 158 - "credit_notes_list_screen.dart"
+Cohesion: 0.10
+Nodes (24): CreditNoteProvider, build, _buildActionMenu, _buildEmptyState, _buildFilterBar, _buildMobileCardsList, _buildPaginationFooter, _buildStatusBadge (+16 more)
+
+### Community 159 - "credit_note_provider.dart"
+Cohesion: 0.05
+Nodes (40): CreditNote? get, CreditNote, clearDateRange, createCreditNote, _creditNotes, _currentPage, _debounceTimer, deleteCreditNote (+32 more)
+
+### Community 160 - "_SliverAppBarDelegate"
+Cohesion: 0.20
+Nodes (9): dart:convert, DashboardHeader, _getTimeGreeting, onOpenDrawer, organization, userProfile, CompanySettings, Map (+1 more)
+
+### Community 161 - "action_buttons.dart"
+Cohesion: 0.15
+Nodes (12): ActionButtons, build, _buildIconButton, invoice, onDelete, onDownloadPdf, onDuplicate, onEdit (+4 more)
+
+### Community 162 - "List"
+Cohesion: 0.12
+Nodes (16): ../../../core/constants/app_colors.dart, ../../customers/models/payment.dart, arguments, SuccessScreen, build, payments, RecentPaymentsWidget, Invoice (+8 more)
+
+### Community 163 - "reset_password_screen.dart"
+Cohesion: 0.17
+Nodes (12): arguments, build, _confirmPasswordController, createState, dispose, _emailController, _formKey, initState (+4 more)
+
+### Community 164 - "forgot_password_screen.dart"
+Cohesion: 0.17
+Nodes (10): build, topCustomers, TopCustomersWidget, build, invoice, InvoiceHeader, outstandingBalance, package:intl/intl.dart (+2 more)
+
+### Community 165 - "VoidCallback"
+Cohesion: 0.22
+Nodes (8): build, _buildActionItem, onNewBill, onNewCustomer, onNewExpense, onNewInvoice, QuickCreateGrid, VoidCallback
+
+### Community 166 - "MaterialPageRoute"
+Cohesion: 0.25
+Nodes (8): build, _navigateToAddCustomer, _buildBuyersTab, build, _navigateToAddProduct, build, _openEditVendor, MaterialPageRoute
+
+### Community 167 - "package:flutter/services.dart"
+Cohesion: 0.20
+Nodes (8): ../constants/app_colors.dart, _apiBaseUrl, Env, init, AppTheme, package:flutter/services.dart, package:google_fonts/google_fonts.dart, static String
+
+### Community 168 - "../models/expense_model.dart"
+Cohesion: 0.29
+Nodes (6): ../core/services/api_service.dart, ApiService, _apiService, fetchLatestVersion, UpdateRepository, ../models/app_version.dart
+
+### Community 170 - "_NewVendorScreenState"
+Cohesion: 0.29
+Nodes (6): ReceivablesReport, build, _buildBucketItem, ReceivablesCard, report, ../models/dashboard_reports.dart
+
+### Community 173 - "splash_screen.dart"
+Cohesion: 0.29
+Nodes (7): Color, build, createState, initState, SplashScreen, _SplashScreenState, ../providers/auth_provider.dart
+
+### Community 174 - "placeholder_screen.dart"
+Cohesion: 0.29
+Nodes (6): IconData, build, description, icon, PlaceholderScreen, title
+
+### Community 175 - "kpi_summary_grid.dart"
+Cohesion: 0.29
+Nodes (6): SalesSummaryReport, build, _buildKpiCard, KpiSummaryGrid, profitLoss, salesSummary
+
+### Community 176 - "expense_breakdown_card.dart"
+Cohesion: 0.33
+Nodes (5): ProfitLossReport, build, ExpenseBreakdownCard, _palette, profitLoss
+
+### Community 177 - "build"
+Cohesion: 0.33
+Nodes (6): build, _buildStickyBottomBar, build, Route /invoices/preview, Route /notifications, Route /profile
+
+### Community 178 - "../models/expense_model.dart"
 Cohesion: 0.50
 Nodes (3): getMockExpenses, now, ../models/expense_model.dart
 
-### Community 148 - "_buildProductsSection"
-Cohesion: 0.18
-Nodes (11): PurchaseOrder, createState, dispose, _getStatusColor, order, PurchaseOrdersListScreen, _PurchaseOrdersListScreenState, _searchController (+3 more)
-
-### Community 149 - "PurchaseOrderProvider"
-Cohesion: 0.18
-Nodes (11): PurchaseOrderProvider, _buildPurchaseOrderDetailsCard, _handleSave, initState, NewPurchaseOrderScreen, _NewPurchaseOrderScreenState, build, initState (+3 more)
-
-### Community 150 - "CustomerSearchField"
-Cohesion: 0.13
-Nodes (15): ../../../core/constants/app_spacing.dart, ../../../core/widgets/custom_states.dart, ExpenseModel, build, createState, expense, ExpenseCard, _ExpenseCardState (+7 more)
-
-### Community 151 - "_NewVendorScreenState"
-Cohesion: 0.12
-Nodes (15): createOrder, deleteOrder, _errorMessage, fetchOrders, getNextPoNumber, _isLoading, _isSaving, _orders (+7 more)
-
-### Community 152 - "dashboard_card.dart"
-Cohesion: 0.15
-Nodes (13): Color, ../../../core/constants/app_dimensions.dart, amount, backgroundColor, build, createState, DashboardCard, _DashboardCardState (+5 more)
-
-### Community 156 - "build"
-Cohesion: 0.17
-Nodes (10): ProfitLossReport, build, ExpenseBreakdownCard, _palette, profitLoss, build, topCustomers, TopCustomersWidget (+2 more)
-
-### Community 157 - "_NewBillScreenState"
-Cohesion: 0.20
-Nodes (15): CreateCustomerScreen, _CreateCustomerScreenState, InvoicePreviewScreen, _InvoicePreviewScreenState, CustomerSearchField, _CustomerSearchFieldState, NavigationShell, _NavigationShellState (+7 more)
-
 ## Knowledge Gaps
-- **2057 isolated node(s):** `flutter_export_environment.sh script`, `+registerWithRegistry`, `ApiConfig`, `baseUrl`, `Env` (+2052 more)
+- **2736 isolated node(s):** `flutter_export_environment.sh script`, `+registerWithRegistry`, `ApiConfig`, `baseUrl`, `Env` (+2731 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **18 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **23 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `SettingsProvider` connect `reset_password_screen.dart` to `VoidCallback`, `State`, `navigation_shell.dart`, `_NewBillScreenState`, `forgot_password_screen.dart`, `package:go_router/go_router.dart`, `package:flutter_animate/flutter_animate.dart`, `invoice_detail_screen.dart`, `package:flutter/material.dart`, `invoice_card.dart`, `main.dart`, `State`, `invoice_item_row.dart`, `invoice_item_row.dart`, `MaterialPageRoute`, `invoice_details_screen.dart`, `../../../core/constants/app_colors.dart`, `forgot_password_screen.dart`, `add_expense_screen.dart`, `MaterialPageRoute`?**
-  _High betweenness centrality (0.017) - this node is a cross-community bridge._
-- **Why does `AuthProvider` connect `forgot_password_screen.dart` to `AuthProvider`, `reset_password_screen.dart`, `AppDelegate`, `Flutter`, `otp_verification_screen.dart`, `invoice_detail_screen.dart`, `VoidCallback`, `splash_screen.dart`, `invoice_details_screen.dart`, `navigation_shell.dart`, `invoice_preview_screen.dart`, `_NewBillScreenState`, `invoice_detail_screen.dart`, `MaterialPageRoute`, `signup_screen.dart`?**
-  _High betweenness centrality (0.016) - this node is a cross-community bridge._
-- **Why does `Customer` connect `FlutterWindow` to `customer.dart`, `main.dart`, `InvoiceProvider`, `invoice.dart`, `splash_screen.dart`, `customer_credentials_dialog.dart`, `settings_screen.dart`, `package:flutter/material.dart`, `create_customer_screen.dart`?**
+- **Why does `SettingsProvider` connect `reset_password_screen.dart` to `VoidCallback`, `State`, `../../../core/constants/app_colors.dart`, `RegisterPlugins`, `credit_notes_list_screen.dart`, `MaterialPageRoute`, `_NewCreditNoteScreenState`, `forgot_password_screen.dart`, `_NewQuotationScreenState`, `InvoiceProvider`, `package:go_router/go_router.dart`, `package:flutter_animate/flutter_animate.dart`, `invoice_detail_screen.dart`, `package:flutter/material.dart`, `invoice_card.dart`, `main.dart`, `State`, `invoice_item_row.dart`, `invoice_item_row.dart`, `MaterialPageRoute`, `invoice_details_screen.dart`, `../../../core/constants/app_colors.dart`, `invoice_preview_screen.dart`, `forgot_password_screen.dart`, `add_expense_screen.dart`, `StatelessWidget`?**
+  _High betweenness centrality (0.026) - this node is a cross-community bridge._
+- **Why does `Customer` connect `customer_card.dart` to `customer.dart`, `main.dart`, `_SliverAppBarDelegate`, `InvoiceProvider`, `invoice.dart`, `../../../core/constants/app_colors.dart`, `List`, `splash_screen.dart`, `customer_credentials_dialog.dart`, `InvoiceProvider`, `BillProvider`, `settings_screen.dart`, `mock_expense_service.dart`, `package:flutter/material.dart`, `create_customer_screen.dart`?**
+  _High betweenness centrality (0.019) - this node is a cross-community bridge._
+- **Why does `AuthProvider` connect `forgot_password_screen.dart` to `AuthProvider`, `reset_password_screen.dart`, `add_expense_screen.dart`, `reset_password_screen.dart`, `AppDelegate`, `Flutter`, `otp_verification_screen.dart`, `State`, `VoidCallback`, `splash_screen.dart`, `invoice_details_screen.dart`, `build`, `RegisterPlugins`, `invoice_detail_screen.dart`, `package:flutter_animate/flutter_animate.dart`?**
   _High betweenness centrality (0.013) - this node is a cross-community bridge._
 - **What connects `Intercept NOTIFY_DEBUGGER_ABOUT_RX_PAGES and touch the pages.`, `flutter_export_environment.sh script`, `+registerWithRegistry` to the rest of the system?**
-  _2058 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _2737 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `my_application.cc` be split into smaller, more focused modules?**
   _Cohesion score 0.09401709401709402 - nodes in this community are weakly interconnected._
 - **Should `What You Must Do When Invoked` be split into smaller, more focused modules?**

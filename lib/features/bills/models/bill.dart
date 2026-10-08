@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class BillItem {
   final String id;
   String name;
@@ -104,6 +106,7 @@ class BillItem {
 class Bill {
   final String id;
   final String billNumber;
+  final String? originalPoId;
   final String vendorId;
   final String vendorName;
   final String category;
@@ -128,6 +131,7 @@ class Bill {
   Bill({
     required this.id,
     required this.billNumber,
+    this.originalPoId,
     this.vendorId = '',
     required this.vendorName,
     required this.category,
@@ -152,24 +156,63 @@ class Bill {
 
   double get balanceDue => (totalAmount - paidAmount).clamp(0.0, double.infinity);
 
+  /// Exact JSON payload matching backend BillRequest.java
+  Map<String, dynamic> toApiJson() {
+    final effectiveDueDate = dueDate ?? billDate.add(const Duration(days: 30));
+    final map = <String, dynamic>{
+      'date': DateFormat('yyyy-MM-dd').format(billDate),
+      'due_date': DateFormat('yyyy-MM-dd').format(effectiveDueDate),
+      'vendor': vendorName,
+      'category': category,
+      'status': status,
+      'amount': subtotal,
+      'tax': totalTax,
+      'total': totalAmount,
+    };
+
+    if (billNumber.trim().isNotEmpty) {
+      map['bill_number'] = billNumber.trim();
+    }
+    final poId = (originalPoId != null && originalPoId!.trim().isNotEmpty)
+        ? originalPoId!.trim()
+        : referenceNumber.trim();
+    if (poId.isNotEmpty) {
+      map['original_po_id'] = poId;
+    }
+    if (notes.trim().isNotEmpty) {
+      map['notes'] = notes.trim();
+    }
+    return map;
+  }
+
   Map<String, dynamic> toJson() => {
         'id': id,
         'bill_number': billNumber,
+        if (originalPoId != null && originalPoId!.isNotEmpty) 'original_po_id': originalPoId,
         'vendor_id': vendorId,
         'vendor_name': vendorName,
+        'vendor': vendorName,
         'category': category,
+        'date': DateFormat('yyyy-MM-dd').format(billDate),
         'bill_date': billDate.toIso8601String(),
-        'due_date': dueDate?.toIso8601String(),
+        'due_date': dueDate != null
+            ? DateFormat('yyyy-MM-dd').format(dueDate!)
+            : DateFormat('yyyy-MM-dd').format(billDate.add(const Duration(days: 30))),
         'reference_number': referenceNumber,
+        'reference': referenceNumber,
         'items': items.map((i) => i.toJson()).toList(),
         'notes': notes,
         'internal_note': internalNote,
         'terms_and_conditions': termsAndConditions,
         'attachments': attachments,
+        'amount': subtotal,
         'subtotal': subtotal,
         'total_discount': totalDiscount,
+        'tax': totalTax,
         'total_tax': totalTax,
+        'total': totalAmount,
         'total_amount': totalAmount,
+        'grand_total': totalAmount,
         'paid_amount': paidAmount,
         'payment_mode': paymentMode,
         'status': status,
@@ -184,24 +227,56 @@ class Bill {
         .map((item) => BillItem.fromJson(item))
         .toList();
 
+    // Parse date
+    DateTime parsedBillDate = DateTime.now();
+    final rawDate = json['date'] ?? json['bill_date'];
+    if (rawDate != null) {
+      parsedBillDate = DateTime.tryParse(rawDate.toString()) ?? DateTime.now();
+    }
+
+    // Parse due date
+    DateTime? parsedDueDate;
+    if (json['due_date'] != null) {
+      parsedDueDate = DateTime.tryParse(json['due_date'].toString());
+    }
+
+    // Parse amounts
+    final parsedSubtotal = (json['amount'] as num?)?.toDouble() ??
+        (json['subtotal'] as num?)?.toDouble() ??
+        0.0;
+    final parsedTax = (json['tax'] as num?)?.toDouble() ??
+        (json['total_tax'] as num?)?.toDouble() ??
+        0.0;
+    final parsedTotal = (json['total'] as num?)?.toDouble() ??
+        (json['grand_total'] as num?)?.toDouble() ??
+        (json['total_amount'] as num?)?.toDouble() ??
+        (parsedSubtotal + parsedTax);
+
+    final rawPoId = json['original_po_id']?.toString() ??
+        json['purchase_order_id']?.toString() ??
+        json['purchase_order_number']?.toString();
+
+    final rawVendor = json['vendor']?.toString() ??
+        json['vendor_name']?.toString() ??
+        json['supplier']?.toString() ??
+        'Unnamed Vendor';
+
+    final rawBillNo = json['bill_number']?.toString() ??
+        json['bill_no']?.toString() ??
+        'BILL-001';
+
     return Bill(
-      id: json['id']?.toString() ?? '',
-      billNumber: json['bill_number']?.toString() ??
-          json['bill_no']?.toString() ??
-          'BILL-001',
+      id: json['id']?.toString() ?? json['db_id']?.toString() ?? '',
+      billNumber: rawBillNo,
+      originalPoId: rawPoId,
       vendorId: json['vendor_id']?.toString() ?? '',
-      vendorName: json['vendor_name']?.toString() ??
-          json['vendor']?.toString() ??
-          'Unnamed Vendor',
-      category: json['category']?.toString() ?? 'General',
-      billDate: json['bill_date'] != null
-          ? DateTime.tryParse(json['bill_date'].toString()) ?? DateTime.now()
-          : DateTime.now(),
-      dueDate: json['due_date'] != null
-          ? DateTime.tryParse(json['due_date'].toString())
-          : null,
+      vendorName: rawVendor,
+      category: json['category']?.toString() ?? 'Raw Materials',
+      billDate: parsedBillDate,
+      dueDate: parsedDueDate,
       referenceNumber: json['reference_number']?.toString() ??
           json['reference']?.toString() ??
+          rawPoId ??
           '',
       items: parsedItems,
       notes: json['notes']?.toString() ?? '',
@@ -211,10 +286,10 @@ class Bill {
               ?.map((e) => e.toString())
               .toList() ??
           [],
-      subtotal: (json['subtotal'] as num?)?.toDouble() ?? 0.0,
+      subtotal: parsedSubtotal,
       totalDiscount: (json['total_discount'] as num?)?.toDouble() ?? 0.0,
-      totalTax: (json['total_tax'] as num?)?.toDouble() ?? 0.0,
-      totalAmount: (json['total_amount'] as num?)?.toDouble() ?? 0.0,
+      totalTax: parsedTax,
+      totalAmount: parsedTotal,
       paidAmount: (json['paid_amount'] as num?)?.toDouble() ?? 0.0,
       paymentMode: json['payment_mode']?.toString() ?? 'Bank Transfer',
       status: json['status']?.toString() ?? 'Pending',
@@ -230,6 +305,7 @@ class Bill {
   Bill copyWith({
     String? id,
     String? billNumber,
+    String? originalPoId,
     String? vendorId,
     String? vendorName,
     String? category,
@@ -254,6 +330,7 @@ class Bill {
     return Bill(
       id: id ?? this.id,
       billNumber: billNumber ?? this.billNumber,
+      originalPoId: originalPoId ?? this.originalPoId,
       vendorId: vendorId ?? this.vendorId,
       vendorName: vendorName ?? this.vendorName,
       category: category ?? this.category,

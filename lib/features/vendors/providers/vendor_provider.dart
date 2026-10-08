@@ -24,8 +24,9 @@ class VendorProvider extends ChangeNotifier {
           v.firstName.toLowerCase().contains(q) ||
           v.lastName.toLowerCase().contains(q) ||
           v.email.toLowerCase().contains(q) ||
-          v.phone.toLowerCase().contains(q) ||
-          v.mobile.toLowerCase().contains(q);
+          v.primaryPhone.toLowerCase().contains(q) ||
+          v.secondaryPhone.toLowerCase().contains(q) ||
+          v.gstNumber.toLowerCase().contains(q);
     }).toList();
   }
 
@@ -34,6 +35,7 @@ class VendorProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// GET /api/v1/vendors
   Future<void> fetchVendors({bool refresh = false}) async {
     if (_isLoading) return;
     _isLoading = true;
@@ -42,23 +44,35 @@ class VendorProvider extends ChangeNotifier {
 
     try {
       final response = await ApiService().get('/api/v1/vendors');
-      if (response['success'] == true && response['data'] != null) {
-        final rawData = response['data'];
-        List<dynamic> list = [];
-        if (rawData is List) {
-          list = rawData;
-        } else if (rawData is Map && rawData['results'] is List) {
+      List<dynamic> list = [];
+
+      final rawData = response['data'] ?? response['results'] ?? response['content'];
+      if (rawData is List) {
+        list = rawData;
+      } else if (rawData is Map) {
+        if (rawData['content'] is List) {
+          list = rawData['content'] as List<dynamic>;
+        } else if (rawData['results'] is List) {
           list = rawData['results'] as List<dynamic>;
+        } else if (rawData['vendors'] is List) {
+          list = rawData['vendors'] as List<dynamic>;
+        } else if (rawData['items'] is List) {
+          list = rawData['items'] as List<dynamic>;
         }
+      }
+
+      if (list.isNotEmpty || response['success'] == true) {
         _vendors.clear();
         for (final item in list) {
           if (item is Map<String, dynamic>) {
             _vendors.add(Vendor.fromJson(item));
           }
         }
+      } else if (_vendors.isEmpty) {
+        _populateDefaultVendors();
       }
-    } catch (_) {
-      // If endpoint doesn't exist yet, populate with reasonable defaults / expenses vendors
+    } catch (e) {
+      _errorMessage = e.toString();
       if (_vendors.isEmpty) {
         _populateDefaultVendors();
       }
@@ -71,50 +85,22 @@ class VendorProvider extends ChangeNotifier {
     }
   }
 
-  void _populateDefaultVendors() {
-    if (_vendors.isNotEmpty) return;
-    final defaults = [
-      Vendor(
-        id: 'v_1',
-        salutation: 'Mr.',
-        firstName: 'Rajesh',
-        lastName: 'Sharma',
-        companyName: 'Apex Logistics Pvt Ltd',
-        displayName: 'Apex Logistics',
-        email: 'billing@apexlogistics.in',
-        phone: '022-45892300',
-        mobile: '9820145892',
-        isMsmeRegistered: true,
-        msmeRegistrationNumber: 'UDYAM-MH-03-0024589',
-        currency: 'INR',
-        paymentTerms: 'Net 30',
-        createdAt: DateTime.now().subtract(const Duration(days: 30)),
-      ),
-      Vendor(
-        id: 'v_2',
-        salutation: 'Ms.',
-        firstName: 'Pooja',
-        lastName: 'Mehta',
-        companyName: 'CloudScale Technologies',
-        displayName: 'CloudScale Tech',
-        email: 'accounts@cloudscale.io',
-        mobile: '9988776655',
-        currency: 'INR',
-        paymentTerms: 'Due on Receipt',
-        createdAt: DateTime.now().subtract(const Duration(days: 15)),
-      ),
-      Vendor(
-        id: 'v_3',
-        companyName: 'Bharat Petroleum Corp',
-        displayName: 'Bharat Petroleum',
-        currency: 'INR',
-        paymentTerms: 'Due on Receipt',
-        createdAt: DateTime.now().subtract(const Duration(days: 5)),
-      ),
-    ];
-    _vendors.addAll(defaults);
+  /// GET /api/v1/vendors/{id}
+  Future<Vendor?> getVendorById(String id) async {
+    try {
+      final response = await ApiService().get('/api/v1/vendors/$id');
+      if (response['data'] is Map<String, dynamic>) {
+        return Vendor.fromJson(response['data'] as Map<String, dynamic>);
+      }
+    } catch (_) {}
+    try {
+      return _vendors.firstWhere((v) => v.id == id);
+    } catch (_) {
+      return null;
+    }
   }
 
+  /// POST /api/v1/vendors
   Future<Vendor?> createVendor(Vendor vendor) async {
     _isSaving = true;
     _errorMessage = null;
@@ -123,51 +109,21 @@ class VendorProvider extends ChangeNotifier {
     try {
       Vendor createdVendor = vendor;
       try {
-        final response = await ApiService().post('/api/v1/vendors', vendor.toJson());
-        if (response['success'] == true && response['data'] is Map<String, dynamic>) {
+        final payload = vendor.toApiJson();
+        final response = await ApiService().post('/api/v1/vendors', payload);
+
+        if (response['data'] is Map<String, dynamic>) {
           createdVendor = Vendor.fromJson(response['data'] as Map<String, dynamic>);
+        } else if (response['success'] == true) {
+          createdVendor = vendor.copyWith(
+            id: response['id']?.toString() ?? 'v_${DateTime.now().millisecondsSinceEpoch}',
+          );
         }
-      } catch (_) {
-        // Fallback: create locally with unique ID
-        final localId = 'v_${DateTime.now().millisecondsSinceEpoch}';
-        createdVendor = Vendor(
-          id: vendor.id.isNotEmpty ? vendor.id : localId,
-          salutation: vendor.salutation,
-          firstName: vendor.firstName,
-          lastName: vendor.lastName,
-          companyName: vendor.companyName,
-          displayName: vendor.displayName,
-          email: vendor.email,
-          phone: vendor.phone,
-          mobile: vendor.mobile,
-          gstin: vendor.gstin,
-          phoneCountryCode: vendor.phoneCountryCode,
-          mobileCountryCode: vendor.mobileCountryCode,
-          isMsmeRegistered: vendor.isMsmeRegistered,
-          msmeRegistrationNumber: vendor.msmeRegistrationNumber,
-          currency: vendor.currency,
-          accountsPayable: vendor.accountsPayable,
-          openingBalance: vendor.openingBalance,
-          paymentTerms: vendor.paymentTerms,
-          website: vendor.website,
-          socialLinks: vendor.socialLinks,
-          billingAttention: vendor.billingAttention,
-          billingAddressLine1: vendor.billingAddressLine1,
-          billingCity: vendor.billingCity,
-          billingState: vendor.billingState,
-          billingPostalCode: vendor.billingPostalCode,
-          billingCountry: vendor.billingCountry,
-          shippingSameAsBilling: vendor.shippingSameAsBilling,
-          shippingAttention: vendor.shippingAttention,
-          shippingAddressLine1: vendor.shippingAddressLine1,
-          shippingCity: vendor.shippingCity,
-          shippingState: vendor.shippingState,
-          shippingPostalCode: vendor.shippingPostalCode,
-          shippingCountry: vendor.shippingCountry,
-          contactPersons: vendor.contactPersons,
-          remarks: vendor.remarks,
-          createdAt: DateTime.now(),
-        );
+      } catch (err) {
+        // Fallback: create locally if server is offline or errored
+        debugPrint('Create vendor API failed, saving locally: $err');
+        final localId = vendor.id.isNotEmpty ? vendor.id : 'v_${DateTime.now().millisecondsSinceEpoch}';
+        createdVendor = vendor.copyWith(id: localId);
       }
 
       _vendors.insert(0, createdVendor);
@@ -182,11 +138,118 @@ class VendorProvider extends ChangeNotifier {
     }
   }
 
-  void deleteVendor(String id) {
-    _vendors.removeWhere((v) => v.id == id);
+  /// PUT or PATCH /api/v1/vendors/{id}
+  Future<Vendor?> updateVendor(String id, Vendor vendor) async {
+    _isSaving = true;
+    _errorMessage = null;
     notifyListeners();
+
     try {
-      ApiService().delete('/api/v1/vendors/$id');
-    } catch (_) {}
+      Vendor updatedVendor = vendor.copyWith(id: id);
+      try {
+        final payload = vendor.toApiJson();
+        Map<String, dynamic> response;
+        try {
+          response = await ApiService().put('/api/v1/vendors/$id', payload);
+        } catch (_) {
+          // Fallback to PATCH if PUT is not allowed
+          response = await ApiService().patch('/api/v1/vendors/$id', payload);
+        }
+
+        if (response['data'] is Map<String, dynamic>) {
+          updatedVendor = Vendor.fromJson(response['data'] as Map<String, dynamic>);
+        }
+      } catch (err) {
+        debugPrint('Update vendor API failed, updating locally: $err');
+      }
+
+      final index = _vendors.indexWhere((v) => v.id == id);
+      if (index != -1) {
+        _vendors[index] = updatedVendor;
+      } else {
+        _vendors.insert(0, updatedVendor);
+      }
+
+      _isSaving = false;
+      notifyListeners();
+      return updatedVendor;
+    } catch (e) {
+      _errorMessage = e.toString();
+      _isSaving = false;
+      notifyListeners();
+      return null;
+    }
+  }
+
+  /// DELETE /api/v1/vendors/{id}
+  Future<bool> deleteVendor(String id) async {
+    final prevIndex = _vendors.indexWhere((v) => v.id == id);
+    Vendor? removedVendor;
+    if (prevIndex != -1) {
+      removedVendor = _vendors.removeAt(prevIndex);
+      notifyListeners();
+    }
+
+    try {
+      await ApiService().delete('/api/v1/vendors/$id');
+      return true;
+    } catch (e) {
+      // If server deletion fails, re-insert
+      if (removedVendor != null && prevIndex != -1) {
+        _vendors.insert(prevIndex, removedVendor);
+        notifyListeners();
+      }
+      _errorMessage = 'Failed to delete vendor: $e';
+      return false;
+    }
+  }
+
+  void _populateDefaultVendors() {
+    if (_vendors.isNotEmpty) return;
+    final defaults = [
+      Vendor(
+        id: 'v_1',
+        displayName: 'Apex Logistics',
+        companyName: 'Apex Logistics Pvt Ltd',
+        firstName: 'Rajesh',
+        lastName: 'Sharma',
+        email: 'billing@apexlogistics.in',
+        primaryPhone: '022-45892300',
+        secondaryPhone: '9820145892',
+        gstNumber: '27AAPFU0939F1ZV',
+        panNumber: 'AAPFU0939F',
+        taxPreference: 'Taxable',
+        currency: 'INR',
+        paymentTerms: 'Net 30',
+        billingCity: 'Mumbai',
+        billingState: 'Maharashtra',
+        createdAt: DateTime.now().subtract(const Duration(days: 30)),
+      ),
+      Vendor(
+        id: 'v_2',
+        displayName: 'CloudScale Tech',
+        companyName: 'CloudScale Technologies',
+        firstName: 'Pooja',
+        lastName: 'Mehta',
+        email: 'accounts@cloudscale.io',
+        primaryPhone: '9988776655',
+        currency: 'INR',
+        paymentTerms: 'Due on Receipt',
+        billingCity: 'Bengaluru',
+        billingState: 'Karnataka',
+        createdAt: DateTime.now().subtract(const Duration(days: 15)),
+      ),
+      Vendor(
+        id: 'v_3',
+        displayName: 'Bharat Petroleum',
+        companyName: 'Bharat Petroleum Corp Ltd',
+        currency: 'INR',
+        paymentTerms: 'Due on Receipt',
+        billingCity: 'Pune',
+        billingState: 'Maharashtra',
+        createdAt: DateTime.now().subtract(const Duration(days: 5)),
+      ),
+    ];
+    _vendors.addAll(defaults);
   }
 }

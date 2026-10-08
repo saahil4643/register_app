@@ -35,7 +35,10 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
   late TextEditingController _emailController;
   late TextEditingController _billingAddressController;
   late TextEditingController _shippingAddressController;
+  String _customerType = 'Business';
+  bool _shippingSameAsBilling = true;
   bool _showInlineAddCustomer = false;
+  bool _showAdditionalCustomerDetails = false;
   bool _isAdditionalExpanded = false;
 
   // Invoice Details (from Image 1 & 2)
@@ -95,11 +98,19 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
     final editing = provider.editingInvoice;
     final customer = provider.selectedCustomer ?? editing?.customer;
 
+    final rawCustType = customer?.customerType ?? 'Business';
+    _customerType = rawCustType.toLowerCase().contains('individual') ? 'Individual' : 'Business';
+    _shippingSameAsBilling = customer?.shippingSameAsBilling ?? true;
+
     _mobileController = TextEditingController(text: customer?.phone ?? '');
     _gstinController = TextEditingController(text: customer?.gstNo ?? '');
     _emailController = TextEditingController(text: customer?.email ?? '');
     _billingAddressController = TextEditingController(text: customer?.address ?? '');
-    _shippingAddressController = TextEditingController(text: customer?.address ?? '');
+    _shippingAddressController = TextEditingController(
+      text: (customer?.shippingAddressLine1.isNotEmpty == true)
+          ? customer!.shippingAddressLine1
+          : (customer?.address ?? ''),
+    );
 
     _invoiceNumberController = TextEditingController(text: provider.invoiceNumber);
     _orderNumberController = TextEditingController();
@@ -181,13 +192,20 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
         _gstinController.text = customer.gstNo;
         _emailController.text = customer.email;
         _billingAddressController.text = customer.address;
-        _shippingAddressController.text = customer.address;
+        _shippingAddressController.text = customer.shippingAddressLine1.isNotEmpty
+            ? customer.shippingAddressLine1
+            : customer.address;
+        _shippingSameAsBilling = customer.shippingSameAsBilling;
+        final rawCustType = customer.customerType;
+        _customerType = rawCustType.toLowerCase().contains('individual') ? 'Individual' : 'Business';
       } else {
         _mobileController.clear();
         _gstinController.clear();
         _emailController.clear();
         _billingAddressController.clear();
         _shippingAddressController.clear();
+        _shippingSameAsBilling = true;
+        _customerType = 'Business';
       }
     });
     _markChanged();
@@ -286,11 +304,24 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
         shippingCharges: _shipping,
         adjustment: _adjustment,
         paymentTerms: _selectedPaymentTerms,
-        referenceNumber: _referenceController.text,
-        salesperson: _salespersonController.text,
+        referenceNumber: _referenceController.text.trim(),
+        salesperson: _salespersonController.text.trim(),
         currency: _selectedCurrency,
         amountReceived: amountPaid,
         paymentMode: _selectedPaymentMethod,
+        isDraft: true,
+        isRoundOff: _roundOff,
+        markAsFullyPaid: _markAsFullyPaid,
+        customerType: _customerType,
+        mobileNumber: _mobileController.text.trim(),
+        gstin: _gstinController.text.trim(),
+        email: _emailController.text.trim(),
+        billingAddress: _billingAddressController.text.trim(),
+        shippingAddress: _shippingAddressController.text.trim(),
+        shippingSameAsBilling: _shippingSameAsBilling,
+        internalNotes: _internalNotesController.text.trim(),
+        notes: _customerNotesController.text.trim(),
+        termsAndConditions: _termsController.text.trim(),
       );
       if (success) {
         setState(() {
@@ -368,13 +399,26 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
       currency: _selectedCurrency,
       amountReceived: amountPaid,
       paymentMode: _selectedPaymentMethod,
+      isDraft: isDraft,
+      isRoundOff: _roundOff,
+      markAsFullyPaid: _markAsFullyPaid,
+      customerType: _customerType,
+      mobileNumber: _mobileController.text.trim(),
+      gstin: _gstinController.text.trim(),
+      email: _emailController.text.trim(),
+      billingAddress: _billingAddressController.text.trim(),
+      shippingAddress: _shippingAddressController.text.trim(),
+      shippingSameAsBilling: _shippingSameAsBilling,
+      internalNotes: _internalNotesController.text.trim(),
+      notes: _customerNotesController.text.trim(),
+      termsAndConditions: _termsController.text.trim(),
     );
 
     if (!mounted) return;
 
     if (success) {
       final savedId = provider.editingInvoice?.id ?? (provider.invoices.isNotEmpty ? provider.invoices.last.id : '');
-      if (!isDraft && savedId.isNotEmpty) {
+      if (!isDraft && savedId.isNotEmpty && !widget.isEditing && !_markAsFullyPaid && !provider.isPaid) {
         await provider.markAsSent(savedId);
         if (!mounted) return;
       }
@@ -722,11 +766,11 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
             _divider(isDark),
             const SizedBox(height: 10),
 
-            // Phone Number (Auto-filled from backend customer)
+            // Mobile Number
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildLabel('Phone Number'),
+                _buildLabel('Mobile Number'),
                 if (customer.phone.isNotEmpty)
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
@@ -747,11 +791,147 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
             ),
             _cleanInputField(
               controller: _mobileController,
-              hint: customer.phone.isNotEmpty ? customer.phone : 'No phone number available',
+              hint: customer.phone.isNotEmpty ? customer.phone : 'e.g. 9876543210',
               keyboardType: TextInputType.phone,
-              readOnly: true,
               onChanged: (v) => _markChanged(),
             ),
+
+            const SizedBox(height: 10),
+            InkWell(
+              onTap: () {
+                setState(() => _showAdditionalCustomerDetails = !_showAdditionalCustomerDetails);
+              },
+              borderRadius: BorderRadius.circular(6),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      _showAdditionalCustomerDetails
+                          ? Icons.keyboard_arrow_up_rounded
+                          : Icons.keyboard_arrow_down_rounded,
+                      size: 18,
+                      color: const Color(0xFF2563EB),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      _showAdditionalCustomerDetails
+                          ? 'Hide additional details'
+                          : 'More details (GSTIN, Address, Email)',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF2563EB),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            if (_showAdditionalCustomerDetails) ...[
+              const SizedBox(height: 10),
+              _divider(isDark),
+              const SizedBox(height: 10),
+
+              // Customer Type
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _buildLabel('Customer Type'),
+                  SegmentedButton<String>(
+                    segments: const [
+                      ButtonSegment(value: 'Business', label: Text('Business', style: TextStyle(fontSize: 11))),
+                      ButtonSegment(value: 'Individual', label: Text('Individual', style: TextStyle(fontSize: 11))),
+                    ],
+                    selected: {_customerType},
+                    onSelectionChanged: (set) {
+                      setState(() => _customerType = set.first);
+                      _markChanged();
+                    },
+                    style: ButtonStyle(
+                      visualDensity: VisualDensity.compact,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              _divider(isDark),
+              const SizedBox(height: 10),
+
+              // Email Address
+              _buildLabel('Email Address'),
+              _cleanInputField(
+                controller: _emailController,
+                hint: customer.email.isNotEmpty ? customer.email : 'e.g. billing@client.com',
+                keyboardType: TextInputType.emailAddress,
+                onChanged: (v) => _markChanged(),
+              ),
+              const SizedBox(height: 10),
+              _divider(isDark),
+              const SizedBox(height: 10),
+
+              // GSTIN
+              _buildLabel('GSTIN'),
+              _cleanInputField(
+                controller: _gstinController,
+                hint: customer.gstNo.isNotEmpty ? customer.gstNo : 'e.g. 27AAPFU0939F1ZV',
+                textCapitalization: TextCapitalization.characters,
+                onChanged: (v) => _markChanged(),
+              ),
+              const SizedBox(height: 10),
+              _divider(isDark),
+              const SizedBox(height: 10),
+
+              // Billing Address
+              _buildLabel('Billing Address'),
+              _cleanInputField(
+                controller: _billingAddressController,
+                hint: 'Enter billing address...',
+                maxLines: 2,
+                onChanged: (v) {
+                  if (_shippingSameAsBilling) {
+                    _shippingAddressController.text = v;
+                  }
+                  _markChanged();
+                },
+              ),
+              const SizedBox(height: 10),
+              _divider(isDark),
+              const SizedBox(height: 10),
+
+              // Shipping Address toggle & field
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Shipping same as billing', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500)),
+                  Switch(
+                    value: _shippingSameAsBilling,
+                    onChanged: (val) {
+                      setState(() {
+                        _shippingSameAsBilling = val;
+                        if (val) {
+                          _shippingAddressController.text = _billingAddressController.text;
+                        }
+                      });
+                      _markChanged();
+                    },
+                  ),
+                ],
+              ),
+              if (!_shippingSameAsBilling) ...[
+                const SizedBox(height: 6),
+                _buildLabel('Shipping Address'),
+                _cleanInputField(
+                  controller: _shippingAddressController,
+                  hint: 'Enter shipping address...',
+                  maxLines: 2,
+                  onChanged: (v) => _markChanged(),
+                ),
+              ],
+            ],
           ],
         ],
       ),
@@ -1236,17 +1416,50 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
           // Discount
           Expanded(
             flex: 2,
-            child: TextFormField(
-              initialValue: item.discountPercentage.toStringAsFixed(1),
-              key: ValueKey('disc_${item.id}'),
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              decoration: const InputDecoration(isDense: true, contentPadding: EdgeInsets.symmetric(vertical: 8), suffixText: '%'),
-              style: const TextStyle(fontSize: 12),
-              onChanged: (val) {
-                final d = double.tryParse(val) ?? 0.0;
-                provider.updateItemDiscount(itemId, d);
-                _markChanged();
-              },
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    initialValue: item.discountType == '₹'
+                        ? (item.discountValue > 0 ? item.discountValue.toStringAsFixed(0) : '')
+                        : (item.discountPercentage > 0 ? item.discountPercentage.toStringAsFixed(1) : ''),
+                    key: ValueKey('disc_${item.id}_${item.discountType}'),
+                    keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                    decoration: InputDecoration(
+                      isDense: true,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                      hintText: item.discountType == '₹' ? '0' : '0%',
+                    ),
+                    style: const TextStyle(fontSize: 12),
+                    onChanged: (val) {
+                      final d = double.tryParse(val) ?? 0.0;
+                      provider.updateItemDiscount(itemId, d, item.discountType);
+                      _markChanged();
+                    },
+                  ),
+                ),
+                InkWell(
+                  onTap: () {
+                    final nextType = item.discountType == '%' ? '₹' : '%';
+                    provider.updateItemDiscountType(itemId, nextType);
+                    _markChanged();
+                  },
+                  borderRadius: BorderRadius.circular(4),
+                  child: Container(
+                    margin: const EdgeInsets.only(left: 2),
+                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: isDark ? Colors.grey[800] : const Color(0xFFEFF6FF),
+                      borderRadius: BorderRadius.circular(4),
+                      border: Border.all(color: const Color(0xFF2563EB).withValues(alpha: 0.3)),
+                    ),
+                    child: Text(
+                      item.discountType,
+                      style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Color(0xFF2563EB)),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
           const SizedBox(width: 6),
@@ -1417,15 +1630,46 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
                   ),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: _subInput(
-                      label: 'Discount %',
-                      initial: item.discountPercentage.toStringAsFixed(1),
-                      isNumeric: true,
-                      onChanged: (v) {
-                        final d = double.tryParse(v) ?? 0.0;
-                        provider.updateItemDiscount(itemId, d);
-                        _markChanged();
-                      },
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text('Discount (${item.discountType})', style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+                            InkWell(
+                              onTap: () {
+                                final nextType = item.discountType == '%' ? '₹' : '%';
+                                provider.updateItemDiscountType(itemId, nextType);
+                                _markChanged();
+                              },
+                              child: Text(
+                                item.discountType == '%' ? 'Switch (₹)' : 'Switch (%)',
+                                style: const TextStyle(fontSize: 9, color: Color(0xFF2563EB), fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 2),
+                        TextFormField(
+                          initialValue: item.discountType == '₹'
+                              ? (item.discountValue > 0 ? item.discountValue.toStringAsFixed(0) : '')
+                              : (item.discountPercentage > 0 ? item.discountPercentage.toStringAsFixed(1) : ''),
+                          key: ValueKey('mob_disc_${item.id}_${item.discountType}'),
+                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                          decoration: InputDecoration(
+                            isDense: true,
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                            hintText: item.discountType == '₹' ? '0' : '0%',
+                          ),
+                          style: const TextStyle(fontSize: 12),
+                          onChanged: (v) {
+                            final d = double.tryParse(v) ?? 0.0;
+                            provider.updateItemDiscount(itemId, d, item.discountType);
+                            _markChanged();
+                          },
+                        ),
+                      ],
                     ),
                   ),
                 ],

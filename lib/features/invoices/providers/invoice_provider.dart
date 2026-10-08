@@ -558,6 +558,11 @@ class InvoiceProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void addItem(InvoiceItem item) {
+    _selectedItems.add(item);
+    notifyListeners();
+  }
+
   void removeProduct(String productId) {
     _selectedItems.removeWhere((item) =>
       item.product.id == productId ||
@@ -583,14 +588,33 @@ class InvoiceProvider extends ChangeNotifier {
     }
   }
 
-  void updateItemDiscount(String productId, double discount) {
+  void updateItemDiscount(String productId, double discount, [String? discountType]) {
     final index = _selectedItems.indexWhere((item) =>
       item.product.id == productId ||
       item.id == productId ||
       item.product.name.trim().toLowerCase() == productId.trim().toLowerCase()
     );
     if (index >= 0) {
-      _selectedItems[index] = _selectedItems[index].copyWith(discountPercentage: discount);
+      final currentType = discountType ?? _selectedItems[index].discountType;
+      _selectedItems[index] = _selectedItems[index].copyWith(
+        discountValue: discount,
+        discountPercentage: currentType == '%' ? discount : _selectedItems[index].discountPercentage,
+        discountType: currentType,
+      );
+      notifyListeners();
+    }
+  }
+
+  void updateItemDiscountType(String productId, String discountType) {
+    final index = _selectedItems.indexWhere((item) =>
+      item.product.id == productId ||
+      item.id == productId ||
+      item.product.name.trim().toLowerCase() == productId.trim().toLowerCase()
+    );
+    if (index >= 0) {
+      _selectedItems[index] = _selectedItems[index].copyWith(
+        discountType: discountType,
+      );
       notifyListeners();
     }
   }
@@ -629,6 +653,7 @@ class InvoiceProvider extends ChangeNotifier {
       final oldProduct = _selectedItems[index].product;
       _selectedItems[index] = _selectedItems[index].copyWith(
         product: oldProduct.copyWith(name: name),
+        itemName: name,
         description: name,
       );
       notifyListeners();
@@ -645,6 +670,7 @@ class InvoiceProvider extends ChangeNotifier {
       final oldProduct = _selectedItems[index].product;
       _selectedItems[index] = _selectedItems[index].copyWith(
         product: oldProduct.copyWith(hsnSacCode: hsn),
+        hsnSac: hsn,
       );
       notifyListeners();
     }
@@ -660,6 +686,7 @@ class InvoiceProvider extends ChangeNotifier {
       final oldProduct = _selectedItems[index].product;
       _selectedItems[index] = _selectedItems[index].copyWith(
         product: oldProduct.copyWith(unitAbbreviation: unit),
+        unit: unit,
       );
       notifyListeners();
     }
@@ -690,6 +717,11 @@ class InvoiceProvider extends ChangeNotifier {
         unitPrice: 0.0,
         discountPercentage: 0.0,
         taxPercentage: 18.0,
+        discountType: '%',
+        discountValue: 0.0,
+        unit: 'Nos',
+        hsnSac: '',
+        itemName: '',
       ),
     );
     notifyListeners();
@@ -773,37 +805,118 @@ class InvoiceProvider extends ChangeNotifier {
     String currency = 'INR',
     double amountReceived = 0.0,
     String paymentMode = 'UPI',
+    bool isDraft = false,
+    bool isRoundOff = true,
+    bool markAsFullyPaid = false,
+    String? customerType,
+    String? mobileNumber,
+    String? gstin,
+    String? email,
+    String? billingAddress,
+    String? shippingAddress,
+    bool shippingSameAsBilling = true,
+    String? internalNotes,
+    String? notes,
+    String? termsAndConditions,
   }) {
     final customerVal = (_selectedCustomer?.id != null && _selectedCustomer!.id.isNotEmpty)
         ? _selectedCustomer!.id
-        : (_selectedCustomer?.name ?? '');
+        : ((_selectedCustomer?.phone != null && _selectedCustomer!.phone.isNotEmpty)
+            ? _selectedCustomer!.phone
+            : (_selectedCustomer?.name ?? ''));
+
+    final cleanCurrency = currency.contains('USD')
+        ? 'USD'
+        : (currency.contains('EUR')
+            ? 'EUR'
+            : (currency.contains('GBP') ? 'GBP' : 'INR'));
+
+    final custType = (customerType != null && customerType.isNotEmpty)
+        ? customerType
+        : (_selectedCustomer?.customerType ?? 'Business');
+    final formattedCustType = custType.isNotEmpty
+        ? (custType[0].toUpperCase() + custType.substring(1))
+        : 'Business';
+
+    final mobile = (mobileNumber != null && mobileNumber.isNotEmpty)
+        ? mobileNumber
+        : (_selectedCustomer?.phone ?? '');
+    final gst = (gstin != null && gstin.isNotEmpty)
+        ? gstin
+        : (_selectedCustomer?.gstNo ?? '');
+    final custEmail = (email != null && email.isNotEmpty)
+        ? email
+        : (_selectedCustomer?.email ?? '');
+    final bAddress = (billingAddress != null && billingAddress.isNotEmpty)
+        ? billingAddress
+        : (_selectedCustomer?.address ?? '');
+    final sAddress = shippingSameAsBilling
+        ? bAddress
+        : ((shippingAddress != null && shippingAddress.isNotEmpty)
+            ? shippingAddress
+            : (_selectedCustomer?.shippingAddressLine1.isNotEmpty == true
+                ? _selectedCustomer!.shippingAddressLine1
+                : bAddress));
+
+    final resolvedNotes = notes ?? _notes;
+    final resolvedTerms = termsAndConditions ?? _terms;
+
+    final double calculatedSubtotal = grandTotal;
+    final double rawTotal = (calculatedSubtotal + shippingCharges + adjustment);
+    final double totalAmount = isRoundOff ? rawTotal.roundToDouble() : rawTotal;
+    final double effectivePaid = markAsFullyPaid ? totalAmount : amountReceived;
+    final double remainingBalance = (totalAmount - effectivePaid).clamp(0.0, double.infinity);
 
     final Map<String, dynamic> payload = {
       'customer': customerVal,
       'invoice_date': _invoiceDate.toIso8601String().substring(0, 10),
       'due_date': _dueDate.toIso8601String().substring(0, 10),
-      'currency': currency.contains('USD') ? 'USD' : (currency.contains('EUR') ? 'EUR' : (currency.contains('GBP') ? 'GBP' : 'INR')),
-      'notes': _notes,
-      'terms_and_conditions': _terms,
-      'items': _selectedItems.map((item) => {
-        'product': item.product.id.isNotEmpty ? item.product.id : item.product.name,
-        'description': item.description.isNotEmpty ? item.description : item.product.name,
-        'quantity': item.quantity,
-        'unit_price': item.unitPrice,
-        'tax': item.taxPercentage,
-        'discount': item.discountAmount > 0 ? item.discountAmount : item.discountPercentage,
+      'currency': cleanCurrency,
+      'payment_mode': paymentMode,
+      'sales_person': (salesperson != null && salesperson.isNotEmpty) ? salesperson : 'General Sales',
+      'reference_no': referenceNumber ?? '',
+      'customer_type': formattedCustType,
+      'mobile_number': mobile,
+      'gstin': gst,
+      'email': custEmail,
+      'billing_address': bAddress,
+      'shipping_address': sAddress,
+      'shipping_same_as_billing': shippingSameAsBilling,
+      'notes': resolvedNotes,
+      'terms_and_conditions': resolvedTerms,
+      'internal_notes': internalNotes ?? '',
+      'is_round_off': isRoundOff,
+      'mark_as_fully_paid': markAsFullyPaid,
+      'amount_received': effectivePaid,
+      'items': _selectedItems.map((item) {
+        final itemName = (item.itemName != null && item.itemName!.isNotEmpty)
+            ? item.itemName!
+            : (item.product.name.isNotEmpty ? item.product.name : item.description);
+        final productId = item.product.id.isNotEmpty ? item.product.id : itemName;
+        final hsn = (item.hsnSac != null && item.hsnSac!.isNotEmpty)
+            ? item.hsnSac!
+            : item.product.hsnSacCode;
+        final unitStr = (item.unit != null && item.unit!.isNotEmpty)
+            ? item.unit!
+            : (item.product.unitAbbreviation.isNotEmpty ? item.product.unitAbbreviation : 'Nos');
+        final disc = item.discountType == '₹'
+            ? (item.discountValue > 0 ? item.discountValue : item.discountAmount)
+            : (item.discountValue > 0 ? item.discountValue : item.discountPercentage);
+
+        return {
+          'product': productId,
+          'item_name': itemName,
+          'description': item.description.isNotEmpty ? item.description : itemName,
+          'hsn_sac': hsn,
+          'quantity': item.quantity,
+          'unit_price': item.unitPrice,
+          'discount': disc,
+          'discount_type': item.discountType,
+          'tax': item.taxPercentage,
+          'unit': unitStr,
+        };
       }).toList(),
     };
-
-    final double totalAmount = (grandTotal + shippingCharges + adjustment).roundToDouble();
-    final double effectivePaid = _isPaid ? totalAmount : amountReceived;
-    final double remainingBalance = (totalAmount - effectivePaid).clamp(0.0, double.infinity);
-
-    if (effectivePaid > 0 || _isPaid) {
-      payload['amount_received'] = effectivePaid;
-      payload['payment_mode'] = paymentMode;
-    }
-    payload['balance_due'] = remainingBalance;
 
     if (_invoiceNumber.isNotEmpty && _invoiceNumber != 'Auto-Generated') {
       payload['invoice_number'] = _invoiceNumber;
@@ -817,11 +930,148 @@ class InvoiceProvider extends ChangeNotifier {
     if (paymentTerms != null && paymentTerms.isNotEmpty) {
       payload['payment_terms'] = paymentTerms;
     }
-    if (_isPaid || (effectivePaid >= totalAmount && totalAmount > 0)) {
+    if (shippingCharges > 0) {
+      payload['shipping_charges'] = shippingCharges;
+    }
+    if (adjustment != 0) {
+      payload['adjustment'] = adjustment;
+    }
+    payload['balance_due'] = remainingBalance;
+
+    if (isDraft) {
+      payload['status'] = 'draft';
+    } else if (markAsFullyPaid || (effectivePaid >= totalAmount && totalAmount > 0)) {
       payload['status'] = 'paid';
     } else if (effectivePaid > 0) {
       payload['status'] = 'partially_paid';
+    } else {
+      payload['status'] = 'draft';
     }
+
+    return payload;
+  }
+
+  // Generate payload for PUT /api/v1/invoices/{id} (UpdateInvoiceRequest DTO)
+  Map<String, dynamic> _getUpdatePayload({
+    double shippingCharges = 0.0,
+    double adjustment = 0.0,
+    String? referenceNumber,
+    String? salesperson,
+    double amountReceived = 0.0,
+    String paymentMode = 'UPI',
+    bool isDraft = false,
+    bool isRoundOff = true,
+    bool markAsFullyPaid = false,
+    String? customerType,
+    String? mobileNumber,
+    String? gstin,
+    String? email,
+    String? billingAddress,
+    String? shippingAddress,
+    bool shippingSameAsBilling = true,
+    String? internalNotes,
+    String? notes,
+    String? termsAndConditions,
+  }) {
+    final custType = (customerType != null && customerType.isNotEmpty)
+        ? customerType
+        : (_selectedCustomer?.customerType ?? 'Business');
+    final formattedCustType = custType.isNotEmpty
+        ? (custType[0].toUpperCase() + custType.substring(1))
+        : 'Business';
+
+    final mobile = (mobileNumber != null && mobileNumber.isNotEmpty)
+        ? mobileNumber
+        : (_selectedCustomer?.phone ?? '');
+    final gst = (gstin != null && gstin.isNotEmpty)
+        ? gstin
+        : (_selectedCustomer?.gstNo ?? '');
+    final custEmail = (email != null && email.isNotEmpty)
+        ? email
+        : (_selectedCustomer?.email ?? '');
+    final bAddress = (billingAddress != null && billingAddress.isNotEmpty)
+        ? billingAddress
+        : (_selectedCustomer?.address ?? '');
+    final sAddress = shippingSameAsBilling
+        ? bAddress
+        : ((shippingAddress != null && shippingAddress.isNotEmpty)
+            ? shippingAddress
+            : (_selectedCustomer?.shippingAddressLine1.isNotEmpty == true
+                ? _selectedCustomer!.shippingAddressLine1
+                : bAddress));
+
+    final resolvedNotes = notes ?? _notes;
+    final resolvedTerms = termsAndConditions ?? _terms;
+
+    final double calculatedSubtotal = grandTotal;
+    final double rawTotal = (calculatedSubtotal + shippingCharges + adjustment);
+    final double totalAmount = isRoundOff ? rawTotal.roundToDouble() : rawTotal;
+    final double effectivePaid = markAsFullyPaid ? totalAmount : amountReceived;
+    final double remainingBalance = (totalAmount - effectivePaid).clamp(0.0, double.infinity);
+
+    String statusStr = 'draft';
+    if (isDraft) {
+      statusStr = 'draft';
+    } else if (markAsFullyPaid || (effectivePaid >= totalAmount && totalAmount > 0)) {
+      statusStr = 'paid';
+    } else if (effectivePaid > 0) {
+      statusStr = 'partially_paid';
+    } else if (_editingInvoice != null && _editingInvoice!.status == InvoiceStatus.sent) {
+      statusStr = 'sent';
+    } else {
+      statusStr = 'sent';
+    }
+
+    final Map<String, dynamic> payload = {
+      'due_date': _dueDate.toIso8601String().substring(0, 10),
+      'sales_person': (salesperson != null && salesperson.isNotEmpty) ? salesperson : 'General Sales',
+      'reference_no': referenceNumber ?? '',
+      'customer_type': formattedCustType,
+      'mobile_number': mobile,
+      'gstin': gst,
+      'email': custEmail,
+      'billing_address': bAddress,
+      'shipping_address': sAddress,
+      'shipping_same_as_billing': shippingSameAsBilling,
+      'payment_mode': paymentMode,
+      'notes': resolvedNotes,
+      'terms_and_conditions': resolvedTerms,
+      'internal_notes': internalNotes ?? '',
+      'is_round_off': isRoundOff,
+      'status': statusStr,
+      'amount_received': effectivePaid,
+      'mark_as_fully_paid': markAsFullyPaid,
+      'balance_due': remainingBalance,
+      'items': _selectedItems.map((item) {
+        final itemName = (item.itemName != null && item.itemName!.isNotEmpty)
+            ? item.itemName!
+            : (item.product.name.isNotEmpty ? item.product.name : item.description);
+        final productId = item.product.id.isNotEmpty ? item.product.id : itemName;
+        final hsn = (item.hsnSac != null && item.hsnSac!.isNotEmpty)
+            ? item.hsnSac!
+            : item.product.hsnSacCode;
+        final unitStr = (item.unit != null && item.unit!.isNotEmpty)
+            ? item.unit!
+            : (item.product.unitAbbreviation.isNotEmpty ? item.product.unitAbbreviation : 'Nos');
+        final disc = item.discountType == '₹'
+            ? (item.discountValue > 0 ? item.discountValue : item.discountAmount)
+            : (item.discountValue > 0 ? item.discountValue : item.discountPercentage);
+
+        return {
+          'product': productId,
+          'item_name': itemName,
+          'description': item.description.isNotEmpty ? item.description : itemName,
+          'hsn_sac': hsn,
+          'quantity': item.quantity,
+          'unit_price': item.unitPrice,
+          'discount': disc,
+          'discount_type': item.discountType,
+          'tax': item.taxPercentage,
+          'unit': unitStr,
+        };
+      }).toList(),
+    };
+
     return payload;
   }
 
@@ -854,16 +1104,22 @@ class InvoiceProvider extends ChangeNotifier {
     String currency = 'INR',
     double amountReceived = 0.0,
     String paymentMode = 'UPI',
+    bool isDraft = false,
+    bool isRoundOff = true,
+    bool markAsFullyPaid = false,
+    String? customerType,
+    String? mobileNumber,
+    String? gstin,
+    String? email,
+    String? billingAddress,
+    String? shippingAddress,
+    bool shippingSameAsBilling = true,
+    String? internalNotes,
+    String? notes,
+    String? termsAndConditions,
   }) async {
     if (_selectedCustomer == null || _selectedItems.isEmpty) {
       _errorMessage = 'Please select a customer and add at least one line item.';
-      notifyListeners();
-      return false;
-    }
-
-    if (_editingInvoice != null && _editingInvoice!.status != InvoiceStatus.draft) {
-      _fieldErrors.clear();
-      _errorMessage = 'Only draft invoices can be updated. Create a new invoice instead.';
       notifyListeners();
       return false;
     }
@@ -874,20 +1130,54 @@ class InvoiceProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final payload = _getSavePayload(
-        shippingCharges: shippingCharges,
-        adjustment: adjustment,
-        paymentTerms: paymentTerms,
-        referenceNumber: referenceNumber,
-        salesperson: salesperson,
-        currency: currency,
-        amountReceived: amountReceived,
-        paymentMode: paymentMode,
-      );
       Map<String, dynamic> response;
       if (_editingInvoice != null) {
+        final payload = _getUpdatePayload(
+          shippingCharges: shippingCharges,
+          adjustment: adjustment,
+          referenceNumber: referenceNumber,
+          salesperson: salesperson,
+          amountReceived: amountReceived,
+          paymentMode: paymentMode,
+          isDraft: isDraft,
+          isRoundOff: isRoundOff,
+          markAsFullyPaid: markAsFullyPaid,
+          customerType: customerType,
+          mobileNumber: mobileNumber,
+          gstin: gstin,
+          email: email,
+          billingAddress: billingAddress,
+          shippingAddress: shippingAddress,
+          shippingSameAsBilling: shippingSameAsBilling,
+          internalNotes: internalNotes,
+          notes: notes,
+          termsAndConditions: termsAndConditions,
+        );
         response = await ApiService().put('/api/v1/invoices/${_editingInvoice!.id}', payload);
       } else {
+        final payload = _getSavePayload(
+          shippingCharges: shippingCharges,
+          adjustment: adjustment,
+          paymentTerms: paymentTerms,
+          referenceNumber: referenceNumber,
+          salesperson: salesperson,
+          currency: currency,
+          amountReceived: amountReceived,
+          paymentMode: paymentMode,
+          isDraft: isDraft,
+          isRoundOff: isRoundOff,
+          markAsFullyPaid: markAsFullyPaid,
+          customerType: customerType,
+          mobileNumber: mobileNumber,
+          gstin: gstin,
+          email: email,
+          billingAddress: billingAddress,
+          shippingAddress: shippingAddress,
+          shippingSameAsBilling: shippingSameAsBilling,
+          internalNotes: internalNotes,
+          notes: notes,
+          termsAndConditions: termsAndConditions,
+        );
         response = await ApiService().post('/api/v1/invoices', payload);
       }
 
@@ -895,7 +1185,29 @@ class InvoiceProvider extends ChangeNotifier {
         final Map<String, dynamic> data = response['data'] is Map<String, dynamic>
             ? response['data'] as Map<String, dynamic>
             : response;
-        final savedInvoice = Invoice.fromJson(data);
+        final parsedInvoice = Invoice.fromJson(data);
+        final savedInvoice = Invoice(
+          id: parsedInvoice.id,
+          invoiceNumber: parsedInvoice.invoiceNumber.isNotEmpty ? parsedInvoice.invoiceNumber : _invoiceNumber,
+          customer: (parsedInvoice.customer.phone.isNotEmpty || parsedInvoice.customer.email.isNotEmpty)
+              ? parsedInvoice.customer
+              : (_selectedCustomer ?? parsedInvoice.customer),
+          invoiceDate: parsedInvoice.invoiceDate,
+          dueDate: parsedInvoice.dueDate,
+          items: parsedInvoice.items.isNotEmpty ? parsedInvoice.items : List.from(_selectedItems),
+          notes: parsedInvoice.notes ?? _notes,
+          terms: parsedInvoice.terms ?? _terms,
+          status: parsedInvoice.status,
+          payments: parsedInvoice.payments,
+          currency: parsedInvoice.currency,
+          subtotalField: parsedInvoice.subtotalField ?? subtotal,
+          totalDiscountField: parsedInvoice.totalDiscountField ?? totalDiscount,
+          totalTaxField: parsedInvoice.totalTaxField ?? totalTax,
+          grandTotalField: parsedInvoice.grandTotalField ?? grandTotal,
+          balanceDueField: parsedInvoice.balanceDueField,
+          paidAmountField: parsedInvoice.paidAmountField,
+        );
+
         if (_editingInvoice != null) {
           final index = _invoices.indexWhere((inv) => inv.id == _editingInvoice!.id);
           if (index >= 0) {
@@ -933,14 +1245,17 @@ class InvoiceProvider extends ChangeNotifier {
     }
   }
 
-  // Update invoice (calls PATCH /api/v1/invoices/{id})
-  Future<bool> updateInvoice(String id, Map<String, dynamic> updateData) async {
+  // Update invoice (calls PUT / PATCH /api/v1/invoices/{id})
+  Future<bool> updateInvoice(String id, Map<String, dynamic> updateData, {bool usePut = true}) async {
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
     try {
-      final response = await ApiService().patch('/api/v1/invoices/$id', updateData);
+      final response = usePut
+          ? await ApiService().put('/api/v1/invoices/$id', updateData)
+          : await ApiService().patch('/api/v1/invoices/$id', updateData);
+
       if (response['success'] == true) {
         if (response['data'] is Map<String, dynamic>) {
           final updated = Invoice.fromJson(response['data'] as Map<String, dynamic>);
@@ -948,12 +1263,18 @@ class InvoiceProvider extends ChangeNotifier {
           if (idx >= 0) {
             _invoices[idx] = updated;
           }
+          if (_editingInvoice?.id == id) {
+            _editingInvoice = updated;
+          }
         }
         _isLoading = false;
         notifyListeners();
         return true;
       } else {
         _errorMessage = response['message'] ?? 'Failed to update invoice';
+        if (response['errors'] is Map<String, dynamic>) {
+          _parseFieldErrors(response['errors']);
+        }
       }
     } catch (e) {
       _errorMessage = 'Error updating invoice: $e';
@@ -962,6 +1283,36 @@ class InvoiceProvider extends ChangeNotifier {
       notifyListeners();
     }
     return false;
+  }
+
+  // Option 2 partial update: Mark invoice as fully paid
+  Future<bool> markAsPaid(String invoiceId) async {
+    return updateInvoice(invoiceId, {
+      'mark_as_fully_paid': true,
+      'status': 'paid',
+    });
+  }
+
+  // Option 2 partial update: Record payment or update amount received
+  Future<bool> updateInvoicePayment({
+    required String invoiceId,
+    required double amountReceived,
+    required String paymentMode,
+    String? notes,
+  }) async {
+    return updateInvoice(invoiceId, {
+      'status': 'paid',
+      'amount_received': amountReceived,
+      'payment_mode': paymentMode,
+      if (notes != null && notes.isNotEmpty) 'notes': notes,
+    });
+  }
+
+  // Option 2 partial update: Update status
+  Future<bool> updateInvoiceStatus(String invoiceId, String status) async {
+    return updateInvoice(invoiceId, {
+      'status': status,
+    });
   }
 
   // Delete invoice (calls DELETE /api/v1/invoices/{id})

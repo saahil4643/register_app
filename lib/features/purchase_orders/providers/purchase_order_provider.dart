@@ -26,7 +26,8 @@ class PurchaseOrderProvider extends ChangeNotifier {
           order.category.toLowerCase().contains(_searchQuery.toLowerCase());
 
       final matchesStatus = _statusFilter == 'All' ||
-          order.status.toLowerCase() == _statusFilter.toLowerCase();
+          PurchaseOrder.normalizeStatusForApi(order.status) ==
+              PurchaseOrder.normalizeStatusForApi(_statusFilter);
 
       return matchesSearch && matchesStatus;
     }).toList();
@@ -52,25 +53,58 @@ class PurchaseOrderProvider extends ChangeNotifier {
       }
     }
     final next = maxNum + 1;
-    return 'PUR-${next.toString().padLeft(3, '0')}';
+    return 'PO-${next.toString().padLeft(3, '0')}';
   }
 
-  Future<void> fetchOrders({bool refresh = false}) async {
-    if (_isLoading) return;
+  /// GET /api/v1/purchase-orders?page=1&page_size=20&status=DRAFT&search=Acme
+  Future<void> fetchOrders({
+    bool refresh = false,
+    String? status,
+    String? search,
+    int page = 1,
+    int pageSize = 50,
+  }) async {
+    if (_isLoading && !refresh) return;
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
     try {
-      final response = await ApiService().get('/api/v1/purchase-orders');
-      if (response['success'] == true && response['data'] != null) {
-        final rawData = response['data'];
+      final queryParams = <String>[
+        'page=$page',
+        'page_size=$pageSize',
+      ];
+      final effStatus = status ?? (_statusFilter != 'All' ? _statusFilter : null);
+      if (effStatus != null && effStatus != 'All') {
+        queryParams.add('status=${PurchaseOrder.normalizeStatusForApi(effStatus)}');
+      }
+      final effSearch = search ?? (_searchQuery.isNotEmpty ? _searchQuery : null);
+      if (effSearch != null && effSearch.trim().isNotEmpty) {
+        queryParams.add('search=${Uri.encodeComponent(effSearch.trim())}');
+      }
+
+      final url = '/api/v1/purchase-orders?${queryParams.join('&')}';
+      final response = await ApiService().get(url);
+
+      if (response['statusCode'] != null && response['statusCode'] >= 400) {
+        _errorMessage = response['message']?.toString();
+      } else {
         List<dynamic> list = [];
+        final rawData = response['results'] ?? response['data'] ?? response['content'];
         if (rawData is List) {
           list = rawData;
-        } else if (rawData is Map && rawData['results'] is List) {
-          list = rawData['results'] as List<dynamic>;
+        } else if (rawData is Map) {
+          if (rawData['results'] is List) {
+            list = rawData['results'] as List<dynamic>;
+          } else if (rawData['content'] is List) {
+            list = rawData['content'] as List<dynamic>;
+          } else if (rawData['items'] is List) {
+            list = rawData['items'] as List<dynamic>;
+          }
+        } else if (response['results'] is List) {
+          list = response['results'] as List<dynamic>;
         }
+
         _orders.clear();
         for (final item in list) {
           if (item is Map<String, dynamic>) {
@@ -78,181 +112,249 @@ class PurchaseOrderProvider extends ChangeNotifier {
           }
         }
       }
-    } catch (_) {
-      // Populated with fallback mock data if API is not yet available
-      if (_orders.isEmpty) {
-        _populateDefaultOrders();
-      }
+    } catch (e) {
+      _errorMessage = e.toString();
     } finally {
-      if (_orders.isEmpty) {
-        _populateDefaultOrders();
-      }
       _isLoading = false;
       notifyListeners();
     }
   }
 
+  /// GET /api/v1/purchase-orders/{id}
+  Future<PurchaseOrder?> getPurchaseOrderById(String id) async {
+    try {
+      final response = await ApiService().get('/api/v1/purchase-orders/$id');
+      Map<String, dynamic>? data;
+      if (response['data'] is Map<String, dynamic>) {
+        data = response['data'] as Map<String, dynamic>;
+      } else if (response.containsKey('id') || response.containsKey('po_number')) {
+        data = response;
+      }
+
+      if (data != null) {
+        final po = PurchaseOrder.fromJson(data);
+        final index = _orders.indexWhere((o) => o.id == id || o.poNumber == id);
+        if (index != -1) {
+          _orders[index] = po;
+        } else {
+          _orders.add(po);
+        }
+        notifyListeners();
+        return po;
+      }
+    } catch (_) {}
+
+    try {
+      return _orders.firstWhere((o) => o.id == id || o.poNumber == id);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// POST /api/v1/purchase-orders (201 Created)
   Future<PurchaseOrder?> createOrder(PurchaseOrder order) async {
     _isSaving = true;
     _errorMessage = null;
     notifyListeners();
 
     try {
-      final response = await ApiService().post(
-        '/api/v1/purchase-orders',
-        order.toJson(),
-      );
+      final payload = order.toApiJson();
+      final response = await ApiService().post('/api/v1/purchase-orders', payload);
+
+      if (response['statusCode'] != null && response['statusCode'] >= 400) {
+        _errorMessage = response['message']?.toString() ?? 'Failed to create purchase order';
+        return null;
+      }
 
       PurchaseOrder created;
-      if (response['success'] == true && response['data'] != null) {
-        created = PurchaseOrder.fromJson(response['data'] as Map<String, dynamic>);
+      Map<String, dynamic>? dataMap;
+      if (response['data'] is Map<String, dynamic>) {
+        dataMap = response['data'] as Map<String, dynamic>;
+      } else if (response.containsKey('id') || response.containsKey('po_number')) {
+        dataMap = response;
+      }
+
+      if (dataMap != null) {
+        created = PurchaseOrder.fromJson(dataMap);
+        if (created.items.isEmpty && order.items.isNotEmpty) {
+          created = created.copyWith(
+            items: order.items,
+            attachments: order.attachments,
+            notes: order.notes,
+            internalNote: order.internalNote,
+            termsAndConditions: order.termsAndConditions,
+          );
+        }
       } else {
-        created = order.copyWith(
-          id: order.id.isEmpty
-              ? 'po_${DateTime.now().millisecondsSinceEpoch}'
-              : order.id,
-        );
+        created = order;
       }
       _orders.insert(0, created);
       return created;
     } catch (e) {
-      // Save locally as fallback
-      final fallback = order.copyWith(
-        id: order.id.isEmpty
-            ? 'po_${DateTime.now().millisecondsSinceEpoch}'
-            : order.id,
-      );
-      _orders.insert(0, fallback);
-      return fallback;
+      _errorMessage = e.toString();
+      return null;
     } finally {
       _isSaving = false;
       notifyListeners();
     }
   }
 
+  /// PUT or PATCH /api/v1/purchase-orders/{id}
   Future<bool> updateOrder(PurchaseOrder order) async {
     _isSaving = true;
     _errorMessage = null;
     notifyListeners();
 
+    final targetId = order.id.isNotEmpty ? order.id : order.poNumber;
     try {
-      await ApiService().put('/api/v1/purchase-orders/${order.id}', order.toJson());
-      final index = _orders.indexWhere((o) => o.id == order.id);
+      final payload = order.toApiJson();
+      final response = await ApiService().put('/api/v1/purchase-orders/$targetId', payload);
+
+      if (response['statusCode'] != null && response['statusCode'] >= 400) {
+        _errorMessage = response['message']?.toString() ?? 'Failed to update purchase order';
+        return false;
+      }
+
+      PurchaseOrder updated = order;
+      Map<String, dynamic>? dataMap;
+      if (response['data'] is Map<String, dynamic>) {
+        dataMap = response['data'] as Map<String, dynamic>;
+      } else if (response.containsKey('id') || response.containsKey('po_number')) {
+        dataMap = response;
+      }
+
+      if (dataMap != null) {
+        updated = PurchaseOrder.fromJson(dataMap);
+        if (updated.items.isEmpty && order.items.isNotEmpty) {
+          updated = updated.copyWith(
+            items: order.items,
+            attachments: order.attachments,
+            notes: order.notes,
+            internalNote: order.internalNote,
+            termsAndConditions: order.termsAndConditions,
+          );
+        }
+      }
+
+      final index = _orders.indexWhere((o) => o.id == order.id || o.poNumber == order.poNumber);
       if (index != -1) {
-        _orders[index] = order;
+        _orders[index] = updated;
+      } else {
+        _orders.insert(0, updated);
       }
       return true;
-    } catch (_) {
-      final index = _orders.indexWhere((o) => o.id == order.id);
-      if (index != -1) {
-        _orders[index] = order;
-      }
-      return true;
+    } catch (e) {
+      _errorMessage = e.toString();
+      return false;
     } finally {
       _isSaving = false;
       notifyListeners();
     }
   }
 
-  Future<bool> deleteOrder(String id) async {
+  /// DELETE /api/v1/purchase-orders/{id} (Cancel PO)
+  Future<bool> cancelOrder(String id) async {
     try {
       await ApiService().delete('/api/v1/purchase-orders/$id');
     } catch (_) {}
-    _orders.removeWhere((o) => o.id == id);
+    final index = _orders.indexWhere((o) => o.id == id || o.poNumber == id);
+    if (index != -1) {
+      _orders[index] = _orders[index].copyWith(status: 'CANCELLED');
+    }
     notifyListeners();
     return true;
   }
 
-  Future<void> updateOrderStatus(String id, String status) async {
-    final index = _orders.indexWhere((o) => o.id == id);
-    if (index != -1) {
-      final updated = _orders[index].copyWith(status: status);
-      _orders[index] = updated;
+  /// POST /api/v1/purchase-orders/{id}/restore (Restore Cancelled PO)
+  Future<bool> restoreOrder(String id) async {
+    try {
+      final response = await ApiService().post('/api/v1/purchase-orders/$id/restore', {});
+      String restoredStatus = 'DRAFT';
+      if (response['status'] != null) {
+        restoredStatus = response['status'].toString();
+      } else if (response['data'] is Map && response['data']['status'] != null) {
+        restoredStatus = response['data']['status'].toString();
+      }
+      final index = _orders.indexWhere((o) => o.id == id || o.poNumber == id);
+      if (index != -1) {
+        _orders[index] = _orders[index].copyWith(
+          status: PurchaseOrder.normalizeStatusForApi(restoredStatus),
+        );
+      }
+    } catch (_) {
+      final index = _orders.indexWhere((o) => o.id == id || o.poNumber == id);
+      if (index != -1) {
+        _orders[index] = _orders[index].copyWith(status: 'DRAFT');
+      }
+    }
+    notifyListeners();
+    return true;
+  }
+
+  /// POST /api/v1/purchase-orders/{id}/convert-to-bill (Convert PO to Bill)
+  Future<Map<String, dynamic>?> convertToBill(String id, {String? billNumber}) async {
+    _isSaving = true;
+    _errorMessage = null;
+    notifyListeners();
+
+    try {
+      final Map<String, dynamic> body = {};
+      if (billNumber != null && billNumber.trim().isNotEmpty) {
+        body['bill_number'] = billNumber.trim();
+      }
+
+      final response = await ApiService().post('/api/v1/purchase-orders/$id/convert-to-bill', body);
+
+      String? createdBillId;
+      if (response['id'] != null) {
+        createdBillId = response['id'].toString();
+      } else if (response['bill_id'] != null) {
+        createdBillId = response['bill_id'].toString();
+      } else if (response['data'] is Map && response['data']['id'] != null) {
+        createdBillId = response['data']['id'].toString();
+      }
+
+      final index = _orders.indexWhere((o) => o.id == id || o.poNumber == id);
+      if (index != -1) {
+        _orders[index] = _orders[index].copyWith(
+          status: 'BILLED',
+          convertedBillId: createdBillId ?? _orders[index].convertedBillId,
+        );
+      }
+      return response;
+    } catch (e) {
+      _errorMessage = e.toString();
+      return null;
+    } finally {
+      _isSaving = false;
       notifyListeners();
-      try {
-        await ApiService().patch('/api/v1/purchase-orders/$id/status', {'status': status});
-      } catch (_) {}
     }
   }
 
-  void _populateDefaultOrders() {
-    if (_orders.isNotEmpty) return;
-    _orders.addAll([
-      PurchaseOrder(
-        id: 'po_001',
-        poNumber: 'PUR-001',
-        vendorId: 'v_1',
-        vendorName: 'Apex Logistics',
-        category: 'Logistics & Freight',
-        purchaseDate: DateTime.now().subtract(const Duration(days: 4)),
-        referenceNumber: 'REF-88912',
-        items: [
-          PurchaseOrderItem(
-            id: 'item_1',
-            name: 'Inter-state Freight Service',
-            hsnCode: '996511',
-            quantity: 2,
-            unit: 'Nos',
-            rate: 12500.0,
-            gstRate: 18.0,
-            discount: 500.0,
-            discountType: 'amount',
-          ),
-          PurchaseOrderItem(
-            id: 'item_2',
-            name: 'Heavy Duty Wooden Pallets',
-            hsnCode: '441520',
-            quantity: 15,
-            unit: 'Pcs',
-            rate: 850.0,
-            gstRate: 12.0,
-            discount: 0.0,
-            discountType: 'amount',
-          ),
-        ],
-        subtotal: 37250.0,
-        totalDiscount: 500.0,
-        totalTax: 5937.0,
-        totalAmount: 42687.0,
-        paymentMode: 'Bank Transfer',
-        status: 'Ordered',
-        notes: 'Deliver to warehouse bay 3 before Friday.',
-        internalNote: 'Approved by supply chain manager.',
-        termsAndConditions: '1. Goods received subject to inspection and approval.\n2. Payment will be processed as per agreed terms.\n3. Mention PO number on all invoices and delivery notes.\n4. All disputes are subject to PUNE jurisdiction only.',
-        createdAt: DateTime.now().subtract(const Duration(days: 4)),
-      ),
-      PurchaseOrder(
-        id: 'po_002',
-        poNumber: 'PUR-002',
-        vendorId: 'v_2',
-        vendorName: 'CloudScale Tech',
-        category: 'IT & Software',
-        purchaseDate: DateTime.now().subtract(const Duration(days: 1)),
-        referenceNumber: 'BILL-44120',
-        items: [
-          PurchaseOrderItem(
-            id: 'item_3',
-            name: 'Cloud Hosting Dedicated Nodes',
-            hsnCode: '998315',
-            quantity: 3,
-            unit: 'Nos',
-            rate: 8000.0,
-            gstRate: 18.0,
-            discount: 10.0,
-            discountType: 'percentage',
-          ),
-        ],
-        subtotal: 24000.0,
-        totalDiscount: 2400.0,
-        totalTax: 3888.0,
-        totalAmount: 25488.0,
-        paymentMode: 'Bank Transfer',
-        status: 'Pending',
-        notes: 'Monthly infrastructure renewal order.',
-        internalNote: 'Annual contract tier 2 discount applied.',
-        termsAndConditions: '1. Goods received subject to inspection and approval.\n2. Payment will be processed as per agreed terms.\n3. Mention PO number on all invoices and delivery notes.\n4. All disputes are subject to PUNE jurisdiction only.',
-        createdAt: DateTime.now().subtract(const Duration(days: 1)),
-      ),
-    ]);
+  /// DELETE /api/v1/purchase-orders/{id}/permanent (Permanently Delete PO)
+  Future<bool> permanentDeleteOrder(String id) async {
+    try {
+      await ApiService().delete('/api/v1/purchase-orders/$id/permanent');
+    } catch (_) {}
+    _orders.removeWhere((o) => o.id == id || o.poNumber == id);
+    notifyListeners();
+    return true;
+  }
+
+  /// Alias for backward compatibility
+  Future<bool> deleteOrder(String id) => cancelOrder(id);
+
+  /// PUT or PATCH /api/v1/purchase-orders/{id} for status update
+  Future<void> updateOrderStatus(String id, String status) async {
+    final normStatus = PurchaseOrder.normalizeStatusForApi(status);
+    final index = _orders.indexWhere((o) => o.id == id || o.poNumber == id);
+    if (index != -1) {
+      final updated = _orders[index].copyWith(status: normStatus);
+      _orders[index] = updated;
+      notifyListeners();
+    }
+    try {
+      await ApiService().patch('/api/v1/purchase-orders/$id', {'status': normStatus});
+    } catch (_) {}
   }
 }

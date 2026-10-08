@@ -401,19 +401,27 @@ class _BillCard extends StatelessWidget {
 
                 const SizedBox(height: 8),
 
-                // Category & Date & Items
+                // Category & Date & Items & Due Date
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      '${bill.category} • ${bill.items.length} ${bill.items.length == 1 ? 'item' : 'items'}',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: isDark ? Colors.white38 : const Color(0xFF64748B),
+                    Expanded(
+                      child: Text(
+                        '${bill.category}'
+                        '${(bill.originalPoId != null && bill.originalPoId!.isNotEmpty) ? ' • PO: ${bill.originalPoId}' : (bill.referenceNumber.isNotEmpty ? ' • Ref: ${bill.referenceNumber}' : '')}'
+                        '${bill.items.isNotEmpty ? ' • ${bill.items.length} ${bill.items.length == 1 ? 'item' : 'items'}' : ''}',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: isDark ? Colors.white38 : const Color(0xFF64748B),
+                        ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
+                    const SizedBox(width: 8),
                     Text(
-                      dateDisplay,
+                      bill.dueDate != null
+                          ? '$dateDisplay • Due ${DateFormat('dd MMM').format(bill.dueDate!)}'
+                          : dateDisplay,
                       style: TextStyle(
                         fontSize: 12,
                         color: isDark ? Colors.white38 : const Color(0xFF64748B),

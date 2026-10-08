@@ -26,12 +26,19 @@ import '../../features/invoices/screens/new_invoice/add_customer_overlay_screen.
 import '../../modules/expenses/screens/add_expense_screen.dart';
 import '../../features/vendors/screens/vendors_list_screen.dart';
 import '../../features/vendors/screens/new_vendor_screen.dart';
+import '../../features/vendors/models/vendor.dart';
 import '../../features/purchase_orders/screens/purchase_orders_list_screen.dart';
 import '../../features/purchase_orders/screens/new_purchase_order_screen.dart';
 import '../../features/purchase_orders/models/purchase_order.dart';
 import '../../features/bills/screens/bills_list_screen.dart';
 import '../../features/bills/screens/new_bill_screen.dart';
 import '../../features/bills/models/bill.dart';
+import '../../features/quotations/screens/quotations_list_screen.dart';
+import '../../features/quotations/screens/new_quotation_screen.dart';
+import '../../features/credit_notes/screens/credit_notes_list_screen.dart';
+import '../../features/credit_notes/screens/new_credit_note_screen.dart';
+import '../../features/proforma_invoices/screens/proforma_invoices_list_screen.dart';
+import '../../features/proforma_invoices/screens/new_proforma_invoice_screen.dart';
 
 class AppRouter {
   static final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -273,29 +280,56 @@ class AppRouter {
         GoRoute(
           parentNavigatorKey: _rootNavigatorKey,
           path: '/sales/quotations',
-          builder: (context, state) => const PlaceholderScreen(
-            title: 'Quotations',
-            description: 'Create, send, and track price estimates and quotation proposals for prospective clients.',
-            icon: Icons.request_quote_rounded,
-          ),
+          builder: (context, state) => const QuotationsListScreen(),
+        ),
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
+          path: '/sales/quotations/create',
+          builder: (context, state) => const NewQuotationScreen(isEditing: false),
+        ),
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
+          path: '/sales/quotations/edit/:id',
+          builder: (context, state) {
+            final id = state.pathParameters['id'];
+            return NewQuotationScreen(isEditing: true, quotationId: id);
+          },
         ),
         GoRoute(
           parentNavigatorKey: _rootNavigatorKey,
           path: '/sales/credit-notes',
-          builder: (context, state) => const PlaceholderScreen(
-            title: 'Credit Notes',
-            description: 'Issue credit notes for sales returns, invoice discounts, or customer adjustments.',
-            icon: Icons.assignment_return_rounded,
-          ),
+          builder: (context, state) => const CreditNotesListScreen(),
+        ),
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
+          path: '/sales/credit-notes/create',
+          builder: (context, state) => const NewCreditNoteScreen(isEditing: false),
+        ),
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
+          path: '/sales/credit-notes/edit/:id',
+          builder: (context, state) {
+            final id = state.pathParameters['id'];
+            return NewCreditNoteScreen(isEditing: true, creditNoteId: id);
+          },
         ),
         GoRoute(
           parentNavigatorKey: _rootNavigatorKey,
           path: '/sales/proforma-invoices',
-          builder: (context, state) => const PlaceholderScreen(
-            title: 'Proforma Invoices',
-            description: 'Draft and send preliminary invoices to clients prior to delivery or work commencement.',
-            icon: Icons.description_rounded,
-          ),
+          builder: (context, state) => const ProformaInvoicesListScreen(),
+        ),
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
+          path: '/sales/proforma-invoices/create',
+          builder: (context, state) => const NewProformaInvoiceScreen(isEditing: false),
+        ),
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
+          path: '/sales/proforma-invoices/edit/:id',
+          builder: (context, state) {
+            final id = state.pathParameters['id'];
+            return NewProformaInvoiceScreen(isEditing: true, proformaId: id);
+          },
         ),
         GoRoute(
           parentNavigatorKey: _rootNavigatorKey,
@@ -317,6 +351,14 @@ class AppRouter {
           builder: (context, state) {
             final initialName = state.extra as String?;
             return NewVendorScreen(initialName: initialName);
+          },
+        ),
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
+          path: '/purchases/vendors/edit',
+          builder: (context, state) {
+            final vendor = state.extra as Vendor?;
+            return NewVendorScreen(vendorToEdit: vendor);
           },
         ),
         GoRoute(

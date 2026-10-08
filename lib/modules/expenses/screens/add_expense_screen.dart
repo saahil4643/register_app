@@ -1364,7 +1364,17 @@ class _DynamicCustomerSearchFieldState extends State<_DynamicCustomerSearchField
         final List<dynamic> list = data is List
             ? data
             : (data is Map && data['results'] is List ? data['results'] as List<dynamic> : []);
-        results = list.map((json) => Customer.fromJson(json as Map<String, dynamic>)).toList();
+        final q = query.trim().toLowerCase();
+        results = list
+            .map((json) => Customer.fromJson(json as Map<String, dynamic>))
+            .where((c) {
+              return c.name.toLowerCase().contains(q) ||
+                  c.companyName.toLowerCase().contains(q) ||
+                  c.primaryPhone.toLowerCase().contains(q) ||
+                  c.email.toLowerCase().contains(q) ||
+                  c.gstNumber.toLowerCase().contains(q);
+            })
+            .toList();
       }
     } catch (_) {}
 

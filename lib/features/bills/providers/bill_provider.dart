@@ -56,21 +56,32 @@ class BillProvider extends ChangeNotifier {
   }
 
   Future<void> fetchBills({bool refresh = false}) async {
-    if (_isLoading) return;
+    if (_isLoading && !refresh) return;
     _isLoading = true;
     _errorMessage = null;
     notifyListeners();
 
     try {
       final response = await ApiService().get('/api/v1/bills');
-      if (response['success'] == true && response['data'] != null) {
-        final rawData = response['data'];
+      if (response['statusCode'] != null && response['statusCode'] >= 400) {
+        _errorMessage = response['message']?.toString();
+      } else {
         List<dynamic> list = [];
+        final rawData = response['results'] ?? response['data'] ?? response['content'];
         if (rawData is List) {
           list = rawData;
-        } else if (rawData is Map && rawData['results'] is List) {
-          list = rawData['results'] as List<dynamic>;
+        } else if (rawData is Map) {
+          if (rawData['results'] is List) {
+            list = rawData['results'] as List<dynamic>;
+          } else if (rawData['content'] is List) {
+            list = rawData['content'] as List<dynamic>;
+          } else if (rawData['items'] is List) {
+            list = rawData['items'] as List<dynamic>;
+          }
+        } else if (response['results'] is List) {
+          list = response['results'] as List<dynamic>;
         }
+
         _bills.clear();
         for (final item in list) {
           if (item is Map<String, dynamic>) {
@@ -78,15 +89,9 @@ class BillProvider extends ChangeNotifier {
           }
         }
       }
-    } catch (_) {
-      // Populated with fallback mock data if API is not yet available
-      if (_bills.isEmpty) {
-        _populateDefaultBills();
-      }
+    } catch (e) {
+      _errorMessage = e.toString();
     } finally {
-      if (_bills.isEmpty) {
-        _populateDefaultBills();
-      }
       _isLoading = false;
       notifyListeners();
     }
@@ -106,6 +111,8 @@ class BillProvider extends ChangeNotifier {
       Bill created;
       if (response['success'] == true && response['data'] != null) {
         created = Bill.fromJson(response['data'] as Map<String, dynamic>);
+      } else if (response.containsKey('id')) {
+        created = Bill.fromJson(response);
       } else {
         created = bill.copyWith(
           id: bill.id.isEmpty
@@ -173,90 +180,5 @@ class BillProvider extends ChangeNotifier {
         await ApiService().patch('/api/v1/bills/$id/status', {'status': status});
       } catch (_) {}
     }
-  }
-
-  void _populateDefaultBills() {
-    if (_bills.isNotEmpty) return;
-    _bills.addAll([
-      Bill(
-        id: 'bill_001',
-        billNumber: 'BILL-001',
-        vendorId: 'v_1',
-        vendorName: 'Apex Logistics',
-        category: 'Logistics & Freight',
-        billDate: DateTime.now().subtract(const Duration(days: 6)),
-        dueDate: DateTime.now().add(const Duration(days: 24)),
-        referenceNumber: 'INV-APEX-9012',
-        items: [
-          BillItem(
-            id: 'item_b1',
-            name: 'Fleet Transport & Warehousing Charges',
-            hsnCode: '996511',
-            quantity: 1,
-            unit: 'Nos',
-            rate: 28000.0,
-            gstRate: 18.0,
-            discount: 0.0,
-            discountType: 'amount',
-          ),
-          BillItem(
-            id: 'item_b2',
-            name: 'Transit Cargo Insurance Fee',
-            hsnCode: '997133',
-            quantity: 1,
-            unit: 'Nos',
-            rate: 2500.0,
-            gstRate: 18.0,
-            discount: 250.0,
-            discountType: 'amount',
-          ),
-        ],
-        subtotal: 30500.0,
-        totalDiscount: 250.0,
-        totalTax: 5445.0,
-        totalAmount: 35695.0,
-        paidAmount: 0.0,
-        paymentMode: 'Bank Transfer',
-        status: 'Pending',
-        notes: 'Monthly billing for north-zone regional transit.',
-        internalNote: 'Checked with warehouse gate entry logs.',
-        termsAndConditions: '1. Bill is payable within the agreed credit period.\n2. Late payments will attract interest as per agreed terms.\n3. Discrepancies must be reported within 7 days of receipt.\n4. All disputes are subject to PUNE jurisdiction only.',
-        createdAt: DateTime.now().subtract(const Duration(days: 6)),
-      ),
-      Bill(
-        id: 'bill_002',
-        billNumber: 'BILL-002',
-        vendorId: 'v_2',
-        vendorName: 'CloudScale Tech',
-        category: 'IT & Software',
-        billDate: DateTime.now().subtract(const Duration(days: 2)),
-        dueDate: DateTime.now().add(const Duration(days: 28)),
-        referenceNumber: 'TAX-CS-3841',
-        items: [
-          BillItem(
-            id: 'item_b3',
-            name: 'API Infrastructure & Database Cluster',
-            hsnCode: '998315',
-            quantity: 1,
-            unit: 'Nos',
-            rate: 15000.0,
-            gstRate: 18.0,
-            discount: 5.0,
-            discountType: 'percentage',
-          ),
-        ],
-        subtotal: 15000.0,
-        totalDiscount: 750.0,
-        totalTax: 2565.0,
-        totalAmount: 16815.0,
-        paidAmount: 16815.0,
-        paymentMode: 'Bank Transfer',
-        status: 'Paid',
-        notes: 'Paid via automated bank transfer settlement.',
-        internalNote: 'Quarterly subscription invoice.',
-        termsAndConditions: '1. Bill is payable within the agreed credit period.\n2. Late payments will attract interest as per agreed terms.\n3. Discrepancies must be reported within 7 days of receipt.\n4. All disputes are subject to PUNE jurisdiction only.',
-        createdAt: DateTime.now().subtract(const Duration(days: 2)),
-      ),
-    ]);
   }
 }

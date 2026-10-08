@@ -243,7 +243,10 @@ class _ProductSearchFieldState extends State<ProductSearchField> {
 
   void _showQuickAddProductDialog(String initialName) {
     final productProvider = context.read<ProductProvider>();
-    final invoiceProvider = context.read<InvoiceProvider>();
+    InvoiceProvider? invoiceProvider;
+    try {
+      invoiceProvider = context.read<InvoiceProvider>();
+    } catch (_) {}
     final messenger = ScaffoldMessenger.of(context);
 
     _hideOverlay();
@@ -345,7 +348,8 @@ class _ProductSearchFieldState extends State<ProductSearchField> {
 
                           if (dialogCtx.mounted) {
                             if (newProduct != null) {
-                              invoiceProvider.addProduct(newProduct);
+                              widget.onSelected(newProduct);
+                              invoiceProvider?.addProduct(newProduct);
                               Navigator.pop(dialogCtx); // Close Dialog
                               messenger.showSnackBar(
                                 SnackBar(

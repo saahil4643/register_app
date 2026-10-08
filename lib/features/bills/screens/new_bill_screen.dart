@@ -7,6 +7,9 @@ import '../../vendors/providers/vendor_provider.dart';
 import '../../vendors/screens/new_vendor_screen.dart';
 import '../models/bill.dart';
 import '../providers/bill_provider.dart';
+import '../../invoices/widgets/product_autocomplete.dart';
+import '../../products/models/product.dart';
+import '../../products/providers/product_provider.dart';
 
 class NewBillScreen extends StatefulWidget {
   final Bill? initialBill;
@@ -34,6 +37,7 @@ class _NewBillScreenState extends State<NewBillScreen> {
   // Bill Details
   late final TextEditingController _billNumberController;
   DateTime _billDate = DateTime.now();
+  DateTime _dueDate = DateTime.now().add(const Duration(days: 30));
   late final TextEditingController _referenceController;
 
   // Items
@@ -113,7 +117,12 @@ class _NewBillScreenState extends State<NewBillScreen> {
       text: initial?.billNumber ?? billProvider.getNextBillNumber(),
     );
     _billDate = initial?.billDate ?? DateTime.now();
-    _referenceController = TextEditingController(text: initial?.referenceNumber ?? '');
+    _dueDate = initial?.dueDate ?? _billDate.add(const Duration(days: 30));
+    _referenceController = TextEditingController(
+      text: initial?.referenceNumber.isNotEmpty == true
+          ? initial!.referenceNumber
+          : (initial?.originalPoId ?? ''),
+    );
 
     _notesController = TextEditingController(text: initial?.notes ?? '');
     _internalNoteController = TextEditingController(text: initial?.internalNote ?? '');
@@ -136,14 +145,12 @@ class _NewBillScreenState extends State<NewBillScreen> {
       for (final item in initial.items) {
         _items.add(_BillItemFormEntry.fromModel(item, onChanged: () => setState(() {})));
       }
-    } else {
-      // Default 1 empty item
-      _items.add(_BillItemFormEntry(onChanged: () => setState(() {})));
     }
 
-    // Ensure vendors are loaded for selection
+    // Ensure vendors and products are loaded for selection
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<VendorProvider>().fetchVendors();
+      context.read<ProductProvider>().fetchProducts();
     });
   }
 
@@ -194,16 +201,250 @@ class _NewBillScreenState extends State<NewBillScreen> {
   }
 
   void _removeItem(int index) {
-    if (_items.length <= 1) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('At least one item is required in the bill.')),
-      );
-      return;
-    }
     setState(() {
       final removed = _items.removeAt(index);
       removed.dispose();
     });
+  }
+
+  void _addProductItem(Product product) {
+    setState(() {
+      final double defaultRate = product.purchasePrice > 0 ? product.purchasePrice : product.sellingPrice;
+      String unitVal = 'Nos';
+      for (final u in _units) {
+        if (u.toLowerCase() == product.unitAbbreviation.toLowerCase() ||
+            u.toLowerCase() == product.unitOfMeasurement.toLowerCase()) {
+          unitVal = u;
+          break;
+        }
+      }
+      double gstVal = _gstRates.firstWhere(
+        (g) => (g - product.gst).abs() < 0.1,
+        orElse: () => 18.0,
+      );
+
+      final newEntry = _BillItemFormEntry(
+        name: product.name,
+        hsn: product.hsnSacCode,
+        qty: 1.0,
+        unit: unitVal,
+        rate: defaultRate,
+        gstRate: gstVal,
+        onChanged: () => setState(() {}),
+      );
+      _items.add(newEntry);
+    });
+  }
+
+  void _populateProductAtIndex(int index, Product product) {
+    setState(() {
+      final double defaultRate = product.purchasePrice > 0 ? product.purchasePrice : product.sellingPrice;
+      String unitVal = 'Nos';
+      for (final u in _units) {
+        if (u.toLowerCase() == product.unitAbbreviation.toLowerCase() ||
+            u.toLowerCase() == product.unitOfMeasurement.toLowerCase()) {
+          unitVal = u;
+          break;
+        }
+      }
+      double gstVal = _gstRates.firstWhere(
+        (g) => (g - product.gst).abs() < 0.1,
+        orElse: () => 18.0,
+      );
+
+      final entry = _items[index];
+      entry.nameController.text = product.name;
+      entry.hsnController.text = product.hsnSacCode;
+      entry.rateController.text = defaultRate > 0
+          ? (defaultRate == defaultRate.roundToDouble() ? defaultRate.toInt().toString() : defaultRate.toString())
+          : '0';
+      entry.unit = unitVal;
+      entry.gstRate = gstVal;
+    });
+  }
+
+  void _openCatalogPicker({int? targetItemIndex}) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: theme.scaffoldBackgroundColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        String searchQuery = '';
+        String selectedCategory = 'All';
+        final searchController = TextEditingController();
+
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            final productProvider = context.watch<ProductProvider>();
+            final currencyFormat = NumberFormat.currency(locale: 'en_IN', symbol: '₹');
+
+            final filteredProducts = productProvider.products.where((p) {
+              final matchesCategory = selectedCategory == 'All' || p.category == selectedCategory;
+              final q = searchQuery.toLowerCase().trim();
+              final matchesQuery = q.isEmpty ||
+                  p.name.toLowerCase().contains(q) ||
+                  p.sku.toLowerCase().contains(q) ||
+                  p.hsnSacCode.toLowerCase().contains(q);
+              return matchesCategory && matchesQuery;
+            }).toList();
+
+            final categories = [
+              'All',
+              ...productProvider.products
+                  .map((p) => p.category)
+                  .where((c) => c.isNotEmpty)
+                  .toSet()
+            ];
+
+            return SafeArea(
+              child: DraggableScrollableSheet(
+                expand: false,
+                initialChildSize: 0.75,
+                minChildSize: 0.4,
+                maxChildSize: 0.95,
+                builder: (_, scrollController) {
+                  return Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              targetItemIndex != null
+                                  ? 'Select Item for Line #${targetItemIndex + 1}'
+                                  : 'Select Item from Catalog',
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 17,
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.close_rounded),
+                              onPressed: () => Navigator.pop(context),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+                        child: TextField(
+                          controller: searchController,
+                          decoration: InputDecoration(
+                            hintText: 'Search by item name, SKU, or HSN...',
+                            prefixIcon: const Icon(Icons.search_rounded),
+                            isDense: true,
+                            suffixIcon: searchQuery.isNotEmpty
+                                ? IconButton(
+                                    icon: const Icon(Icons.clear_rounded, size: 18),
+                                    onPressed: () {
+                                      searchController.clear();
+                                      setModalState(() => searchQuery = '');
+                                    },
+                                  )
+                                : null,
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                          ),
+                          onChanged: (val) {
+                            setModalState(() => searchQuery = val);
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      if (categories.length > 1)
+                        SizedBox(
+                          height: 38,
+                          child: ListView.separated(
+                            scrollDirection: Axis.horizontal,
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            itemCount: categories.length,
+                            separatorBuilder: (_, _) => const SizedBox(width: 8),
+                            itemBuilder: (_, idx) {
+                              final cat = categories[idx];
+                              final isSelected = cat == selectedCategory;
+                              return ChoiceChip(
+                                label: Text(cat, style: TextStyle(fontSize: 12, fontWeight: isSelected ? FontWeight.bold : FontWeight.normal)),
+                                selected: isSelected,
+                                onSelected: (_) {
+                                  setModalState(() => selectedCategory = cat);
+                                },
+                              );
+                            },
+                          ),
+                        ),
+                      const SizedBox(height: 8),
+                      const Divider(height: 1),
+                      Expanded(
+                        child: productProvider.isLoading && productProvider.products.isEmpty
+                            ? const Center(child: CircularProgressIndicator())
+                            : filteredProducts.isEmpty
+                                ? Center(
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Icon(Icons.inventory_2_outlined, size: 48, color: Colors.grey.withValues(alpha: 0.5)),
+                                        const SizedBox(height: 12),
+                                        Text(
+                                          searchQuery.isEmpty ? 'No products available' : 'No products matching "$searchQuery"',
+                                          style: const TextStyle(color: Colors.grey, fontSize: 14),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                : ListView.separated(
+                                    controller: scrollController,
+                                    itemCount: filteredProducts.length,
+                                    separatorBuilder: (_, _) => const Divider(height: 1),
+                                    itemBuilder: (_, idx) {
+                                      final product = filteredProducts[idx];
+                                      final double displayPrice = product.purchasePrice > 0 ? product.purchasePrice : product.sellingPrice;
+                                      return ListTile(
+                                        title: Text(product.name, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
+                                        subtitle: Text(
+                                          'SKU: ${product.sku.isNotEmpty ? product.sku : 'N/A'}${product.hsnSacCode.isNotEmpty ? ' • HSN: ${product.hsnSacCode}' : ''} • Stock: ${product.stock} ${product.unitAbbreviation}',
+                                          style: TextStyle(fontSize: 12, color: isDark ? Colors.white60 : Colors.black54),
+                                        ),
+                                        trailing: Column(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          crossAxisAlignment: CrossAxisAlignment.end,
+                                          children: [
+                                            Text(
+                                              currencyFormat.format(displayPrice),
+                                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: theme.colorScheme.primary),
+                                            ),
+                                            Text(
+                                              'GST: ${product.gst.toInt()}%',
+                                              style: const TextStyle(fontSize: 11, color: Colors.grey),
+                                            ),
+                                          ],
+                                        ),
+                                        onTap: () {
+                                          Navigator.pop(context);
+                                          if (targetItemIndex != null && targetItemIndex < _items.length) {
+                                            _populateProductAtIndex(targetItemIndex, product);
+                                          } else {
+                                            _addProductItem(product);
+                                          }
+                                        },
+                                      );
+                                    },
+                                  ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   Future<void> _pickDate() async {
@@ -220,7 +461,30 @@ class _NewBillScreenState extends State<NewBillScreen> {
       },
     );
     if (picked != null) {
-      setState(() => _billDate = picked);
+      setState(() {
+        _billDate = picked;
+        if (_dueDate.isBefore(picked)) {
+          _dueDate = picked.add(const Duration(days: 30));
+        }
+      });
+    }
+  }
+
+  Future<void> _pickDueDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _dueDate.isBefore(_billDate) ? _billDate : _dueDate,
+      firstDate: _billDate,
+      lastDate: DateTime(2035),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null) {
+      setState(() => _dueDate = picked);
     }
   }
 
@@ -412,6 +676,16 @@ class _NewBillScreenState extends State<NewBillScreen> {
       return;
     }
 
+    if (_items.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please add at least one item to the bill.'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
+
     // Validate item names
     for (int i = 0; i < _items.length; i++) {
       if (_items[i].nameController.text.trim().isEmpty) {
@@ -430,10 +704,14 @@ class _NewBillScreenState extends State<NewBillScreen> {
     final bill = Bill(
       id: widget.initialBill?.id ?? '',
       billNumber: _billNumberController.text.trim(),
+      originalPoId: _referenceController.text.trim().isNotEmpty
+          ? _referenceController.text.trim()
+          : widget.initialBill?.originalPoId,
       vendorId: _selectedVendorId ?? '',
       vendorName: _selectedVendorName.trim(),
       category: _selectedCategory,
       billDate: _billDate,
+      dueDate: _dueDate,
       referenceNumber: _referenceController.text.trim(),
       items: parsedItems,
       notes: _notesController.text.trim(),
@@ -848,6 +1126,7 @@ class _NewBillScreenState extends State<NewBillScreen> {
     bool isDark,
   ) {
     final dateDisplay = DateFormat('dd-MM-yyyy').format(_billDate);
+    final dueDateDisplay = DateFormat('dd-MM-yyyy').format(_dueDate);
 
     return Container(
       decoration: BoxDecoration(
@@ -922,45 +1201,92 @@ class _NewBillScreenState extends State<NewBillScreen> {
 
           const SizedBox(height: 14),
 
-          // BILL DATE *
+          // BILL DATE & DUE DATE
           Row(
             children: [
-              const Text(
-                'BILL DATE',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0.5,
-                  color: Color(0xFF64748B),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        const Text(
+                          'BILL DATE',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 0.5,
+                            color: Color(0xFF64748B),
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        Text('*', style: TextStyle(color: requiredRed, fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    InkWell(
+                      onTap: _pickDate,
+                      child: InputDecorator(
+                        decoration: InputDecoration(
+                          isDense: true,
+                          contentPadding: const EdgeInsets.only(bottom: 6, top: 4),
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: underlineColor, width: 1.2),
+                          ),
+                          suffixIcon: const Icon(Icons.calendar_today_rounded, size: 18, color: Color(0xFF64748B)),
+                        ),
+                        child: Text(
+                          dateDisplay,
+                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(width: 4),
-              Text('*', style: TextStyle(color: requiredRed, fontWeight: FontWeight.bold)),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'DUE DATE',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 0.5,
+                        color: Color(0xFF64748B),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    InkWell(
+                      onTap: _pickDueDate,
+                      child: InputDecorator(
+                        decoration: InputDecoration(
+                          isDense: true,
+                          contentPadding: const EdgeInsets.only(bottom: 6, top: 4),
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: underlineColor, width: 1.2),
+                          ),
+                          suffixIcon: const Icon(Icons.event_available_rounded, size: 18, color: Color(0xFF64748B)),
+                        ),
+                        child: Text(
+                          dueDateDisplay,
+                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
-          ),
-          InkWell(
-            onTap: _pickDate,
-            child: InputDecorator(
-              decoration: InputDecoration(
-                isDense: true,
-                contentPadding: const EdgeInsets.only(bottom: 6, top: 4),
-                enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: underlineColor, width: 1.2),
-                ),
-                suffixIcon: const Icon(Icons.calendar_today_rounded, size: 18, color: Color(0xFF64748B)),
-              ),
-              child: Text(
-                dateDisplay,
-                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-              ),
-            ),
           ),
 
           const SizedBox(height: 14),
 
-          // REFERENCE #
+          // PO / REFERENCE #
           const Text(
-            'REFERENCE #',
+            'PO / REFERENCE #',
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,
@@ -971,7 +1297,7 @@ class _NewBillScreenState extends State<NewBillScreen> {
           TextField(
             controller: _referenceController,
             decoration: InputDecoration(
-              hintText: 'Reference or bill number',
+              hintText: 'e.g. PO-001 or supplier invoice ref',
               hintStyle: TextStyle(
                 fontSize: 13,
                 color: isDark ? Colors.white38 : const Color(0xFF94A3B8),
@@ -1036,58 +1362,124 @@ class _NewBillScreenState extends State<NewBillScreen> {
                   ),
                 ],
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: isDark ? Colors.white10 : const Color(0xFFF1F5F9),
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: cardBorder),
-                ),
-                child: Text(
-                  'Total Items: ${_items.length}',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF64748B),
+              Row(
+                children: [
+                  TextButton.icon(
+                    onPressed: () => _openCatalogPicker(),
+                    icon: const Icon(Icons.apps_rounded, size: 16, color: Color(0xFF2563EB)),
+                    label: const Text('Browse Catalog', style: TextStyle(color: Color(0xFF2563EB), fontSize: 12, fontWeight: FontWeight.bold)),
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      minimumSize: Size.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
                   ),
-                ),
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: isDark ? Colors.white10 : const Color(0xFFF1F5F9),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: cardBorder),
+                    ),
+                    child: Text(
+                      'Total Items: ${_items.length}',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF64748B),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
 
-          // Items List
-          ListView.separated(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: _items.length,
-            separatorBuilder: (_, _) => const SizedBox(height: 14),
-            itemBuilder: (context, index) {
-              return _buildItemRow(
-                index,
-                _items[index],
-                cardBorder,
-                underlineColor,
-                labelBlue,
-                isDark,
-              );
-            },
+          // Items search from catalog (matching Invoices)
+          ProductSearchField(
+            onSelected: (product) => _addProductItem(product),
           ),
-
           const SizedBox(height: 16),
 
-          // Add Item Button
-          OutlinedButton.icon(
-            onPressed: _addItem,
-            icon: const Icon(Icons.add_rounded, size: 18),
-            label: const Text('+ Add Item'),
-            style: OutlinedButton.styleFrom(
-              foregroundColor: labelBlue,
-              side: BorderSide(color: labelBlue.withValues(alpha: 0.5)),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          // Items List & Actions
+          if (_items.isNotEmpty) ...[
+            ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: _items.length,
+              separatorBuilder: (_, _) => const SizedBox(height: 14),
+              itemBuilder: (context, index) {
+                return _buildItemRow(
+                  index,
+                  _items[index],
+                  cardBorder,
+                  underlineColor,
+                  labelBlue,
+                  isDark,
+                );
+              },
             ),
-          ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: _addItem,
+                icon: const Icon(Icons.add_circle_outline_rounded, size: 20),
+                label: const Text('Add Another Item', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: labelBlue,
+                  side: BorderSide(color: labelBlue.withValues(alpha: 0.4), width: 1.2),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  backgroundColor: isDark ? labelBlue.withValues(alpha: 0.08) : const Color(0xFFEFF6FF),
+                ),
+              ),
+            ),
+          ] else ...[
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+              decoration: BoxDecoration(
+                color: isDark ? Colors.white.withValues(alpha: 0.02) : const Color(0xFFF8FAFC),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: isDark ? Colors.white12 : const Color(0xFFE2E8F0),
+                ),
+              ),
+              child: Column(
+                children: [
+                  Icon(Icons.inventory_2_outlined, size: 36, color: labelBlue.withValues(alpha: 0.4)),
+                  const SizedBox(height: 10),
+                  Text(
+                    'No items added yet',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: isDark ? Colors.white70 : const Color(0xFF475569),
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Search for a product above or browse the catalog to add items',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: isDark ? Colors.white38 : const Color(0xFF94A3B8),
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 12),
+                  TextButton.icon(
+                    onPressed: _addItem,
+                    icon: const Icon(Icons.add_rounded, size: 18),
+                    label: const Text('Add Custom Item Manually', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+                    style: TextButton.styleFrom(foregroundColor: labelBlue),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -1101,266 +1493,547 @@ class _NewBillScreenState extends State<NewBillScreen> {
     Color labelBlue,
     bool isDark,
   ) {
-    return Container(
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: cardBorder),
-      ),
-      padding: const EdgeInsets.all(12.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
+    final inputBg = isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC);
+    final fieldBorder = isDark ? Colors.white12 : const Color(0xFFCBD5E1);
+
+    InputDecoration buildInputDecoration({
+      String? hintText,
+      Widget? prefixIcon,
+      Widget? suffixIcon,
+      EdgeInsetsGeometry? contentPadding,
+    }) {
+      return InputDecoration(
+        hintText: hintText,
+        hintStyle: TextStyle(
+          fontSize: 13,
+          color: isDark ? Colors.white38 : const Color(0xFF94A3B8),
+        ),
+        isDense: true,
+        filled: true,
+        fillColor: inputBg,
+        prefixIcon: prefixIcon,
+        suffixIcon: suffixIcon,
+        contentPadding: contentPadding ?? const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: fieldBorder),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: fieldBorder),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(8),
+          borderSide: BorderSide(color: labelBlue, width: 1.5),
+        ),
+      );
+    }
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final isCompact = constraints.maxWidth < 600;
+
+        return Container(
+          decoration: BoxDecoration(
+            color: isDark ? const Color(0xFF131D31) : Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: cardBorder, width: 1.2),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.03),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          padding: const EdgeInsets.all(14.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              CircleAvatar(
-                radius: 11,
-                backgroundColor: labelBlue.withValues(alpha: 0.15),
-                child: Text(
-                  '${index + 1}',
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                    color: labelBlue,
+              // Top Row: Index Badge, Item Title, Amount Pill & Delete Button
+              Row(
+                children: [
+                  Container(
+                    width: 24,
+                    height: 24,
+                    decoration: BoxDecoration(
+                      color: labelBlue.withValues(alpha: 0.12),
+                      shape: BoxShape.circle,
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      '${index + 1}',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: labelBlue,
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  'Item #${index + 1}',
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-                ),
-              ),
-              Text(
-                _currencyFormat.format(item.totalAmount),
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                  color: Color(0xFF059669),
-                ),
-              ),
-              const SizedBox(width: 8),
-              IconButton(
-                icon: const Icon(Icons.delete_outline_rounded, color: Color(0xFFEF4444), size: 20),
-                tooltip: 'Remove Item',
-                onPressed: () => _removeItem(index),
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-
-          // ITEM DETAILS & HSN
-          Row(
-            children: [
-              Expanded(
-                flex: 6,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'ITEM DETAILS *',
-                      style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Color(0xFF64748B)),
-                    ),
-                    TextField(
-                      controller: item.nameController,
-                      decoration: InputDecoration(
-                        hintText: 'Item name / description',
-                        hintStyle: TextStyle(fontSize: 12, color: isDark ? Colors.white38 : const Color(0xFF94A3B8)),
-                        isDense: true,
-                        contentPadding: const EdgeInsets.only(bottom: 6, top: 4),
-                        enabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: underlineColor),
-                        ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Item #${index + 1}',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                        color: isDark ? Colors.white : const Color(0xFF0F172A),
                       ),
                     ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                flex: 4,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'HSN/SAC',
-                      style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Color(0xFF64748B)),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF10B981).withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(6),
                     ),
-                    TextField(
-                      controller: item.hsnController,
-                      decoration: InputDecoration(
-                        hintText: 'HSN code',
-                        hintStyle: TextStyle(fontSize: 12, color: isDark ? Colors.white38 : const Color(0xFF94A3B8)),
-                        isDense: true,
-                        contentPadding: const EdgeInsets.only(bottom: 6, top: 4),
-                        enabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: underlineColor),
-                        ),
+                    child: Text(
+                      _currencyFormat.format(item.totalAmount),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 13,
+                        color: Color(0xFF059669),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(width: 6),
+                  IconButton(
+                    icon: const Icon(Icons.delete_outline_rounded, color: Color(0xFFEF4444), size: 20),
+                    tooltip: 'Remove Item',
+                    onPressed: () => _removeItem(index),
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                ],
               ),
-            ],
-          ),
+              const SizedBox(height: 14),
 
-          const SizedBox(height: 12),
-
-          // QTY, UNIT, RATE, GST, DISCOUNT
-          Wrap(
-            spacing: 12,
-            runSpacing: 10,
-            children: [
-              // QTY
-              SizedBox(
-                width: 75,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('QTY', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Color(0xFF64748B))),
-                    TextField(
-                      controller: item.qtyController,
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      decoration: InputDecoration(
-                        isDense: true,
-                        contentPadding: const EdgeInsets.only(bottom: 6, top: 4),
-                        enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: underlineColor)),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // UNIT (with DropdownButtonHideUnderline and isExpanded: true to prevent RenderFlex overflow)
-              SizedBox(
-                width: 85,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('UNIT', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Color(0xFF64748B))),
-                    DropdownButtonHideUnderline(
-                      child: DropdownButton<String>(
-                        value: item.unit,
-                        isDense: true,
-                        isExpanded: true,
-                        icon: const Icon(Icons.arrow_drop_down, size: 18, color: Color(0xFF64748B)),
-                        items: _units.map((u) {
-                          return DropdownMenuItem(
-                            value: u,
-                            child: Text(u, style: const TextStyle(fontSize: 12)),
-                          );
-                        }).toList(),
-                        onChanged: (val) {
-                          if (val != null) setState(() => item.unit = val);
-                        },
-                      ),
-                    ),
-                    Container(height: 1.2, color: underlineColor),
-                  ],
-                ),
-              ),
-
-              // RATE (₹)
-              SizedBox(
-                width: 100,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('RATE (₹)', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Color(0xFF64748B))),
-                    TextField(
-                      controller: item.rateController,
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      decoration: InputDecoration(
-                        isDense: true,
-                        contentPadding: const EdgeInsets.only(bottom: 6, top: 4),
-                        enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: underlineColor)),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // GST (%) (with DropdownButtonHideUnderline and isExpanded: true to prevent RenderFlex overflow)
-              SizedBox(
-                width: 85,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('GST (%)', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Color(0xFF64748B))),
-                    DropdownButtonHideUnderline(
-                      child: DropdownButton<double>(
-                        value: item.gstRate,
-                        isDense: true,
-                        isExpanded: true,
-                        icon: const Icon(Icons.arrow_drop_down, size: 18, color: Color(0xFF64748B)),
-                        items: _gstRates.map((g) {
-                          return DropdownMenuItem(
-                            value: g,
-                            child: Text('${g.toInt()}%', style: const TextStyle(fontSize: 12)),
-                          );
-                        }).toList(),
-                        onChanged: (val) {
-                          if (val != null) {
-                            setState(() {
-                              item.gstRate = val;
-                            });
-                          }
-                        },
-                      ),
-                    ),
-                    Container(height: 1.2, color: underlineColor),
-                  ],
-                ),
-              ),
-
-              // DISCOUNT
-              SizedBox(
-                width: 110,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              // Row 1: Item Details & HSN/SAC
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    flex: 7,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('DISCOUNT', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: Color(0xFF64748B))),
-                        InkWell(
-                          onTap: () {
-                            setState(() {
-                              item.discountType = item.discountType == 'amount' ? 'percentage' : 'amount';
-                            });
-                          },
-                          child: Text(
-                            item.discountType == 'amount' ? '₹' : '%',
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.bold,
-                              color: labelBlue,
+                        Row(
+                          children: const [
+                            Text(
+                              'ITEM DETAILS',
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0.5,
+                                color: Color(0xFF64748B),
+                              ),
+                            ),
+                            SizedBox(width: 4),
+                            Text('*', style: TextStyle(color: Color(0xFFEF4444), fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        TextField(
+                          controller: item.nameController,
+                          style: const TextStyle(fontSize: 13),
+                          decoration: buildInputDecoration(
+                            hintText: 'Item name or description',
+                            suffixIcon: IconButton(
+                              icon: const Icon(Icons.search_rounded, size: 18, color: Color(0xFF64748B)),
+                              tooltip: 'Pick from product catalog',
+                              onPressed: () => _openCatalogPicker(targetItemIndex: index),
                             ),
                           ),
                         ),
                       ],
                     ),
-                    TextField(
-                      controller: item.discountController,
-                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                      decoration: InputDecoration(
-                        isDense: true,
-                        contentPadding: const EdgeInsets.only(bottom: 6, top: 4),
-                        enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: underlineColor)),
-                        suffixText: item.discountType == 'amount' ? '₹' : '%',
-                        suffixStyle: const TextStyle(fontSize: 11, color: Color(0xFF64748B)),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    flex: 3,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'HSN/SAC',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.5,
+                            color: Color(0xFF64748B),
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        TextField(
+                          controller: item.hsnController,
+                          style: const TextStyle(fontSize: 13),
+                          decoration: buildInputDecoration(
+                            hintText: 'HSN code',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 12),
+
+              // Quantities, Rates, GST & Discount
+              if (isCompact) ...[
+                // Row A: QTY, UNIT, RATE
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'QTY',
+                            style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 0.5, color: Color(0xFF64748B)),
+                          ),
+                          const SizedBox(height: 6),
+                          TextField(
+                            controller: item.qtyController,
+                            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                            style: const TextStyle(fontSize: 13),
+                            decoration: buildInputDecoration(),
+                          ),
+                        ],
                       ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      flex: 3,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'UNIT',
+                            style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 0.5, color: Color(0xFF64748B)),
+                          ),
+                          const SizedBox(height: 6),
+                          DropdownButtonFormField<String>(
+                            initialValue: item.unit,
+                            isDense: true,
+                            decoration: buildInputDecoration(
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                            ),
+                            icon: const Icon(Icons.arrow_drop_down, size: 20, color: Color(0xFF64748B)),
+                            items: _units.map((u) {
+                              return DropdownMenuItem(
+                                value: u,
+                                child: Text(u, style: const TextStyle(fontSize: 13)),
+                              );
+                            }).toList(),
+                            onChanged: (val) {
+                              if (val != null) setState(() => item.unit = val);
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      flex: 4,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'RATE (₹)',
+                            style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 0.5, color: Color(0xFF64748B)),
+                          ),
+                          const SizedBox(height: 6),
+                          TextField(
+                            controller: item.rateController,
+                            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                            style: const TextStyle(fontSize: 13),
+                            decoration: buildInputDecoration(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                // Row B: GST RATE & DISCOUNT
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      flex: 4,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'GST (%)',
+                            style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 0.5, color: Color(0xFF64748B)),
+                          ),
+                          const SizedBox(height: 6),
+                          DropdownButtonFormField<double>(
+                            initialValue: item.gstRate,
+                            isDense: true,
+                            decoration: buildInputDecoration(
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                            ),
+                            icon: const Icon(Icons.arrow_drop_down, size: 20, color: Color(0xFF64748B)),
+                            items: _gstRates.map((g) {
+                              return DropdownMenuItem(
+                                value: g,
+                                child: Text('${g.toInt()}%', style: const TextStyle(fontSize: 13)),
+                              );
+                            }).toList(),
+                            onChanged: (val) {
+                              if (val != null) setState(() => item.gstRate = val);
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      flex: 5,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'DISCOUNT',
+                            style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 0.5, color: Color(0xFF64748B)),
+                          ),
+                          const SizedBox(height: 6),
+                          TextField(
+                            controller: item.discountController,
+                            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                            style: const TextStyle(fontSize: 13),
+                            decoration: buildInputDecoration(
+                              contentPadding: const EdgeInsets.only(left: 12, top: 10, bottom: 10, right: 4),
+                              suffixIcon: Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: InkWell(
+                                  onTap: () {
+                                    setState(() {
+                                      item.discountType = item.discountType == 'amount' ? 'percentage' : 'amount';
+                                    });
+                                  },
+                                  borderRadius: BorderRadius.circular(6),
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: labelBlue.withValues(alpha: 0.12),
+                                      borderRadius: BorderRadius.circular(6),
+                                      border: Border.all(color: labelBlue.withValues(alpha: 0.3)),
+                                    ),
+                                    child: Text(
+                                      item.discountType == 'amount' ? '₹' : '%',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                        color: labelBlue,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ] else ...[
+                // Wide: All 5 in 1 balanced row
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // QTY
+                    Expanded(
+                      flex: 2,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'QTY',
+                            style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 0.5, color: Color(0xFF64748B)),
+                          ),
+                          const SizedBox(height: 6),
+                          TextField(
+                            controller: item.qtyController,
+                            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                            style: const TextStyle(fontSize: 13),
+                            decoration: buildInputDecoration(),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    // UNIT
+                    Expanded(
+                      flex: 2,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'UNIT',
+                            style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 0.5, color: Color(0xFF64748B)),
+                          ),
+                          const SizedBox(height: 6),
+                          DropdownButtonFormField<String>(
+                            initialValue: item.unit,
+                            isDense: true,
+                            decoration: buildInputDecoration(
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                            ),
+                            icon: const Icon(Icons.arrow_drop_down, size: 20, color: Color(0xFF64748B)),
+                            items: _units.map((u) {
+                              return DropdownMenuItem(
+                                value: u,
+                                child: Text(u, style: const TextStyle(fontSize: 13)),
+                              );
+                            }).toList(),
+                            onChanged: (val) {
+                              if (val != null) setState(() => item.unit = val);
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    // RATE
+                    Expanded(
+                      flex: 3,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'RATE (₹)',
+                            style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 0.5, color: Color(0xFF64748B)),
+                          ),
+                          const SizedBox(height: 6),
+                          TextField(
+                            controller: item.rateController,
+                            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                            style: const TextStyle(fontSize: 13),
+                            decoration: buildInputDecoration(),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    // GST
+                    Expanded(
+                      flex: 2,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'GST (%)',
+                            style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 0.5, color: Color(0xFF64748B)),
+                          ),
+                          const SizedBox(height: 6),
+                          DropdownButtonFormField<double>(
+                            initialValue: item.gstRate,
+                            isDense: true,
+                            decoration: buildInputDecoration(
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                            ),
+                            icon: const Icon(Icons.arrow_drop_down, size: 20, color: Color(0xFF64748B)),
+                            items: _gstRates.map((g) {
+                              return DropdownMenuItem(
+                                value: g,
+                                child: Text('${g.toInt()}%', style: const TextStyle(fontSize: 13)),
+                              );
+                            }).toList(),
+                            onChanged: (val) {
+                              if (val != null) setState(() => item.gstRate = val);
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    // DISCOUNT
+                    Expanded(
+                      flex: 3,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'DISCOUNT',
+                            style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 0.5, color: Color(0xFF64748B)),
+                          ),
+                          const SizedBox(height: 6),
+                          TextField(
+                            controller: item.discountController,
+                            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                            style: const TextStyle(fontSize: 13),
+                            decoration: buildInputDecoration(
+                              contentPadding: const EdgeInsets.only(left: 12, top: 10, bottom: 10, right: 4),
+                              suffixIcon: Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: InkWell(
+                                  onTap: () {
+                                    setState(() {
+                                      item.discountType = item.discountType == 'amount' ? 'percentage' : 'amount';
+                                    });
+                                  },
+                                  borderRadius: BorderRadius.circular(6),
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: labelBlue.withValues(alpha: 0.12),
+                                      borderRadius: BorderRadius.circular(6),
+                                      border: Border.all(color: labelBlue.withValues(alpha: 0.3)),
+                                    ),
+                                    child: Text(
+                                      item.discountType == 'amount' ? '₹' : '%',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                        color: labelBlue,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+
+              const SizedBox(height: 12),
+
+              // Bottom Calculation Breakdown
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: isDark ? Colors.white.withValues(alpha: 0.04) : const Color(0xFFF1F5F9),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Base: ${_currencyFormat.format(item.baseAmount)}${item.discountAmount > 0 ? ' • Disc: -${_currencyFormat.format(item.discountAmount)}' : ''} • Tax: +${_currencyFormat.format(item.taxAmount)}',
+                      style: TextStyle(fontSize: 11, color: isDark ? Colors.white60 : const Color(0xFF64748B)),
+                    ),
+                    Text(
+                      'Total: ${_currencyFormat.format(item.totalAmount)}',
+                      style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF059669)),
                     ),
                   ],
                 ),
               ),
             ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 

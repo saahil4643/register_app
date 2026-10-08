@@ -658,20 +658,17 @@ class InvoiceDetailScreen extends StatelessWidget {
         top: false,
         child: Row(
           children: [
-            // The API permits edits only while the invoice is a draft.
-            if (invoice.status == InvoiceStatus.draft) ...[
-              Expanded(
-                child: OutlinedButton.icon(
-                  onPressed: () {
-                    provider.startEditingInvoice(invoice);
-                    context.push('/invoices/edit');
-                  },
-                  icon: const Icon(Icons.edit_rounded, size: 16),
-                  label: const Text('Edit'),
-                ),
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: () {
+                  provider.startEditingInvoice(invoice);
+                  context.push('/invoices/edit');
+                },
+                icon: const Icon(Icons.edit_rounded, size: 16),
+                label: const Text('Edit'),
               ),
-              const SizedBox(width: 8),
-            ],
+            ),
+            const SizedBox(width: 8),
 
             // Dynamic Action Button (Mark Sent / Mark Paid)
             if (showMarkSent)

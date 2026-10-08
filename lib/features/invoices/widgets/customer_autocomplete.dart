@@ -15,12 +15,22 @@ class CustomerSearchField extends StatefulWidget {
   final ValueChanged<Customer?> onSelected;
   final Customer? initialSelected;
   final ValueChanged<String> onCreateNewTap;
+  final TextEditingController? controller;
+  final String? labelText;
+  final String? hintText;
+  final InputDecoration? decoration;
+  final ValueChanged<String>? onChanged;
 
   const CustomerSearchField({
     super.key,
     required this.onSelected,
     required this.initialSelected,
     required this.onCreateNewTap,
+    this.controller,
+    this.labelText,
+    this.hintText,
+    this.decoration,
+    this.onChanged,
   });
 
   @override
@@ -28,7 +38,8 @@ class CustomerSearchField extends StatefulWidget {
 }
 
 class _CustomerSearchFieldState extends State<CustomerSearchField> {
-  final TextEditingController _controller = TextEditingController();
+  late TextEditingController _controller;
+  bool _isInternalController = false;
   final FocusNode _focusNode = FocusNode();
   final LayerLink _layerLink = LayerLink();
   OverlayEntry? _overlayEntry;
@@ -44,6 +55,12 @@ class _CustomerSearchFieldState extends State<CustomerSearchField> {
   @override
   void initState() {
     super.initState();
+    if (widget.controller != null) {
+      _controller = widget.controller!;
+    } else {
+      _controller = TextEditingController();
+      _isInternalController = true;
+    }
     _focusNode.addListener(_onFocusChange);
     if (widget.initialSelected != null) {
       _controller.text = widget.initialSelected!.name;
@@ -53,10 +70,22 @@ class _CustomerSearchFieldState extends State<CustomerSearchField> {
   @override
   void didUpdateWidget(covariant CustomerSearchField oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (widget.controller != oldWidget.controller) {
+      if (oldWidget.controller == null && _isInternalController) {
+        _controller.dispose();
+      }
+      if (widget.controller != null) {
+        _controller = widget.controller!;
+        _isInternalController = false;
+      } else {
+        _controller = TextEditingController();
+        _isInternalController = true;
+      }
+    }
     if (widget.initialSelected != oldWidget.initialSelected) {
       if (widget.initialSelected != null) {
         _controller.text = widget.initialSelected!.name;
-      } else {
+      } else if (oldWidget.initialSelected != null) {
         _controller.clear();
       }
     }
@@ -67,7 +96,9 @@ class _CustomerSearchFieldState extends State<CustomerSearchField> {
     _hideOverlay();
     _focusNode.removeListener(_onFocusChange);
     _focusNode.dispose();
-    _controller.dispose();
+    if (_isInternalController) {
+      _controller.dispose();
+    }
     _debounce?.cancel();
     super.dispose();
   }
@@ -167,6 +198,7 @@ class _CustomerSearchFieldState extends State<CustomerSearchField> {
   void _onTextChanged(String text) {
     final query = text.trim();
     _searchQuery = query;
+    widget.onChanged?.call(text);
 
     if (query.length < 2) {
       _hideOverlay();
@@ -193,11 +225,13 @@ class _CustomerSearchFieldState extends State<CustomerSearchField> {
   }
 
   Future<void> _search(String query) async {
-    if (query.length < 2) return;
+    final cleanQuery = query.trim().toLowerCase();
+    if (cleanQuery.length < 2) return;
     try {
-      final String path = '/api/v1/customers?search=${Uri.encodeComponent(query)}';
+      final String path = '/api/v1/customers?search=${Uri.encodeComponent(query.trim())}';
       final response = await ApiService().get(path);
       if (!mounted) return;
+      if (_searchQuery.trim().toLowerCase() != cleanQuery) return;
 
       if (response['success'] == true) {
         final data = response['data'];
@@ -206,10 +240,39 @@ class _CustomerSearchFieldState extends State<CustomerSearchField> {
             : (data is Map && data['results'] is List
                 ? data['results'] as List<dynamic>
                 : []);
+
+        final fetchedCustomers = dataList
+            .map((json) => Customer.fromJson(json as Map<String, dynamic>))
+            .toList();
+
+        // Strictly filter to ensure that only customers actually containing the
+        // search term in their name, company, phone, email, or GSTIN are shown.
+        // This avoids backend wildcard matching on customer_type or returning all records.
+        final filtered = fetchedCustomers.where((c) {
+          final name = c.name.toLowerCase();
+          final company = c.company.toLowerCase();
+          final phone = c.phone.toLowerCase();
+          final email = c.email.toLowerCase();
+          final gst = c.gstNo.toLowerCase();
+
+          return name.contains(cleanQuery) ||
+              company.contains(cleanQuery) ||
+              phone.contains(cleanQuery) ||
+              email.contains(cleanQuery) ||
+              gst.contains(cleanQuery);
+        }).toList();
+
+        // Sort: customers whose name starts with the query appear first
+        filtered.sort((a, b) {
+          final aStartsWith = a.name.toLowerCase().startsWith(cleanQuery);
+          final bStartsWith = b.name.toLowerCase().startsWith(cleanQuery);
+          if (aStartsWith && !bStartsWith) return -1;
+          if (!aStartsWith && bStartsWith) return 1;
+          return a.name.compareTo(b.name);
+        });
+
         setState(() {
-          _suggestions = dataList
-              .map((json) => Customer.fromJson(json as Map<String, dynamic>))
-              .toList();
+          _suggestions = filtered;
           _highlightedIndex = _suggestions.isNotEmpty ? 0 : -1;
           _isLoading = false;
         });
@@ -236,6 +299,7 @@ class _CustomerSearchFieldState extends State<CustomerSearchField> {
     _controller.text = customer.name;
     _hideOverlay();
     _focusNode.unfocus();
+    widget.onChanged?.call(customer.name);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
@@ -322,31 +386,56 @@ class _CustomerSearchFieldState extends State<CustomerSearchField> {
                 controller: _controller,
                 focusNode: _focusNode,
                 onChanged: _onTextChanged,
-                decoration: InputDecoration(
-                  labelText: 'Client Name',
-                  hintText: 'Type to search client...',
-                  prefixIcon: const Icon(Icons.person_search_rounded),
-                  suffixIcon: _controller.text.isNotEmpty
-                      ? IconButton(
-                          icon: const Icon(Icons.clear_rounded),
-                          onPressed: () {
-                            _controller.clear();
-                            _hideOverlay();
-                            _focusNode.unfocus();
-                            WidgetsBinding.instance.addPostFrameCallback((_) {
-                              if (mounted) {
-                                widget.onSelected(null);
-                              }
-                            });
-                            setState(() {
-                              _suggestions = [];
-                              _highlightedIndex = -1;
-                              _searchQuery = '';
-                            });
-                          },
-                        )
-                      : null,
-                ),
+                decoration: widget.decoration != null
+                    ? widget.decoration!.copyWith(
+                        suffixIcon: _controller.text.isNotEmpty
+                            ? IconButton(
+                                icon: const Icon(Icons.clear_rounded, size: 18),
+                                onPressed: () {
+                                  _controller.clear();
+                                  _hideOverlay();
+                                  _focusNode.unfocus();
+                                  widget.onChanged?.call('');
+                                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                                    if (mounted) {
+                                      widget.onSelected(null);
+                                    }
+                                  });
+                                  setState(() {
+                                    _suggestions = [];
+                                    _highlightedIndex = -1;
+                                    _searchQuery = '';
+                                  });
+                                },
+                              )
+                            : null,
+                      )
+                    : InputDecoration(
+                        labelText: widget.labelText,
+                        hintText: widget.hintText ?? 'Customer Name',
+                        prefixIcon: const Icon(Icons.person_search_rounded),
+                        suffixIcon: _controller.text.isNotEmpty
+                            ? IconButton(
+                                icon: const Icon(Icons.clear_rounded, size: 18),
+                                onPressed: () {
+                                  _controller.clear();
+                                  _hideOverlay();
+                                  _focusNode.unfocus();
+                                  widget.onChanged?.call('');
+                                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                                    if (mounted) {
+                                      widget.onSelected(null);
+                                    }
+                                  });
+                                  setState(() {
+                                    _suggestions = [];
+                                    _highlightedIndex = -1;
+                                    _searchQuery = '';
+                                  });
+                                },
+                              )
+                            : null,
+                      ),
               ),
             );
           },
@@ -514,7 +603,7 @@ class CustomerSuggestionTile extends StatelessWidget {
             : null,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             CircleAvatar(
               radius: 18,
@@ -522,11 +611,9 @@ class CustomerSuggestionTile extends StatelessWidget {
                   ? theme.colorScheme.primary
                   : theme.colorScheme.primaryContainer,
               child: Text(
-                customer.company.isNotEmpty
-                    ? customer.company.substring(0, 1).toUpperCase()
-                    : customer.name.isNotEmpty
-                        ? customer.name.substring(0, 1).toUpperCase()
-                        : 'C',
+                customer.name.isNotEmpty
+                    ? customer.name.substring(0, 1).toUpperCase()
+                    : (customer.company.isNotEmpty ? customer.company.substring(0, 1).toUpperCase() : 'C'),
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
@@ -540,55 +627,37 @@ class CustomerSuggestionTile extends StatelessWidget {
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
                   Row(
                     children: [
                       const Icon(Icons.person_outline_rounded,
-                          size: 14, color: Colors.grey),
-                      const SizedBox(width: 4),
+                          size: 15, color: Colors.grey),
+                      const SizedBox(width: 6),
                       Expanded(
                         child: Text(
-                          customer.name,
+                          customer.name.isNotEmpty ? customer.name : customer.company,
                           style: theme.textTheme.bodyLarge?.copyWith(
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
                           ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ],
                   ),
-                  if (customer.company.isNotEmpty) ...[
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        const Icon(Icons.business_outlined,
-                            size: 14, color: Colors.grey),
-                        const SizedBox(width: 4),
-                        Expanded(
-                          child: Text(
-                            customer.company,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              fontSize: 12,
-                              color: isDark
-                                  ? Colors.grey[300]
-                                  : Colors.grey[700],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
                   if (customer.phone.isNotEmpty) ...[
                     const SizedBox(height: 4),
                     Row(
                       children: [
                         const Icon(Icons.phone_outlined,
-                            size: 14, color: Colors.grey),
-                        const SizedBox(width: 4),
+                            size: 13, color: Colors.grey),
+                        const SizedBox(width: 6),
                         Text(
                           customer.phone,
                           style: theme.textTheme.bodySmall?.copyWith(
-                            fontSize: 11,
+                            fontSize: 12,
                             color: Colors.grey,
                           ),
                         ),

@@ -149,17 +149,15 @@ class InvoiceCard extends StatelessWidget {
                                       contentPadding: EdgeInsets.zero,
                                     ),
                                   ),
-                                  if (invoice.status == InvoiceStatus.draft) ...[
-                                    const PopupMenuItem<String>(
-                                      value: 'edit',
-                                      child: ListTile(
-                                        leading: Icon(Icons.edit_outlined, size: 18),
-                                        title: Text('Edit Invoice', style: TextStyle(fontSize: 13)),
-                                        dense: true,
-                                        contentPadding: EdgeInsets.zero,
-                                      ),
+                                  const PopupMenuItem<String>(
+                                    value: 'edit',
+                                    child: ListTile(
+                                      leading: Icon(Icons.edit_outlined, size: 18),
+                                      title: Text('Edit Invoice', style: TextStyle(fontSize: 13)),
+                                      dense: true,
+                                      contentPadding: EdgeInsets.zero,
                                     ),
-                                  ],
+                                  ),
                                   if (invoice.status != InvoiceStatus.paid && invoice.status != InvoiceStatus.cancelled) ...[
                                     const PopupMenuItem<String>(
                                       value: 'pay',

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import '../../../../core/constants/app_colors.dart';
 import '../../../customers/models/customer.dart';
 import '../../../customers/providers/customer_provider.dart';
 import '../../providers/invoice_provider.dart';
@@ -189,13 +189,26 @@ class _AddCustomerFormState extends State<AddCustomerForm> {
               TextFormField(
                 controller: _nameCtrl,
                 focusNode: _nameFocus,
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),
+                ],
                 decoration: const InputDecoration(
                   labelText: 'Contact Name *',
-                  hintText: 'Enter full name',
+                  hintText: 'Enter full name (letters only)',
                   prefixIcon: Icon(Icons.person_outline_rounded),
                 ),
                 textCapitalization: TextCapitalization.words,
-                validator: (v) => (v == null || v.trim().isEmpty) ? 'Required' : null,
+                validator: (v) {
+                  final trimmed = v?.trim() ?? '';
+                  if (trimmed.isEmpty) return 'Contact name is required';
+                  if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(trimmed)) {
+                    return 'Only letters and spaces are allowed';
+                  }
+                  if (trimmed.length < 2) {
+                    return 'Contact name must be at least 2 characters';
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 10),
               TextFormField(

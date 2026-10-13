@@ -113,11 +113,39 @@ class SettingsProvider extends ChangeNotifier {
         _logoMatrix = Matrix4.identity();
       }
       
+      final cachedCompany = prefs.getString('company_name') ?? prefs.getString('logged_in_company_name');
+      if (_companySettings == null && cachedCompany != null && cachedCompany.isNotEmpty) {
+        _companySettings = CompanySettings(
+          companyName: cachedCompany,
+          legalName: cachedCompany,
+          website: '',
+          email: '',
+          phone: '',
+          gstNumber: '',
+          panNumber: '',
+          currency: 'INR',
+          timezone: 'UTC',
+          country: '',
+          state: '',
+          city: '',
+          address: '',
+          postalCode: '',
+          financialYear: 'April - March',
+          language: 'en',
+          dateFormat: 'YYYY-MM-DD',
+          timeFormat: 'HH:mm:ss',
+        );
+      }
+
       final response = await _apiService.get('/api/v1/settings');
       if (response['success'] != false) {
         final orgMap = response['organization'] ?? response['company'];
         if (orgMap is Map<String, dynamic>) {
           _companySettings = CompanySettings.fromJson(orgMap);
+          if (_companySettings!.companyName.isNotEmpty) {
+            await prefs.setString('company_name', _companySettings!.companyName);
+            await prefs.setString('logged_in_company_name', _companySettings!.companyName);
+          }
         }
         final invMap = response['invoices'] ?? response['financial'];
         if (invMap is Map<String, dynamic>) {
@@ -190,6 +218,11 @@ class SettingsProvider extends ChangeNotifier {
         } else {
           _companySettings = CompanySettings.fromJson(data);
         }
+        if (_companySettings != null && _companySettings!.companyName.isNotEmpty) {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('company_name', _companySettings!.companyName);
+          await prefs.setString('logged_in_company_name', _companySettings!.companyName);
+        }
         notifyListeners();
         return true;
       } else {
@@ -256,6 +289,11 @@ class SettingsProvider extends ChangeNotifier {
       final response = await _apiService.put('/api/v1/settings/organization', settings.toOrganizationJson());
       if (response['success'] != false) {
         _companySettings = settings;
+        if (settings.companyName.isNotEmpty) {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('company_name', settings.companyName);
+          await prefs.setString('logged_in_company_name', settings.companyName);
+        }
         notifyListeners();
         return true;
       } else {

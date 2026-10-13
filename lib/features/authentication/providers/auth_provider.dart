@@ -11,12 +11,14 @@ class AuthProvider extends ChangeNotifier {
   static const String _userFirstNameKey = 'logged_in_first_name';
   static const String _userLastNameKey = 'logged_in_last_name';
   static const String _userProfileImageKey = 'logged_in_profile_image';
+  static const String _userCompanyNameKey = 'logged_in_company_name';
 
   bool _isAuthenticated = false;
   bool _isLoading = false;
   String? _errorMessage;
   String? _currentUserId;
   String? _currentUserName;
+  String? _currentUserCompanyName;
   String? _currentUserEmail;
   String? _currentUserFirstName;
   String? _currentUserLastName;
@@ -45,6 +47,7 @@ class AuthProvider extends ChangeNotifier {
   String? get errorMessage => _errorMessage;
   String? get currentUserId => _currentUserId;
   String? get currentUserName => _currentUserName;
+  String? get currentUserCompanyName => _currentUserCompanyName;
   String? get currentUserEmail => _currentUserEmail;
   String? get currentUserFirstName => _currentUserFirstName;
   String? get currentUserLastName => _currentUserLastName;
@@ -65,6 +68,7 @@ class AuthProvider extends ChangeNotifier {
       final prefs = await SharedPreferences.getInstance();
       _isAuthenticated = prefs.getBool(_authKey) ?? false;
       _pendingVerificationEmail = prefs.getString('pending_verification_email');
+      _currentUserCompanyName = prefs.getString(_userCompanyNameKey) ?? prefs.getString('company_name');
       if (_isAuthenticated) {
         _currentUserEmail = prefs.getString(_userEmailKey) ?? 'admin@prabhim.com';
         _currentUserFirstName = prefs.getString(_userFirstNameKey);
@@ -110,6 +114,10 @@ class AuthProvider extends ChangeNotifier {
           final userFirstName = user['firstName'] ?? user['first_name'] ?? '';
           final userLastName = user['lastName'] ?? user['last_name'] ?? '';
           final userProfileImage = user['profile_image'] ?? user['profileImage'] ?? user['profilePic'] ?? '';
+          final userCompany = (user['companyName'] ?? user['company_name'] ?? user['businessName'] ?? user['business_name'] ?? user['organization']?['companyName'] ?? user['organization']?['name'] ?? data['organization']?['companyName'] ?? data['company']?['companyName'] ?? data['company']?['name'])?.toString();
+          if (userCompany != null && userCompany.trim().isNotEmpty) {
+            _currentUserCompanyName = userCompany.trim();
+          }
 
           _isAuthenticated = true;
           _currentUserEmail = userEmail;
@@ -127,6 +135,10 @@ class AuthProvider extends ChangeNotifier {
             await prefs.setString(_userFirstNameKey, userFirstName);
             await prefs.setString(_userLastNameKey, userLastName);
             await prefs.setString(_userProfileImageKey, userProfileImage);
+            if (_currentUserCompanyName != null && _currentUserCompanyName!.isNotEmpty) {
+              await prefs.setString(_userCompanyNameKey, _currentUserCompanyName!);
+              await prefs.setString('company_name', _currentUserCompanyName!);
+            }
             await prefs.setString('access_token', accessToken);
             await prefs.setString('refresh_token', refreshToken);
             await prefs.remove('pending_verification_email');
@@ -197,6 +209,12 @@ class AuthProvider extends ChangeNotifier {
           'first_name': firstName.trim(),
           'last_name': lastName.trim(),
           'phone': phone.trim(),
+          if (businessName != null && businessName.trim().isNotEmpty) ...{
+            'businessName': businessName.trim(),
+            'business_name': businessName.trim(),
+            'companyName': businessName.trim(),
+            'company_name': businessName.trim(),
+          },
         }),
       );
 
@@ -211,6 +229,11 @@ class AuthProvider extends ChangeNotifier {
           try {
             final prefs = await SharedPreferences.getInstance();
             await prefs.setString('pending_verification_email', email.trim());
+            if (businessName != null && businessName.trim().isNotEmpty) {
+              _currentUserCompanyName = businessName.trim();
+              await prefs.setString(_userCompanyNameKey, businessName.trim());
+              await prefs.setString('company_name', businessName.trim());
+            }
           } catch (e) {
             debugPrint('Error saving pending verification email: $e');
           }
@@ -628,10 +651,19 @@ class AuthProvider extends ChangeNotifier {
           _currentUserTheme = data['theme']?.toString() ?? _currentUserTheme;
           _accountStatus = data['accountStatus']?.toString() ?? _accountStatus;
 
+          final userCompany = (data['companyName'] ?? data['company_name'] ?? data['businessName'] ?? data['business_name'] ?? data['organization']?['companyName'] ?? data['organization']?['name'] ?? data['company']?['companyName'] ?? data['company']?['name'])?.toString();
+          if (userCompany != null && userCompany.trim().isNotEmpty) {
+            _currentUserCompanyName = userCompany.trim();
+          }
+
           if (_currentUserEmail != null) await prefs.setString(_userEmailKey, _currentUserEmail!);
           if (_currentUserFirstName != null) await prefs.setString(_userFirstNameKey, _currentUserFirstName!);
           if (_currentUserLastName != null) await prefs.setString(_userLastNameKey, _currentUserLastName!);
           if (_currentUserProfileImage != null) await prefs.setString(_userProfileImageKey, _currentUserProfileImage!);
+          if (_currentUserCompanyName != null && _currentUserCompanyName!.isNotEmpty) {
+            await prefs.setString(_userCompanyNameKey, _currentUserCompanyName!);
+            await prefs.setString('company_name', _currentUserCompanyName!);
+          }
 
           _isLoading = false;
           notifyListeners();
@@ -944,6 +976,19 @@ class AuthProvider extends ChangeNotifier {
   String getProfilePictureUrl([String? userId]) {
     final id = userId ?? _currentUserId ?? '';
     return '${Env.apiBaseUrl}/api/v1/profile/picture/$id';
+  }
+
+  Future<void> updateCompanyName(String newName) async {
+    if (newName.trim().isEmpty) return;
+    _currentUserCompanyName = newName.trim();
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_userCompanyNameKey, newName.trim());
+      await prefs.setString('company_name', newName.trim());
+    } catch (e) {
+      debugPrint('Error updating company name in auth provider: $e');
+    }
+    notifyListeners();
   }
 
   void clearError() {

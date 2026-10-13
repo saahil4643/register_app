@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
@@ -2618,8 +2619,26 @@ class _AddCustomerInlinePanelState extends State<_AddCustomerInlinePanel> {
             const SizedBox(height: 10),
             TextFormField(
               controller: _nameCtrl,
-              decoration: const InputDecoration(labelText: 'Customer Name *', isDense: true),
-              validator: (v) => (v == null || v.trim().isEmpty) ? 'Required' : null,
+              textCapitalization: TextCapitalization.words,
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),
+              ],
+              decoration: const InputDecoration(
+                labelText: 'Customer Name *',
+                hintText: 'Letters only',
+                isDense: true,
+              ),
+              validator: (v) {
+                final trimmed = v?.trim() ?? '';
+                if (trimmed.isEmpty) return 'Customer name is required';
+                if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(trimmed)) {
+                  return 'Only letters and spaces are allowed';
+                }
+                if (trimmed.length < 2) {
+                  return 'Customer name must be at least 2 characters';
+                }
+                return null;
+              },
             ),
             const SizedBox(height: 8),
             Row(

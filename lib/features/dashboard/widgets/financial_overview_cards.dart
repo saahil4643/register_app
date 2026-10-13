@@ -17,7 +17,7 @@ class FinancialOverviewCards extends StatelessWidget {
     required this.totalReceivables,
     required this.totalPayables,
     this.overdueInvoicesCount = 0,
-    this.overdueBillsCount = 1,
+    this.overdueBillsCount = 0,
     this.onReceivablesTap,
     this.onPayablesTap,
     this.onOverdueInvoicesTap,

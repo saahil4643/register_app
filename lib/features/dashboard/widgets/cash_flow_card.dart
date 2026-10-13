@@ -1,15 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart' hide TextDirection;
 import '../../../../core/constants/app_colors.dart';
+import '../../invoices/models/invoice.dart';
+import '../../bills/models/bill.dart';
 import '../models/dashboard_reports.dart';
 
 class CashFlowCard extends StatefulWidget {
   final ProfitLossReport? profitLoss;
   final SalesSummaryReport? salesSummary;
+  final List<Invoice>? invoices;
+  final List<Bill>? bills;
 
   const CashFlowCard({
     super.key,
     required this.profitLoss,
     required this.salesSummary,
+    this.invoices,
+    this.bills,
   });
 
   @override
@@ -31,7 +38,50 @@ class _CashFlowCardState extends State<CashFlowCard> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
 
-    final trends = widget.profitLoss?.monthlyTrends ?? [];
+    List<MonthlyTrendItem> trends = List.from(widget.profitLoss?.monthlyTrends ?? []);
+
+    final hasBackendData = trends.any((t) => t.revenue > 0 || t.netProfit > 0);
+    if (!hasBackendData && (widget.invoices?.isNotEmpty == true || widget.bills?.isNotEmpty == true)) {
+      final monthsList = ['Apr', 'Jun', 'Aug', 'Oct', 'Dec', 'Feb'];
+      final Map<String, double> monthlyRev = {for (var m in monthsList) m: 0.0};
+      final Map<String, double> monthlyExp = {for (var m in monthsList) m: 0.0};
+
+      final monthFormat = DateFormat('MMM');
+      String mapToSlot(String m) {
+        switch (m) {
+          case 'May':
+            return 'Jun';
+          case 'Jul':
+            return 'Aug';
+          case 'Sep':
+            return 'Oct';
+          case 'Nov':
+            return 'Dec';
+          case 'Jan':
+            return 'Feb';
+          default:
+            return 'Apr';
+        }
+      }
+
+      for (final inv in widget.invoices ?? []) {
+        final m = monthFormat.format(inv.invoiceDate);
+        final slot = monthlyRev.containsKey(m) ? m : mapToSlot(m);
+        monthlyRev[slot] = (monthlyRev[slot] ?? 0.0) + inv.grandTotal;
+      }
+
+      for (final bill in widget.bills ?? []) {
+        final m = monthFormat.format(bill.billDate);
+        final slot = monthlyExp.containsKey(m) ? m : mapToSlot(m);
+        monthlyExp[slot] = (monthlyExp[slot] ?? 0.0) + bill.totalAmount;
+      }
+
+      trends = monthsList.map((m) {
+        final r = monthlyRev[m] ?? 0.0;
+        final e = monthlyExp[m] ?? 0.0;
+        return MonthlyTrendItem(period: m, revenue: r, expenses: e, netProfit: r - e);
+      }).toList();
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -184,36 +234,38 @@ class _CashFlowPainter extends CustomPainter {
       fontWeight: FontWeight.w400,
     );
 
-    // Determine 3 Y-values (Max, Mid, Low)
-    double maxVal = 1208.0;
-    double midVal = 1000.0;
-    double lowVal = 800.3;
+    final bool hasData = trends.any((t) => t.revenue > 0 || t.netProfit > 0);
 
-    if (trends.isNotEmpty) {
+    // Determine 3 Y-values (Max, Mid, Low)
+    double maxVal = 0.0;
+    double midVal = 0.0;
+    double lowVal = 0.0;
+
+    if (hasData) {
       double maxRev = 0.0;
+      double minRev = double.infinity;
       for (final t in trends) {
         if (t.revenue > maxRev) maxRev = t.revenue;
+        if (t.revenue < minRev && t.revenue > 0) minRev = t.revenue;
       }
       if (maxRev > 0) {
         maxVal = maxRev;
-        lowVal = maxRev * 0.4;
+        lowVal = (minRev != double.infinity && minRev < maxVal) ? (minRev * 0.5) : 0.0;
         midVal = (maxVal + lowVal) / 2;
       }
     }
 
     String formatVal(double v) {
+      if (v <= 0) return '0';
       if (v >= 10000000) return '${(v / 10000000).toStringAsFixed(1)}Cr';
       if (v >= 100000) return '${(v / 100000).toStringAsFixed(1)}L';
-      if (v >= 1000) {
-        // e.g. 1.208 or formatted
-        if (v == 1208.0) return '1.208';
-        if (v == 1000.0) return '1';
-        return (v / 1000).toStringAsFixed(1);
-      }
-      return v.toStringAsFixed(1);
+      if (v >= 1000) return '${(v / 1000).toStringAsFixed(1)}k';
+      return v.toStringAsFixed(0);
     }
 
-    final labels = [formatVal(maxVal), formatVal(midVal), formatVal(lowVal)];
+    final labels = hasData
+        ? [formatVal(maxVal), formatVal(midVal), formatVal(lowVal)]
+        : ['0', '0', '0'];
     final yPositions = [
       topMargin,
       topMargin + chartHeight / 2,
@@ -246,22 +298,31 @@ class _CashFlowPainter extends CustomPainter {
     // Points calculation
     List<Offset> points = [];
 
-    if (trends.length >= 2) {
+    // X-axis month ticks
+    final months = ['Apr', 'Jun', 'Aug', 'Oct', 'Dec', 'Feb'];
+    if (trends.length >= 6) {
+      for (int i = 0; i < 6; i++) {
+        final label = trends[i].period.length > 3 ? trends[i].period.substring(0, 3) : trends[i].period;
+        months[i] = label;
+      }
+    }
+
+    if (hasData && trends.length >= 2) {
+      final range = (maxVal - lowVal) == 0 ? 1.0 : (maxVal - lowVal);
       final stepX = chartWidth / (trends.length - 1);
       for (int i = 0; i < trends.length; i++) {
         final t = trends[i];
-        final normY = ((t.revenue - lowVal) / (maxVal - lowVal)).clamp(0.05, 0.95);
+        final normY = ((t.revenue - lowVal) / range).clamp(0.05, 0.95);
         final x = leftMargin + i * stepX;
         final y = topMargin + chartHeight * (1.0 - normY);
         points.add(Offset(x, y));
       }
     } else {
-      // Default sample smooth curve matching the design
-      final sampleNorms = [0.8, 0.65, 0.75, 0.5, 0.6, 0.45];
-      final stepX = chartWidth / (sampleNorms.length - 1);
-      for (int i = 0; i < sampleNorms.length; i++) {
+      // Initially zero: flat baseline points along the bottom
+      final stepX = chartWidth / (months.length - 1);
+      for (int i = 0; i < months.length; i++) {
         final x = leftMargin + i * stepX;
-        final y = topMargin + chartHeight * (1.0 - sampleNorms[i]);
+        final y = topMargin + chartHeight;
         points.add(Offset(x, y));
       }
     }
@@ -320,15 +381,6 @@ class _CashFlowPainter extends CustomPainter {
       for (final p in points) {
         canvas.drawCircle(p, 4.0, dotBgPaint);
         canvas.drawCircle(p, 2.5, dotPaint);
-      }
-    }
-
-    // X-axis month ticks
-    final months = ['Apr', 'Jun', 'Aug', 'Oct', 'Dec', 'Feb'];
-    if (trends.length >= 6) {
-      for (int i = 0; i < 6; i++) {
-        final label = trends[i].period.length > 3 ? trends[i].period.substring(0, 3) : trends[i].period;
-        months[i] = label;
       }
     }
 

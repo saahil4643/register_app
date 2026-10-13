@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/services/api_service.dart';
 import '../../invoices/models/invoice.dart';
 import '../../customers/models/payment.dart';
@@ -82,9 +83,40 @@ class DashboardProvider extends ChangeNotifier {
     }
   }
 
+  void setOrganization(CompanySettings org) {
+    _organization = org;
+    notifyListeners();
+  }
+
   // 2. Organization: GET /api/v1/organization (fallback /api/v1/settings/organization or /api/v1/settings)
   Future<void> _fetchOrganization() async {
     try {
+      final prefs = await SharedPreferences.getInstance();
+      final cachedCompany = prefs.getString('company_name') ?? prefs.getString('logged_in_company_name');
+      if (_organization == null && cachedCompany != null && cachedCompany.trim().isNotEmpty) {
+        _organization = CompanySettings(
+          companyName: cachedCompany.trim(),
+          legalName: cachedCompany.trim(),
+          website: '',
+          email: '',
+          phone: '',
+          gstNumber: '',
+          panNumber: '',
+          currency: 'INR',
+          timezone: 'UTC',
+          country: '',
+          state: '',
+          city: '',
+          address: '',
+          postalCode: '',
+          financialYear: 'April - March',
+          language: 'en',
+          dateFormat: 'YYYY-MM-DD',
+          timeFormat: 'HH:mm:ss',
+        );
+        notifyListeners();
+      }
+
       var res = await _apiService.get('/api/v1/organization');
       if (res['success'] == false) {
         res = await _apiService.get('/api/v1/settings/organization');
@@ -95,7 +127,13 @@ class DashboardProvider extends ChangeNotifier {
 
       final data = res['data'] ?? res['organization'] ?? res['company'] ?? res;
       if (data is Map<String, dynamic>) {
-        _organization = CompanySettings.fromJson(data);
+        final parsed = CompanySettings.fromJson(data);
+        if (parsed.companyName.isNotEmpty) {
+          _organization = parsed;
+          await prefs.setString('company_name', parsed.companyName);
+          await prefs.setString('logged_in_company_name', parsed.companyName);
+          notifyListeners();
+        }
       }
     } catch (e) {
       debugPrint('Dashboard: error fetching organization: $e');

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../../core/constants/app_colors.dart';
@@ -290,11 +291,28 @@ class _CreateCustomerScreenState extends State<CreateCustomerScreen> with Single
                   const SizedBox(height: 12),
                   TextFormField(
                     controller: _nameController,
+                    textCapitalization: TextCapitalization.words,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),
+                    ],
                     decoration: const InputDecoration(
                       labelText: 'Contact Name *',
+                      hintText: 'Enter full name (letters only)',
                       prefixIcon: Icon(Icons.person_rounded),
                     ),
-                    validator: (val) => val == null || val.trim().isEmpty ? 'Please enter contact name' : null,
+                    validator: (val) {
+                      final trimmed = val?.trim() ?? '';
+                      if (trimmed.isEmpty) {
+                        return 'Please enter contact name';
+                      }
+                      if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(trimmed)) {
+                        return 'Only letters and spaces are allowed';
+                      }
+                      if (trimmed.length < 2) {
+                        return 'Contact name must be at least 2 characters';
+                      }
+                      return null;
+                    },
                   ),
                   if (_customerType == 'business') ...[
                     const SizedBox(height: 12),
@@ -310,11 +328,21 @@ class _CreateCustomerScreenState extends State<CreateCustomerScreen> with Single
                   TextFormField(
                     controller: _phoneController,
                     keyboardType: TextInputType.phone,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(10),
+                    ],
                     decoration: const InputDecoration(
                       labelText: 'Phone Number *',
+                      hintText: 'Enter 10-digit mobile number',
                       prefixIcon: Icon(Icons.phone_rounded),
                     ),
-                    validator: (val) => val == null || val.trim().isEmpty ? 'Enter phone number' : null,
+                    validator: (val) {
+                      final trimmed = val?.trim() ?? '';
+                      if (trimmed.isEmpty) return 'Enter phone number';
+                      if (trimmed.length != 10) return 'Enter a valid 10-digit phone number';
+                      return null;
+                    },
                   ),
                   const SizedBox(height: 12),
                   TextFormField(
@@ -324,15 +352,37 @@ class _CreateCustomerScreenState extends State<CreateCustomerScreen> with Single
                       labelText: 'Email Address',
                       prefixIcon: Icon(Icons.email_rounded),
                     ),
+                    validator: (val) {
+                      if (val != null && val.trim().isNotEmpty) {
+                        final emailRegex = RegExp(r'^[\w\.-]+@[\w\.-]+\.\w{2,}$');
+                        if (!emailRegex.hasMatch(val.trim())) {
+                          return 'Enter a valid email address';
+                        }
+                      }
+                      return null;
+                    },
                   ),
                   const SizedBox(height: 12),
                   TextFormField(
                     controller: _gstNoController,
+                    textCapitalization: TextCapitalization.characters,
+                    inputFormatters: [
+                      LengthLimitingTextInputFormatter(15),
+                      FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9]')),
+                    ],
                     decoration: const InputDecoration(
                       labelText: 'GST Number',
                       prefixIcon: Icon(Icons.receipt_rounded),
                       hintText: 'e.g. 27AAAAA1111A1Z1',
                     ),
+                    validator: (val) {
+                      if (val != null && val.trim().isNotEmpty) {
+                        if (val.trim().length != 15) {
+                          return 'GST number must be 15 characters';
+                        }
+                      }
+                      return null;
+                    },
                   ),
                   const SizedBox(height: 20),
                   _buildSectionHeader(theme, 'Address Details'),
@@ -347,6 +397,10 @@ class _CreateCustomerScreenState extends State<CreateCustomerScreen> with Single
                   const SizedBox(height: 12),
                   TextFormField(
                     controller: _cityController,
+                    textCapitalization: TextCapitalization.words,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),
+                    ],
                     decoration: const InputDecoration(
                       labelText: 'City',
                       prefixIcon: Icon(Icons.location_city_rounded),
@@ -355,6 +409,10 @@ class _CreateCustomerScreenState extends State<CreateCustomerScreen> with Single
                   const SizedBox(height: 12),
                   TextFormField(
                     controller: _stateController,
+                    textCapitalization: TextCapitalization.words,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),
+                    ],
                     decoration: const InputDecoration(
                       labelText: 'State',
                       prefixIcon: Icon(Icons.map_rounded),
@@ -364,10 +422,20 @@ class _CreateCustomerScreenState extends State<CreateCustomerScreen> with Single
                   TextFormField(
                     controller: _pincodeController,
                     keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(6),
+                    ],
                     decoration: const InputDecoration(
                       labelText: 'Pincode',
                       prefixIcon: Icon(Icons.pin_drop_rounded),
                     ),
+                    validator: (val) {
+                      if (val != null && val.trim().isNotEmpty && val.trim().length != 6) {
+                        return 'Enter a valid 6-digit pincode';
+                      }
+                      return null;
+                    },
                   ),
                 ],
               ).animate().fade(duration: 200.ms),

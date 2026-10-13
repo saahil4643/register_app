@@ -8,6 +8,9 @@ import '../../invoices/models/invoice.dart';
 import '../../invoices/providers/invoice_provider.dart';
 import '../../invoices/widgets/status_chip.dart';
 import '../../customers/screens/create_customer_screen.dart';
+import '../../authentication/providers/auth_provider.dart';
+import '../../settings/providers/settings_provider.dart';
+import '../../bills/providers/bill_provider.dart';
 import '../providers/dashboard_provider.dart';
 import '../widgets/dashboard_sub_tabs.dart';
 import '../widgets/financial_overview_cards.dart';
@@ -30,6 +33,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<DashboardProvider>().fetchDashboardData();
+      context.read<SettingsProvider>().fetchSettings();
+      context.read<BillProvider>().fetchBills();
+      context.read<InvoiceProvider>().fetchInvoices();
     });
   }
 
@@ -92,8 +98,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   void _showPayablesBreakdown(BuildContext context, DashboardProvider provider) {
     final report = provider.profitLoss;
+    final billProvider = context.read<BillProvider>();
     final currency = NumberFormat.currency(locale: 'en_IN', symbol: '₹', decimalDigits: 2);
     final theme = Theme.of(context);
+
+    final billsTotal = billProvider.bills.fold<double>(0.0, (sum, b) => sum + b.balanceDue);
 
     showModalBottomSheet(
       context: context,
@@ -124,8 +133,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ],
                 ),
                 const Divider(),
+                _buildAgingRow('Bills Due (Payables)', currency.format(billsTotal > 0 ? billsTotal : (report?.billsExpenses ?? 0.0))),
                 _buildAgingRow('Operating Expenses', currency.format(report?.operatingExpenses ?? 0.0)),
-                _buildAgingRow('Bills Expenses', currency.format(report?.billsExpenses ?? 42567.0)),
                 _buildAgingRow('Purchase Expenses', currency.format(report?.purchaseExpenses ?? 0.0)),
                 const SizedBox(height: 12),
                 SizedBox(
@@ -133,9 +142,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.pop(context);
-                      context.push('/expenses');
+                      context.push('/purchases/bills');
                     },
-                    child: const Text('View Expenses & Bills'),
+                    child: const Text('View All Bills'),
                   ),
                 ),
               ],
@@ -171,23 +180,52 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final dashboardProvider = context.watch<DashboardProvider>();
+    final settingsProvider = context.watch<SettingsProvider>();
+    final authProvider = context.watch<AuthProvider>();
     final currency = NumberFormat.currency(locale: 'en_IN', symbol: '₹', decimalDigits: 2);
 
-    final companyName = (dashboardProvider.organization?.companyName.isNotEmpty == true)
-        ? dashboardProvider.organization!.companyName
-        : 'Prapti Cycle System Pvt. Ltd.';
+    String companyName = '';
+    if (dashboardProvider.organization?.companyName.trim().isNotEmpty == true) {
+      companyName = dashboardProvider.organization!.companyName.trim();
+    } else if (settingsProvider.companySettings?.companyName.trim().isNotEmpty == true) {
+      companyName = settingsProvider.companySettings!.companyName.trim();
+    } else if (authProvider.currentUserCompanyName?.trim().isNotEmpty == true) {
+      companyName = authProvider.currentUserCompanyName!.trim();
+    }
+    if (companyName.isEmpty) {
+      companyName = 'My Business';
+    }
 
-    final totalReceivables = dashboardProvider.receivables?.totalReceivables ?? 0.0;
-    final totalPayables = (dashboardProvider.profitLoss?.totalExpenses != null &&
-            dashboardProvider.profitLoss!.totalExpenses > 0)
-        ? dashboardProvider.profitLoss!.totalExpenses
-        : 42567.0;
+    final billProvider = context.watch<BillProvider>();
+    final invoiceProvider = context.watch<InvoiceProvider>();
 
-    final overdueInvoicesCount = dashboardProvider.recentInvoices
-        .where((inv) => inv.status == InvoiceStatus.overdue)
-        .length;
+    final backendReceivables = dashboardProvider.receivables?.totalReceivables ?? 0.0;
+    final invoicesReceivable = invoiceProvider.invoices
+        .where((inv) => inv.status != InvoiceStatus.paid && inv.status != InvoiceStatus.cancelled)
+        .fold<double>(0.0, (sum, inv) => sum + inv.balanceDue);
+    final totalReceivables = backendReceivables > 0 ? backendReceivables : invoicesReceivable;
+    
+    // Total payables starts at 0.0 and increases as bills / expenses are added
+    final totalBillsPayable = billProvider.bills.fold<double>(
+      0.0,
+      (sum, b) => sum + b.balanceDue,
+    );
+    final totalPayables = totalBillsPayable > 0
+        ? totalBillsPayable
+        : (dashboardProvider.profitLoss?.totalExpenses ?? 0.0);
 
-    const overdueBillsCount = 1;
+    final overdueInvoicesCount = invoiceProvider.invoices.isNotEmpty
+        ? invoiceProvider.invoices.where((inv) => inv.status == InvoiceStatus.overdue).length
+        : dashboardProvider.recentInvoices.where((inv) => inv.status == InvoiceStatus.overdue).length;
+
+    // Overdue bills starts at 0 and increases if bills have overdue status or passed due date
+    final overdueBillsCount = billProvider.bills.where((b) {
+      final isStatusOverdue = b.status.toLowerCase() == 'overdue';
+      final isPastDue = b.dueDate != null &&
+          b.dueDate!.isBefore(DateTime.now()) &&
+          b.balanceDue > 0;
+      return isStatusOverdue || isPastDue;
+    }).length;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -268,7 +306,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 children: [
                   // Tab 0: Dashboard Content
                   RefreshIndicator(
-                    onRefresh: () => dashboardProvider.fetchDashboardData(refresh: true),
+                    onRefresh: () async {
+                      await Future.wait([
+                        dashboardProvider.fetchDashboardData(refresh: true),
+                        context.read<InvoiceProvider>().fetchInvoices(refresh: true),
+                        context.read<BillProvider>().fetchBills(),
+                      ]);
+                    },
                     child: SingleChildScrollView(
                       physics: const AlwaysScrollableScrollPhysics(),
                       padding: const EdgeInsets.symmetric(vertical: 14.0),
@@ -373,7 +417,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               onReceivablesTap: () => _showReceivablesBreakdown(context, dashboardProvider),
                               onPayablesTap: () => _showPayablesBreakdown(context, dashboardProvider),
                               onOverdueInvoicesTap: () => context.go('/invoices'),
-                              onOverdueBillsTap: () => context.push('/expenses'),
+                              onOverdueBillsTap: () => context.push('/purchases/bills'),
                             ),
                           ).animate().fade(delay: 50.ms),
 
@@ -394,7 +438,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 context.push('/invoices/create');
                               },
                               onNewBill: () {
-                                context.push('/expenses');
+                                context.push('/purchases/bills/new');
                               },
                               onNewExpense: () {
                                 context.push('/expenses');
@@ -419,6 +463,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           CashFlowCard(
                             profitLoss: dashboardProvider.profitLoss,
                             salesSummary: dashboardProvider.salesSummary,
+                            invoices: invoiceProvider.invoices.isNotEmpty
+                                ? invoiceProvider.invoices
+                                : dashboardProvider.recentInvoices,
+                            bills: billProvider.bills,
                           ).animate().fade(delay: 150.ms),
 
                           const SizedBox(height: 24),
@@ -446,16 +494,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           ),
                           const SizedBox(height: 8),
 
-                          if (dashboardProvider.recentInvoices.isNotEmpty) ...[
+                          if ((invoiceProvider.invoices.isNotEmpty ? invoiceProvider.invoices : dashboardProvider.recentInvoices).isNotEmpty) ...[
                             Padding(
                               padding: const EdgeInsets.symmetric(horizontal: 16.0),
                               child: ListView.separated(
                                 shrinkWrap: true,
                                 physics: const NeverScrollableScrollPhysics(),
-                                itemCount: dashboardProvider.recentInvoices.length,
+                                itemCount: (invoiceProvider.invoices.isNotEmpty ? invoiceProvider.invoices : dashboardProvider.recentInvoices).take(5).length,
                                 separatorBuilder: (_, _) => const SizedBox(height: 10),
                                 itemBuilder: (context, index) {
-                                  final inv = dashboardProvider.recentInvoices[index];
+                                  final displayList = invoiceProvider.invoices.isNotEmpty ? invoiceProvider.invoices : dashboardProvider.recentInvoices;
+                                  final inv = displayList[index];
                                   final dateFormatted = DateFormat('dd MMM yyyy').format(inv.invoiceDate);
 
                                   return Card(

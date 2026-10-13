@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_colors.dart';
 import '../models/customer.dart';
@@ -329,15 +330,28 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
                           TextFormField(
                             controller: _nameController,
                             autofocus: widget.initialName?.isEmpty ?? true,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]')),
+                            ],
                             decoration: const InputDecoration(
                               labelText: 'Contact Name *',
-                              hintText: 'Enter full name',
+                              hintText: 'Enter full name (letters only)',
                               prefixIcon: Icon(Icons.person_outline_rounded),
                             ),
                             textCapitalization: TextCapitalization.words,
-                            validator: (val) => val == null || val.trim().isEmpty
-                                ? 'Please enter contact name'
-                                : null,
+                            validator: (val) {
+                              final trimmed = val?.trim() ?? '';
+                              if (trimmed.isEmpty) {
+                                return 'Please enter contact name';
+                              }
+                              if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(trimmed)) {
+                                return 'Only letters and spaces are allowed';
+                              }
+                              if (trimmed.length < 2) {
+                                return 'Contact name must be at least 2 characters';
+                              }
+                              return null;
+                            },
                             onChanged: (val) {
                               if (_companyController.text == widget.initialName) {
                                 _companyController.text = val;

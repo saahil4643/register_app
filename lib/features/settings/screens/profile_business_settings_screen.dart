@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../../core/config/env.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../authentication/providers/auth_provider.dart';
+import '../../dashboard/providers/dashboard_provider.dart';
 import '../models/settings_models.dart';
 import '../providers/settings_provider.dart';
 
@@ -496,6 +497,11 @@ class _ProfileBusinessSettingsScreenState extends State<ProfileBusinessSettingsS
       allSuccess = false;
       if (mounted) {
         _showSnackBar(settingsProvider.errorMessage ?? 'Failed to update organization details', isError: true);
+      }
+    } else {
+      if (mounted) {
+        context.read<AuthProvider>().updateCompanyName(updatedOrg.companyName);
+        context.read<DashboardProvider>().setOrganization(updatedOrg);
       }
     }
 

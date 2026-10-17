@@ -194,7 +194,7 @@ class _ExpenseCardState extends State<ExpenseCard> {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        '${widget.expense.vendor} • ${dateFormatter.format(widget.expense.expenseDate)}',
+                        '${widget.expense.displayIdentifier} • ${widget.expense.vendor} • ${dateFormatter.format(widget.expense.expenseDate)}',
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
                         ),

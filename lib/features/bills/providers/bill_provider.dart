@@ -103,15 +103,21 @@ class BillProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
+      final payload = bill.toApiJson();
       final response = await ApiService().post(
         '/api/v1/bills',
-        bill.toJson(),
+        payload,
       );
+
+      if (response['statusCode'] != null && response['statusCode'] >= 400) {
+        _errorMessage = response['message']?.toString() ?? 'Failed to create bill';
+        debugPrint('API Error creating bill: $_errorMessage');
+      }
 
       Bill created;
       if (response['success'] == true && response['data'] != null) {
         created = Bill.fromJson(response['data'] as Map<String, dynamic>);
-      } else if (response.containsKey('id')) {
+      } else if (response.containsKey('id') || response.containsKey('bill_number')) {
         created = Bill.fromJson(response);
       } else {
         created = bill.copyWith(
@@ -123,6 +129,8 @@ class BillProvider extends ChangeNotifier {
       _bills.insert(0, created);
       return created;
     } catch (e) {
+      debugPrint('Exception creating bill via API: $e');
+      _errorMessage = e.toString();
       // Save locally as fallback
       final fallback = bill.copyWith(
         id: bill.id.isEmpty
@@ -143,13 +151,16 @@ class BillProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      await ApiService().put('/api/v1/bills/${bill.id}', bill.toJson());
+      final payload = bill.toApiJson();
+      await ApiService().put('/api/v1/bills/${bill.id}', payload);
       final index = _bills.indexWhere((b) => b.id == bill.id);
       if (index != -1) {
         _bills[index] = bill;
       }
       return true;
-    } catch (_) {
+    } catch (e) {
+      debugPrint('Exception updating bill via API: $e');
+      _errorMessage = e.toString();
       final index = _bills.indexWhere((b) => b.id == bill.id);
       if (index != -1) {
         _bills[index] = bill;

@@ -50,7 +50,7 @@
     "semantic_hash": ""
   },
   "ios/Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage/Package.swift": {
-    "mtime": 1791879046.5233364,
+    "mtime": 1791881204.2027779,
     "ast_hash": "63bc00d19466662a75b7492ac07d5a97",
     "semantic_hash": ""
   },
@@ -240,8 +240,8 @@
     "semantic_hash": ""
   },
   "lib/features/dashboard/screens/dashboard_screen.dart": {
-    "mtime": 1791880402.769958,
-    "ast_hash": "244f0801453ba46524f17a7aaa5b4d92",
+    "mtime": 1791881087.070842,
+    "ast_hash": "d13928018fe8032f11a62f536d42c42c",
     "semantic_hash": ""
   },
   "lib/features/invoices/models/invoice.dart": {
@@ -485,7 +485,7 @@
     "semantic_hash": ""
   },
   "macos/Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage/Package.swift": {
-    "mtime": 1791879046.6541822,
+    "mtime": 1791881204.2585554,
     "ast_hash": "61d013e6c93b3d917c4f6178b9f6c9cb",
     "semantic_hash": ""
   },
@@ -1155,8 +1155,8 @@
     "semantic_hash": ""
   },
   "lib/features/dashboard/widgets/cash_flow_card.dart": {
-    "mtime": 1790769933.2480743,
-    "ast_hash": "dc65c36274a5c52a49071bd716bf4c21",
+    "mtime": 1791881191.1698163,
+    "ast_hash": "4eeea1942381877ff0cb83b0de92ccab",
     "semantic_hash": ""
   },
   "lib/features/dashboard/widgets/dashboard_sub_tabs.dart": {

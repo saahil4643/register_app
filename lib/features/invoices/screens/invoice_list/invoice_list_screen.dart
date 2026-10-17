@@ -12,6 +12,7 @@ import '../../providers/invoice_provider.dart';
 import '../../widgets/invoice_card.dart';
 import '../../widgets/statistics_card.dart';
 import '../../../customers/models/payment.dart';
+import '../../../navigation/navigation_shell.dart';
 
 import 'dart:async';
 
@@ -205,14 +206,10 @@ class _InvoiceListScreenState extends State<InvoiceListScreen> {
                 },
               )
             : const Text('Invoices'),
-        leading: Builder(
-          builder: (context) {
-            return IconButton(
-              icon: const Icon(Icons.menu_rounded),
-              onPressed: () {
-                Scaffold.of(context).openDrawer();
-              },
-            );
+        leading: IconButton(
+          icon: const Icon(Icons.menu_rounded),
+          onPressed: () {
+            NavigationShell.openDrawer(context);
           },
         ),
         actions: [
@@ -262,20 +259,11 @@ class _InvoiceListScreenState extends State<InvoiceListScreen> {
             onPressed: () => context.push('/notifications'),
           ),
           const SizedBox(width: 4),
-          GestureDetector(
+          CustomAvatar(
+            name: initials,
+            imageUrl: authProvider.currentUserProfileImage ?? authProvider.currentUserAvatar,
+            radius: 16,
             onTap: () => context.push('/profile'),
-            child: CircleAvatar(
-              radius: 16,
-              backgroundColor: theme.colorScheme.primaryContainer,
-              child: Text(
-                initials.length > 2 ? initials.substring(0, 2) : initials,
-                style: TextStyle(
-                  color: theme.colorScheme.primary,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 12,
-                ),
-              ),
-            ),
           ),
           const SizedBox(width: 16),
         ],

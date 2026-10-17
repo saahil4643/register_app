@@ -7,7 +7,6 @@ class ExpenseProvider with ChangeNotifier {
   final ExpenseRepository _repository = ExpenseRepository();
 
   List<ExpenseModel> _expenses = [];
-  List<ExpenseModel> _recentExpenses = [];
   List<String> _categories = [];
   List<String> _vendors = [];
 
@@ -39,7 +38,6 @@ class ExpenseProvider with ChangeNotifier {
 
   // Getters
   List<ExpenseModel> get expenses => _expenses;
-  List<ExpenseModel> get recentExpenses => _recentExpenses;
   List<String> get categories => _categories;
   List<String> get vendors => _vendors;
   bool get isLoading => _isLoading;
@@ -54,6 +52,74 @@ class ExpenseProvider with ChangeNotifier {
   double get thisMonthExpenses => _thisMonthExpenses;
   double get pendingPayments => _pendingPayments;
 
+  double get calculatedTotalExpenses {
+    if (_totalExpenses > 0) return _totalExpenses;
+    return _expenses.fold(0.0, (sum, e) => sum + e.totalAmount);
+  }
+
+  double get calculatedThisMonthExpenses {
+    if (_thisMonthExpenses > 0) return _thisMonthExpenses;
+    final now = DateTime.now();
+    return _expenses
+        .where((e) => e.expenseDate.year == now.year && e.expenseDate.month == now.month)
+        .fold(0.0, (sum, e) => sum + e.totalAmount);
+  }
+
+  double get calculatedGstCredit {
+    if (_gstInputCredit > 0) return _gstInputCredit;
+    return _expenses.fold(0.0, (sum, e) => sum + e.gstAmount);
+  }
+
+  double get calculatedPendingPayments {
+    if (_pendingPayments > 0) return _pendingPayments;
+    return _expenses
+        .where((e) => e.status.toLowerCase() == 'pending')
+        .fold(0.0, (sum, e) => sum + e.totalAmount);
+  }
+
+  /// Client-side filtered and sorted expenses for snappy UI response
+  List<ExpenseModel> get filteredExpenses {
+    return _expenses.where((expense) {
+      final query = _searchQuery.toLowerCase();
+      final matchQuery = query.isEmpty ||
+          expense.id.toLowerCase().contains(query) ||
+          expense.category.toLowerCase().contains(query) ||
+          expense.vendor.toLowerCase().contains(query) ||
+          (expense.billNumber?.toLowerCase().contains(query) ?? false) ||
+          (expense.notes?.toLowerCase().contains(query) ?? false);
+
+      bool matchStatus = true;
+      if (_statusFilter != null && _statusFilter!.isNotEmpty && _statusFilter != 'All') {
+        matchStatus = expense.status.toLowerCase() == _statusFilter!.toLowerCase();
+      }
+
+      bool matchCategory = true;
+      if (_categoryFilter != null && _categoryFilter!.isNotEmpty && _categoryFilter != 'All') {
+        matchCategory = expense.category.toLowerCase() == _categoryFilter!.toLowerCase();
+      }
+
+      return matchQuery && matchStatus && matchCategory;
+    }).toList()
+      ..sort((a, b) {
+        switch (_ordering) {
+          case 'date_desc':
+          case 'newest':
+            return b.expenseDate.compareTo(a.expenseDate);
+          case 'date_asc':
+          case 'oldest':
+            return a.expenseDate.compareTo(b.expenseDate);
+          case 'amount_desc':
+          case 'highest_amount':
+            return b.totalAmount.compareTo(a.totalAmount);
+          case 'amount_asc':
+          case 'lowest_amount':
+            return a.totalAmount.compareTo(b.totalAmount);
+          default:
+            return b.expenseDate.compareTo(a.expenseDate);
+        }
+      });
+  }
+
   String get searchQuery => _searchQuery;
   String? get categoryFilter => _categoryFilter;
   String? get vendorFilter => _vendorFilter;
@@ -66,6 +132,21 @@ class ExpenseProvider with ChangeNotifier {
 
   ExpenseProvider() {
     refreshAll();
+  }
+
+  void setSearchQuery(String query) {
+    _searchQuery = query;
+    notifyListeners();
+  }
+
+  void setStatusFilter(String status) {
+    _statusFilter = (status == 'All' || status.isEmpty) ? null : status;
+    notifyListeners();
+  }
+
+  void setSortBy(String sort) {
+    _ordering = sort;
+    notifyListeners();
   }
 
   /// Sets active filter parameters and updates the expense list
@@ -114,11 +195,10 @@ class ExpenseProvider with ChangeNotifier {
 
     try {
       await Future.wait([
-        fetchDashboardMetrics(silent: true),
-        fetchCategories(silent: true),
-        fetchVendors(silent: true),
-        fetchRecentExpenses(silent: true),
-        fetchExpenses(reset: true, silent: true),
+        fetchDashboardMetrics(silent: true).catchError((_) {}),
+        fetchCategories(silent: true).catchError((_) {}),
+        fetchVendors(silent: true).catchError((_) {}),
+        fetchExpenses(reset: true, silent: true).catchError((_) {}),
       ]);
     } catch (e) {
       _errorMessage = 'Failed to fetch expense records: $e';
@@ -172,15 +252,8 @@ class ExpenseProvider with ChangeNotifier {
     }
   }
 
-  /// Load horizontal cards list
-  Future<void> fetchRecentExpenses({bool silent = false}) async {
-    try {
-      _recentExpenses = await _repository.getRecentExpenses();
-      if (!silent) notifyListeners();
-    } catch (e) {
-      rethrow;
-    }
-  }
+  /// List recent expenses
+  List<ExpenseModel> get recentExpenses => _expenses.take(10).toList();
 
   /// Helper to convert active filter filters to API parameters
   Map<String, dynamic> _buildFilterParams() {
@@ -241,7 +314,7 @@ class ExpenseProvider with ChangeNotifier {
     }
   }
 
-  /// POST/PATCH expense changes along with file attachments
+  /// POST/PATCH expense changes
   Future<bool> saveExpense(ExpenseModel expense, {File? file}) async {
     _isSaving = true;
     _errorMessage = null;
@@ -255,15 +328,16 @@ class ExpenseProvider with ChangeNotifier {
         _expenses.insert(0, saved);
       } else {
         saved = await _repository.updateExpense(expense, file: file);
-        final index = _expenses.indexWhere((e) => e.id == saved.id);
+        final index = _expenses.indexWhere((e) => e.id == saved.id || e.id == expense.id);
         if (index >= 0) {
           _expenses[index] = saved;
+        } else {
+          _expenses.insert(0, saved);
         }
       }
 
-      // Update recent collections and metrics in background
+      // Update metrics in background
       await fetchDashboardMetrics(silent: true);
-      await fetchRecentExpenses(silent: true);
       notifyListeners();
       return true;
     } catch (e) {
@@ -276,20 +350,36 @@ class ExpenseProvider with ChangeNotifier {
     }
   }
 
-  /// DELETE an expense
+  /// DELETE an expense (Soft Delete)
   Future<bool> deleteExpense(String id) async {
     _errorMessage = null;
     try {
       final success = await _repository.deleteExpense(id);
       if (success) {
         _expenses.removeWhere((e) => e.id == id);
-        _recentExpenses.removeWhere((e) => e.id == id);
         await fetchDashboardMetrics(silent: true);
         notifyListeners();
       }
       return success;
     } catch (e) {
       _errorMessage = 'Failed to delete expense: $e';
+      notifyListeners();
+      return false;
+    }
+  }
+
+  /// RESTORE soft-deleted expense
+  Future<bool> restoreExpense(String id) async {
+    _errorMessage = null;
+    try {
+      final success = await _repository.restoreExpense(id);
+      if (success) {
+        await fetchExpenses(reset: true);
+        await fetchDashboardMetrics(silent: true);
+      }
+      return success;
+    } catch (e) {
+      _errorMessage = 'Failed to restore expense: $e';
       notifyListeners();
       return false;
     }

@@ -21,138 +21,189 @@ class ExpensePageResult {
 class ExpenseRepository {
   final ExpenseApiService _apiService = ExpenseApiService();
 
-  /// Retrieve aggregate stats for the metrics cards
+  /// Retrieve summary stats from profit-loss report for dashboard / summary cards
   Future<Map<String, double>> getDashboardMetrics() async {
-    final response = await _apiService.fetchDashboard();
-    final data = response.data['data'] as Map<String, dynamic>;
-    return {
-      'total_expenses': (data['total_expenses'] ?? 0.0).toDouble(),
-      'gst_input_credit': (data['gst_input_credit'] ?? 0.0).toDouble(),
-      'this_month': (data['this_month'] ?? 0.0).toDouble(),
-      'pending_payments': (data['pending_payments'] ?? 0.0).toDouble(),
-    };
+    try {
+      final response = await _apiService.fetchProfitLossReport();
+      dynamic data = response;
+      if (data is Map && data.containsKey('data')) {
+        data = data['data'];
+      }
+      if (data is Map) {
+        double toDouble(dynamic val) {
+          if (val == null) return 0.0;
+          if (val is num) return val.toDouble();
+          if (val is String) return double.tryParse(val) ?? 0.0;
+          return 0.0;
+        }
+
+        return {
+          'total_expenses': toDouble(data['totalExpenses'] ?? data['total_expenses'] ?? data['operatingExpenses']),
+          'operating_expenses': toDouble(data['operatingExpenses'] ?? data['operating_expenses']),
+          'bills_expenses': toDouble(data['billsExpenses'] ?? data['bills_expenses']),
+          'purchase_expenses': toDouble(data['purchaseExpenses'] ?? data['purchase_expenses']),
+        };
+      }
+    } catch (_) {}
+    return {};
   }
 
-  /// Retrieve standard category names
+  /// Retrieve category names from /api/v1/settings (expenses.expenseCategories)
   Future<List<String>> getCategories() async {
-    final response = await _apiService.fetchCategories();
-    final list = response.data['data'] as List;
-    return list.map((item) => item['name'] as String).toList();
+    try {
+      final response = await _apiService.fetchSettings();
+      dynamic data = response;
+      if (data is Map && data.containsKey('data')) {
+        data = data['data'];
+      }
+      if (data is Map && data.containsKey('expenses')) {
+        final expensesBlock = data['expenses'];
+        if (expensesBlock is Map && expensesBlock.containsKey('expenseCategories')) {
+          final catString = expensesBlock['expenseCategories']?.toString() ?? '';
+          if (catString.isNotEmpty) {
+            final list = catString
+                .split(',')
+                .map((c) => c.trim())
+                .where((c) => c.isNotEmpty)
+                .toList();
+            if (list.isNotEmpty) return list;
+          }
+        }
+      }
+    } catch (_) {}
+
+    // Fallback standard categories if settings are unset
+    return [
+      'Rent & Accommodation',
+      'Office Supplies',
+      'Travel Expenses',
+      'Utilities',
+      'Advertising & Marketing',
+      'Employee Salaries & Wages',
+      'Food, Meals & Entertainment',
+      'Freight & Delivery',
+      'Fuel & Petrol',
+      'Insurance',
+      'Internet & Telephone',
+      'Repairs & Maintenance',
+      'Software & Subscriptions',
+      'Taxes & Licenses',
+      'Miscellaneous',
+    ];
   }
 
-  /// Retrieve standard vendor names (supporting live search queries)
+  /// Retrieve vendors list from /api/v1/vendors for autocomplete
   Future<List<String>> getVendors({String? search}) async {
-    final response = await _apiService.fetchVendors(search: search);
-    final list = response.data['data'] as List;
-    return list.map((item) => item['vendor_name'] as String).toList();
+    try {
+      final response = await _apiService.fetchVendors(search: search);
+      dynamic data = response;
+      if (data is Map && data.containsKey('data')) {
+        data = data['data'];
+      }
+      if (data is List) {
+        final names = data.map((item) {
+          if (item is Map) {
+            return (item['name'] ?? item['vendor_name'] ?? item['company_name'] ?? '').toString();
+          }
+          return item.toString();
+        }).where((name) => name.isNotEmpty).toList();
+        return names;
+      }
+    } catch (_) {}
+    return [];
   }
 
-  /// Retrieve recent expenses list (latest 10)
-  Future<List<ExpenseModel>> getRecentExpenses() async {
-    final response = await _apiService.fetchRecentExpenses();
-    final list = response.data['data'] as List;
-    return list.map((item) => ExpenseModel.fromMap(item)).toList();
-  }
-
-  /// Retrieve full list of expenses (paginated and filtered)
+  /// Retrieve full list of expenses (GET /api/v1/expenses)
   Future<ExpensePageResult> getExpenses({Map<String, dynamic>? queryParameters}) async {
     final response = await _apiService.fetchExpenses(queryParameters: queryParameters);
-    final data = response.data['data'] as Map<String, dynamic>;
-    final results = data['results'] as List;
-    final expenses = results.map((item) => ExpenseModel.fromMap(item)).toList();
-    
+    dynamic listData = response;
+
+    if (listData is Map && listData.containsKey('data')) {
+      listData = listData['data'];
+    }
+    if (listData is Map && listData.containsKey('results')) {
+      final results = listData['results'] as List;
+      final expenses = results.map((item) => ExpenseModel.fromMap(Map<String, dynamic>.from(item as Map))).toList();
+      return ExpensePageResult(
+        expenses: expenses,
+        count: listData['count'] ?? expenses.length,
+        next: listData['next'],
+        previous: listData['previous'],
+        totalPages: listData['total_pages'] ?? 1,
+      );
+    }
+
+    if (listData is List) {
+      final expenses = listData
+          .map((item) => ExpenseModel.fromMap(Map<String, dynamic>.from(item as Map)))
+          .toList();
+      return ExpensePageResult(
+        expenses: expenses,
+        count: expenses.length,
+        totalPages: 1,
+      );
+    }
+
     return ExpensePageResult(
-      expenses: expenses,
-      count: data['count'] ?? 0,
-      next: data['next'],
-      previous: data['previous'],
-      totalPages: data['total_pages'] ?? 1,
+      expenses: [],
+      count: 0,
+      totalPages: 1,
     );
   }
 
-  /// Fetch full details of a specific expense
+  /// Fetch full details of a specific expense (GET /api/v1/expenses/{id})
   Future<ExpenseModel> getExpenseDetails(String id) async {
     final response = await _apiService.fetchExpenseDetails(id);
-    final data = response.data['data'] as Map<String, dynamic>;
-    return ExpenseModel.fromMap(data);
+    dynamic data = response;
+    if (data is Map && data.containsKey('data') && data['data'] is Map) {
+      data = data['data'];
+    }
+    return ExpenseModel.fromMap(Map<String, dynamic>.from(data as Map));
   }
 
-  /// POST a new expense with calculation fields excluded
+  /// Create a new expense (POST /api/v1/expenses)
   Future<ExpenseModel> createExpense(ExpenseModel expense, {File? file}) async {
-    final map = expense.toMap();
-    // Calculations performed server-side (do not trust frontend)
-    map.remove('gstAmount');
-    map.remove('totalAmount');
-    
-    // Remove local mock template IDs
-    if (expense.id.isEmpty || expense.id.startsWith('EXP-') || expense.id.startsWith('temp_')) {
-      map.remove('id');
+    final payload = expense.toApiJson();
+    final response = await _apiService.createExpense(payload);
+    dynamic data = response;
+    if (data is Map && data.containsKey('data') && data['data'] is Map) {
+      data = data['data'];
     }
-
-    // Convert date times to clean YYYY-MM-DD formats for DateFields
-    if (map['expenseDate'] != null) {
-      map['expenseDate'] = map['expenseDate'].toString().split('T').first;
+    if (data is Map) {
+      return ExpenseModel.fromMap(Map<String, dynamic>.from(data));
     }
-    if (map['dueDate'] != null) {
-      map['dueDate'] = map['dueDate'].toString().split('T').first;
-    }
-
-    // Map keys to match python snake_case
-    final payload = _convertToSnakeCase(map);
-    
-    final response = await _apiService.createExpense(payload, file: file);
-    final responseData = response.data['data'] as Map<String, dynamic>;
-    return ExpenseModel.fromMap(responseData);
+    return expense;
   }
 
-  /// PUT (PATCH) updates on an existing expense
+  /// Update an existing expense (PUT /api/v1/expenses/{id})
   Future<ExpenseModel> updateExpense(ExpenseModel expense, {File? file}) async {
-    final map = expense.toMap();
-    map.remove('gstAmount');
-    map.remove('totalAmount');
-    
-    if (map['expenseDate'] != null) {
-      map['expenseDate'] = map['expenseDate'].toString().split('T').first;
+    final payload = expense.toApiJson();
+    final response = await _apiService.updateExpense(expense.id, payload);
+    dynamic data = response;
+    if (data is Map && data.containsKey('data') && data['data'] is Map) {
+      data = data['data'];
     }
-    if (map['dueDate'] != null) {
-      map['dueDate'] = map['dueDate'].toString().split('T').first;
+    if (data is Map) {
+      return ExpenseModel.fromMap(Map<String, dynamic>.from(data));
     }
-
-    final payload = _convertToSnakeCase(map);
-
-    final response = await _apiService.updateExpense(expense.id, payload, file: file);
-    final responseData = response.data['data'] as Map<String, dynamic>;
-    return ExpenseModel.fromMap(responseData);
+    return expense;
   }
 
-  /// DELETE an expense
+  /// Delete an expense (DELETE /api/v1/expenses/{id})
   Future<bool> deleteExpense(String id) async {
     final response = await _apiService.deleteExpense(id);
-    return response.data['success'] ?? false;
+    if (response is Map) {
+      return response['success'] == true || response['statusCode'] == 200 || response['statusCode'] == 204;
+    }
+    return true;
   }
 
-  /// Map camelCase fields to snake_case backend parameters
-  Map<String, dynamic> _convertToSnakeCase(Map<String, dynamic> camelMap) {
-    final Map<String, dynamic> snakeMap = {};
-    camelMap.forEach((key, value) {
-      String snakeKey = key;
-      if (key == 'gstRate') {
-        snakeKey = 'gst_rate';
-      } else if (key == 'paymentMode') {
-        snakeKey = 'payment_mode';
-      } else if (key == 'expenseDate') {
-        snakeKey = 'expense_date';
-      } else if (key == 'dueDate') {
-        snakeKey = 'due_date';
-      } else if (key == 'billNumber') {
-        snakeKey = 'bill_number';
-      } else if (key == 'status') {
-        snakeKey = 'payment_status';
-      } else if (key == 'isDraft') {
-        snakeKey = 'is_draft';
-      }
-      snakeMap[snakeKey] = value;
-    });
-    return snakeMap;
+  /// Restore a soft-deleted expense (POST /api/v1/expenses/{id}/restore)
+  Future<bool> restoreExpense(String id) async {
+    final response = await _apiService.restoreExpense(id);
+    if (response is Map) {
+      return response['success'] == true;
+    }
+    return true;
   }
 }

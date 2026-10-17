@@ -12,6 +12,26 @@ import '../settings/providers/settings_provider.dart';
 
 class NavigationShell extends StatefulWidget {
   final StatefulNavigationShell navigationShell;
+  static final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+
+  static void openDrawer([BuildContext? context]) {
+    if (scaffoldKey.currentState?.hasDrawer ?? false) {
+      scaffoldKey.currentState!.openDrawer();
+      return;
+    }
+    if (context != null) {
+      context.visitAncestorElements((element) {
+        if (element is StatefulElement && element.state is ScaffoldState) {
+          final state = element.state as ScaffoldState;
+          if (state.hasDrawer) {
+            state.openDrawer();
+            return false;
+          }
+        }
+        return true;
+      });
+    }
+  }
 
   const NavigationShell({
     super.key,
@@ -508,7 +528,7 @@ class _NavigationShellState extends State<NavigationShell> {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             onTap: () {
               Navigator.pop(context);
-              context.push('/expenses');
+              context.push('/expenses/create');
             },
           ),
           const SizedBox(height: 16),
@@ -541,62 +561,74 @@ class _NavigationShellState extends State<NavigationShell> {
     final companyName = settingsProvider.companySettings?.companyName ?? 'Prabhim One';
 
     return Scaffold(
+      key: NavigationShell.scaffoldKey,
       drawer: Drawer(
         backgroundColor: theme.scaffoldBackgroundColor,
         child: Column(
           children: [
             // Custom Premium Drawer Header
-            Container(
-              padding: const EdgeInsets.only(top: 60, bottom: 24, left: 20, right: 20),
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: isDark ? theme.colorScheme.surface : theme.colorScheme.primaryContainer,
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(24),
-                  bottomRight: Radius.circular(24),
+            InkWell(
+              onTap: () {
+                Navigator.pop(context);
+                context.push('/profile');
+              },
+              child: Container(
+                padding: const EdgeInsets.only(top: 60, bottom: 24, left: 20, right: 20),
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: isDark ? theme.colorScheme.surface : theme.colorScheme.primaryContainer,
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(24),
+                    bottomRight: Radius.circular(24),
+                  ),
                 ),
-              ),
-              child: Row(
-                children: [
-                  CustomAvatar(
-                    name: userName,
-                    radius: 28,
-                  ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          userName,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          companyName,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: theme.colorScheme.primary,
-                          ),
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          email,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: isDark ? Colors.grey[400] : Colors.grey[600],
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
+                child: Row(
+                  children: [
+                    CustomAvatar(
+                      name: userName,
+                      imageUrl: authProvider.currentUserProfileImage ?? authProvider.currentUserAvatar,
+                      radius: 28,
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            userName,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            companyName,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: theme.colorScheme.primary,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            email,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: isDark ? Colors.grey[400] : Colors.grey[600],
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(
+                      Icons.chevron_right_rounded,
+                      color: theme.colorScheme.primary.withValues(alpha: 0.6),
+                    ),
+                  ],
+                ),
               ),
             ),
 

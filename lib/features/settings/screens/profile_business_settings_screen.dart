@@ -29,6 +29,7 @@ class _ProfileBusinessSettingsScreenState extends State<ProfileBusinessSettingsS
   late TextEditingController _personalPhoneController;
   late TextEditingController _designationController;
   late TextEditingController _personalEmailController;
+  late TextEditingController _personalTimeZoneController;
   String _selectedAvatar = '👤';
   String _selectedTheme = 'light';
 
@@ -67,6 +68,7 @@ class _ProfileBusinessSettingsScreenState extends State<ProfileBusinessSettingsS
     _personalPhoneController = TextEditingController(text: authProvider.currentUserPhone ?? '');
     _designationController = TextEditingController(text: authProvider.currentUserDesignation ?? '');
     _personalEmailController = TextEditingController(text: authProvider.currentUserEmail ?? '');
+    _personalTimeZoneController = TextEditingController(text: authProvider.currentUserTimeZone ?? 'Asia/Kolkata');
     _selectedAvatar = authProvider.currentUserAvatar ?? '👤';
     _selectedTheme = authProvider.currentUserTheme ?? 'light';
 
@@ -94,15 +96,23 @@ class _ProfileBusinessSettingsScreenState extends State<ProfileBusinessSettingsS
 
       if (mounted) {
         if (profileData != null) {
-          final name = profileData['name'] ?? profileData['fullName'];
+          final name = profileData['name'] ?? profileData['fullName'] ?? profileData['full_name'];
           if (name != null && name.toString().isNotEmpty) {
             _fullNameController.text = name.toString();
           }
-          if (profileData['phone'] != null) {
-            _personalPhoneController.text = profileData['phone'].toString();
+          final phone = profileData['phone'] ?? profileData['phoneNumber'] ?? profileData['phone_number'];
+          if (phone != null) {
+            _personalPhoneController.text = phone.toString();
+          }
+          if (profileData['email'] != null && profileData['email'].toString().isNotEmpty) {
+            _personalEmailController.text = profileData['email'].toString();
           }
           if (profileData['designation'] != null) {
             _designationController.text = profileData['designation'].toString();
+          }
+          final tz = profileData['timeZone'] ?? profileData['time_zone'] ?? profileData['timezone'];
+          if (tz != null && tz.toString().isNotEmpty) {
+            _personalTimeZoneController.text = tz.toString();
           }
           if (profileData['avatar'] != null) {
             setState(() {
@@ -143,6 +153,7 @@ class _ProfileBusinessSettingsScreenState extends State<ProfileBusinessSettingsS
     _personalPhoneController.dispose();
     _designationController.dispose();
     _personalEmailController.dispose();
+    _personalTimeZoneController.dispose();
 
     _companyNameController.dispose();
     _legalNameController.dispose();
@@ -440,79 +451,71 @@ class _ProfileBusinessSettingsScreenState extends State<ProfileBusinessSettingsS
 
   Future<void> _saveAll() async {
     final isProfileTab = _tabController.index == 0;
-    if (isProfileTab) {
-      if (!_profileFormKey.currentState!.validate()) return;
-    } else {
-      if (!_businessFormKey.currentState!.validate()) return;
-    }
-
     final authProvider = context.read<AuthProvider>();
     final settingsProvider = context.read<SettingsProvider>();
 
-    bool allSuccess = true;
-
-    // Save Profile
-    if (_profileFormKey.currentState?.validate() ?? true) {
+    if (isProfileTab) {
+      if (!_profileFormKey.currentState!.validate()) return;
       final profileSuccess = await authProvider.updateProfile(
         name: _fullNameController.text.trim(),
+        email: _personalEmailController.text.trim(),
         phone: _personalPhoneController.text.trim(),
         designation: _designationController.text.trim(),
         avatar: _selectedAvatar,
         theme: _selectedTheme,
-        timeZone: _timezoneController.text.trim(),
+        timeZone: _personalTimeZoneController.text.trim(),
       );
-      if (!profileSuccess) {
-        allSuccess = false;
-        if (mounted) {
-          _showSnackBar(authProvider.errorMessage ?? 'Failed to update personal profile', isError: true);
+      if (mounted) {
+        if (profileSuccess) {
+          _showSnackBar('Personal profile updated successfully.', isError: false);
+        } else {
+          _showSnackBar(authProvider.errorMessage ?? 'Failed to update personal profile.', isError: true);
+        }
+      }
+    } else {
+      if (!_businessFormKey.currentState!.validate()) return;
+      final updatedOrg = CompanySettings(
+        companyName: _companyNameController.text.trim(),
+        legalName: _legalNameController.text.trim(),
+        website: _websiteController.text.trim(),
+        email: _businessEmailController.text.trim(),
+        phone: _businessPhoneController.text.trim(),
+        gstNumber: _gstNumberController.text.trim(),
+        panNumber: _panNumberController.text.trim(),
+        currency: settingsProvider.companySettings?.currency ?? 'INR',
+        timezone: _timezoneController.text.trim(),
+        country: _countryController.text.trim(),
+        state: _stateController.text.trim(),
+        city: _cityController.text.trim(),
+        address: _addressController.text.trim(),
+        postalCode: _postalCodeController.text.trim(),
+        financialYear: settingsProvider.companySettings?.financialYear ?? 'April - March',
+        language: settingsProvider.companySettings?.language ?? 'en',
+        dateFormat: settingsProvider.companySettings?.dateFormat ?? 'YYYY-MM-DD',
+        timeFormat: settingsProvider.companySettings?.timeFormat ?? 'HH:mm:ss',
+        companyLogo: settingsProvider.companySettings?.companyLogo,
+      );
+
+      final orgSuccess = await settingsProvider.updateCompany(updatedOrg);
+      if (mounted) {
+        if (orgSuccess) {
+          context.read<AuthProvider>().updateCompanyName(updatedOrg.companyName);
+          context.read<DashboardProvider>().setOrganization(updatedOrg);
+          _showSnackBar('Company details updated successfully.', isError: false);
+        } else {
+          _showSnackBar(settingsProvider.errorMessage ?? 'Failed to update organization details.', isError: true);
         }
       }
     }
-
-    // Save Business / Organization
-    final updatedOrg = CompanySettings(
-      companyName: _companyNameController.text.trim(),
-      legalName: _legalNameController.text.trim(),
-      website: _websiteController.text.trim(),
-      email: _businessEmailController.text.trim(),
-      phone: _businessPhoneController.text.trim(),
-      gstNumber: _gstNumberController.text.trim(),
-      panNumber: _panNumberController.text.trim(),
-      currency: settingsProvider.companySettings?.currency ?? 'INR',
-      timezone: _timezoneController.text.trim(),
-      country: _countryController.text.trim(),
-      state: _stateController.text.trim(),
-      city: _cityController.text.trim(),
-      address: _addressController.text.trim(),
-      postalCode: _postalCodeController.text.trim(),
-      financialYear: settingsProvider.companySettings?.financialYear ?? 'April - March',
-      language: settingsProvider.companySettings?.language ?? 'en',
-      dateFormat: settingsProvider.companySettings?.dateFormat ?? 'YYYY-MM-DD',
-      timeFormat: settingsProvider.companySettings?.timeFormat ?? 'HH:mm:ss',
-      companyLogo: settingsProvider.companySettings?.companyLogo,
-    );
-
-    final orgSuccess = await settingsProvider.updateCompany(updatedOrg);
-    if (!orgSuccess) {
-      allSuccess = false;
-      if (mounted) {
-        _showSnackBar(settingsProvider.errorMessage ?? 'Failed to update organization details', isError: true);
-      }
-    } else {
-      if (mounted) {
-        context.read<AuthProvider>().updateCompanyName(updatedOrg.companyName);
-        context.read<DashboardProvider>().setOrganization(updatedOrg);
-      }
-    }
-
-    if (mounted && allSuccess) {
-      _showSnackBar('Profile & Business details saved successfully', isError: false);
-      Navigator.pop(context);
-    }
   }
 
-  Widget _buildImageWidget(String? url, IconData placeholderIcon, bool isDark) {
+  Widget _buildImageWidget(String? url, IconData placeholderIcon, bool isDark, {String? fallbackEmoji}) {
     if (url == null || url.isEmpty) {
+      if (fallbackEmoji != null && fallbackEmoji.isNotEmpty) {
+        return Center(
+          child: Text(fallbackEmoji, style: const TextStyle(fontSize: 42)),
+        );
+      }
       return Center(
         child: Icon(placeholderIcon, size: 40, color: isDark ? Colors.grey[600] : Colors.grey[400]),
       );
@@ -525,6 +528,11 @@ class _ProfileBusinessSettingsScreenState extends State<ProfileBusinessSettingsS
         final bytes = base64Decode(base64Data);
         return Image.memory(bytes, fit: BoxFit.cover);
       } catch (_) {
+        if (fallbackEmoji != null && fallbackEmoji.isNotEmpty) {
+          return Center(
+            child: Text(fallbackEmoji, style: const TextStyle(fontSize: 42)),
+          );
+        }
         return Center(
           child: Icon(placeholderIcon, size: 40, color: isDark ? Colors.grey[600] : Colors.grey[400]),
         );
@@ -536,6 +544,11 @@ class _ProfileBusinessSettingsScreenState extends State<ProfileBusinessSettingsS
       fullUrl,
       fit: BoxFit.cover,
       errorBuilder: (context, error, stackTrace) {
+        if (fallbackEmoji != null && fallbackEmoji.isNotEmpty) {
+          return Center(
+            child: Text(fallbackEmoji, style: const TextStyle(fontSize: 42)),
+          );
+        }
         return Center(
           child: Icon(placeholderIcon, size: 40, color: isDark ? Colors.grey[600] : Colors.grey[400]),
         );
@@ -546,6 +559,7 @@ class _ProfileBusinessSettingsScreenState extends State<ProfileBusinessSettingsS
   Widget _buildPhotoCard({
     required String title,
     required String? imageUrl,
+    String? fallbackEmoji,
     required VoidCallback onPick,
     required VoidCallback? onDelete,
     required bool isLoading,
@@ -599,7 +613,7 @@ class _ProfileBusinessSettingsScreenState extends State<ProfileBusinessSettingsS
                           child: CircularProgressIndicator(strokeWidth: 2.5),
                         ),
                       )
-                    : _buildImageWidget(imageUrl, placeholderIcon, isDark),
+                    : _buildImageWidget(imageUrl, placeholderIcon, isDark, fallbackEmoji: fallbackEmoji),
               ),
             ),
             Positioned(
@@ -706,6 +720,7 @@ class _ProfileBusinessSettingsScreenState extends State<ProfileBusinessSettingsS
               child: _buildPhotoCard(
                 title: 'Profile Picture',
                 imageUrl: auth.currentUserProfileImage,
+                fallbackEmoji: _selectedAvatar,
                 onPick: () => _pickImage(isProfile: true),
                 onDelete: auth.currentUserProfileImage != null && auth.currentUserProfileImage!.isNotEmpty
                     ? () => _deleteImage(isProfile: true)
@@ -815,7 +830,7 @@ class _ProfileBusinessSettingsScreenState extends State<ProfileBusinessSettingsS
                     const SizedBox(height: 16),
                     _buildCustomTextField(
                       controller: _fullNameController,
-                      label: 'Full Name',
+                      label: 'Full Name *',
                       hintText: 'John Doe',
                       prefixIcon: Icons.person_outline_rounded,
                       validator: (val) =>
@@ -823,10 +838,16 @@ class _ProfileBusinessSettingsScreenState extends State<ProfileBusinessSettingsS
                     ),
                     const SizedBox(height: 14),
                     _buildCustomTextField(
-                      controller: _designationController,
-                      label: 'Designation / Title',
-                      hintText: 'e.g. Director, Managing Partner',
-                      prefixIcon: Icons.badge_outlined,
+                      controller: _personalEmailController,
+                      label: 'Account Email *',
+                      hintText: 'user@example.com',
+                      prefixIcon: Icons.email_outlined,
+                      keyboardType: TextInputType.emailAddress,
+                      validator: (val) {
+                        if (val == null || val.trim().isEmpty) return 'Please enter your email';
+                        if (!val.contains('@') || !val.contains('.')) return 'Please enter a valid email';
+                        return null;
+                      },
                     ),
                     const SizedBox(height: 14),
                     _buildCustomTextField(
@@ -838,11 +859,132 @@ class _ProfileBusinessSettingsScreenState extends State<ProfileBusinessSettingsS
                     ),
                     const SizedBox(height: 14),
                     _buildCustomTextField(
-                      controller: _personalEmailController,
-                      label: 'Account Email',
-                      hintText: 'user@example.com',
-                      prefixIcon: Icons.email_outlined,
-                      isReadOnly: true,
+                      controller: _designationController,
+                      label: 'Designation / Title',
+                      hintText: 'e.g. Managing Director, Founder',
+                      prefixIcon: Icons.badge_outlined,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Preferences Card (Theme & Time Zone)
+            Card(
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Preferences & Appearance',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    ),
+                    const SizedBox(height: 14),
+                    Text(
+                      'App Theme',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).brightness == Brightness.dark ? Colors.grey[300] : Colors.grey[700],
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: InkWell(
+                            onTap: () => setState(() => _selectedTheme = 'light'),
+                            borderRadius: BorderRadius.circular(10),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              decoration: BoxDecoration(
+                                color: _selectedTheme == 'light'
+                                    ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.15)
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                  color: _selectedTheme == 'light'
+                                      ? Theme.of(context).colorScheme.primary
+                                      : Colors.grey.withValues(alpha: 0.3),
+                                  width: _selectedTheme == 'light' ? 2 : 1,
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.light_mode_rounded,
+                                    size: 18,
+                                    color: _selectedTheme == 'light' ? Theme.of(context).colorScheme.primary : Colors.grey,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'Light',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: _selectedTheme == 'light' ? Theme.of(context).colorScheme.primary : null,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: InkWell(
+                            onTap: () => setState(() => _selectedTheme = 'dark'),
+                            borderRadius: BorderRadius.circular(10),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              decoration: BoxDecoration(
+                                color: _selectedTheme == 'dark'
+                                    ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.15)
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                  color: _selectedTheme == 'dark'
+                                      ? Theme.of(context).colorScheme.primary
+                                      : Colors.grey.withValues(alpha: 0.3),
+                                  width: _selectedTheme == 'dark' ? 2 : 1,
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.dark_mode_rounded,
+                                    size: 18,
+                                    color: _selectedTheme == 'dark' ? Theme.of(context).colorScheme.primary : Colors.grey,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'Dark',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: _selectedTheme == 'dark' ? Theme.of(context).colorScheme.primary : null,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+                    _buildCustomTextField(
+                      controller: _personalTimeZoneController,
+                      label: 'Time Zone',
+                      hintText: 'Asia/Kolkata',
+                      prefixIcon: Icons.schedule_rounded,
+                      textInputAction: TextInputAction.done,
                     ),
                   ],
                 ),

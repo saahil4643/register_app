@@ -44,8 +44,31 @@ class BillItem {
   /// Total amount for this item
   double get totalAmount => taxableAmount + taxAmount;
 
+  static final RegExp _uuidRegex = RegExp(
+    r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
+  );
+
+  Map<String, dynamic> toApiJson() {
+    final map = <String, dynamic>{
+      'item_details': name,
+      'name': name,
+      'hsn_sac': hsnCode,
+      'quantity': quantity,
+      'unit': unit,
+      'rate': rate,
+      'gst_rate': gstRate,
+      'discount': discount,
+      'discount_type': discountType,
+      'amount': taxableAmount,
+    };
+    if (_uuidRegex.hasMatch(id)) {
+      map['id'] = id;
+    }
+    return map;
+  }
+
   Map<String, dynamic> toJson() => {
-        'id': id,
+        if (_uuidRegex.hasMatch(id)) 'id': id,
         'item_details': name,
         'name': name,
         'hsn_sac': hsnCode,
@@ -181,6 +204,12 @@ class Bill {
     }
     if (notes.trim().isNotEmpty) {
       map['notes'] = notes.trim();
+    }
+    if (paymentMode.trim().isNotEmpty) {
+      map['payment_mode'] = paymentMode.trim();
+    }
+    if (items.isNotEmpty) {
+      map['items'] = items.map((i) => i.toApiJson()).toList();
     }
     return map;
   }

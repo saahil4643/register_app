@@ -682,7 +682,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_flutter_material_dart",
-      "community": 175,
+      "community": 93,
       "norm_label": "package:flutter/material.dart"
     },
     {
@@ -702,7 +702,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_provider_provider_dart",
-      "community": 78,
+      "community": 93,
       "norm_label": "package:provider/provider.dart"
     },
     {
@@ -1762,7 +1762,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_constants_app_text_styles",
-      "community": 38,
+      "community": 125,
       "norm_label": "app_text_styles.dart"
     },
     {
@@ -1772,7 +1772,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_constants_app_text_styles_apptextstyles",
-      "community": 38,
+      "community": 125,
       "norm_label": "apptextstyles"
     },
     {
@@ -1782,7 +1782,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_constants_app_text_styles_titlelarge",
-      "community": 38,
+      "community": 125,
       "norm_label": "titlelarge"
     },
     {
@@ -1792,7 +1792,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_constants_app_text_styles_titlemedium",
-      "community": 38,
+      "community": 125,
       "norm_label": "titlemedium"
     },
     {
@@ -1802,7 +1802,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_constants_app_text_styles_bodylarge",
-      "community": 38,
+      "community": 125,
       "norm_label": "bodylarge"
     },
     {
@@ -1812,7 +1812,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_constants_app_text_styles_bodymedium",
-      "community": 38,
+      "community": 125,
       "norm_label": "bodymedium"
     },
     {
@@ -1822,7 +1822,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_constants_app_text_styles_bodysmall",
-      "community": 38,
+      "community": 125,
       "norm_label": "bodysmall"
     },
     {
@@ -1832,7 +1832,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_constants_app_text_styles_labelbold",
-      "community": 38,
+      "community": 125,
       "norm_label": "labelbold"
     },
     {
@@ -1842,7 +1842,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_google_fonts_google_fonts_dart",
-      "community": 38,
+      "community": 125,
       "norm_label": "package:google_fonts/google_fonts.dart"
     },
     {
@@ -1852,7 +1852,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "app_colors_dart",
-      "community": 38,
+      "community": 125,
       "norm_label": "app_colors.dart"
     },
     {
@@ -1872,7 +1872,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_services_api_service_apiservice",
-      "community": 168,
+      "community": 115,
       "norm_label": "apiservice"
     },
     {
@@ -1912,7 +1912,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "voidcallback",
-      "community": 150,
+      "community": 163,
       "norm_label": "voidcallback"
     },
     {
@@ -2372,7 +2372,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_theme_app_theme",
-      "community": 38,
+      "community": 125,
       "norm_label": "app_theme.dart"
     },
     {
@@ -2382,7 +2382,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_theme_app_theme_apptheme",
-      "community": 38,
+      "community": 125,
       "norm_label": "apptheme"
     },
     {
@@ -2392,7 +2392,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "constants_app_colors_dart",
-      "community": 38,
+      "community": 125,
       "norm_label": "../constants/app_colors.dart"
     },
     {
@@ -2422,7 +2422,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "changenotifier",
-      "community": 158,
+      "community": 135,
       "norm_label": "changenotifier"
     },
     {
@@ -2762,7 +2762,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_widgets_custom_buttons",
-      "community": 88,
+      "community": 85,
       "norm_label": "custom_buttons.dart"
     },
     {
@@ -2772,7 +2772,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_widgets_custom_buttons_customprimarybutton",
-      "community": 88,
+      "community": 85,
       "norm_label": "customprimarybutton"
     },
     {
@@ -2782,7 +2782,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "statelesswidget",
-      "community": 88,
+      "community": 85,
       "norm_label": "statelesswidget"
     },
     {
@@ -2792,7 +2792,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_widgets_custom_buttons_customsecondarybutton",
-      "community": 88,
+      "community": 85,
       "norm_label": "customsecondarybutton"
     },
     {
@@ -2802,7 +2802,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_widgets_custom_buttons_customoutlinedbutton",
-      "community": 88,
+      "community": 85,
       "norm_label": "customoutlinedbutton"
     },
     {
@@ -2812,7 +2812,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_widgets_custom_buttons_customtextbutton",
-      "community": 88,
+      "community": 85,
       "norm_label": "customtextbutton"
     },
     {
@@ -2822,7 +2822,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_widgets_custom_buttons_text",
-      "community": 88,
+      "community": 85,
       "norm_label": "text"
     },
     {
@@ -2832,7 +2832,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_widgets_custom_buttons_onpressed",
-      "community": 88,
+      "community": 85,
       "norm_label": "onpressed"
     },
     {
@@ -2842,7 +2842,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_widgets_custom_buttons_isloading",
-      "community": 88,
+      "community": 85,
       "norm_label": "isloading"
     },
     {
@@ -2852,7 +2852,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_widgets_custom_buttons_icon",
-      "community": 88,
+      "community": 85,
       "norm_label": "icon"
     },
     {
@@ -2862,7 +2862,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "icondata",
-      "community": 88,
+      "community": 146,
       "norm_label": "icondata"
     },
     {
@@ -2872,7 +2872,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_widgets_custom_buttons_width",
-      "community": 88,
+      "community": 85,
       "norm_label": "width"
     },
     {
@@ -2882,7 +2882,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "double",
-      "community": 88,
+      "community": 85,
       "norm_label": "double?"
     },
     {
@@ -2892,7 +2892,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_widgets_custom_buttons_color",
-      "community": 88,
+      "community": 85,
       "norm_label": "color"
     },
     {
@@ -2902,7 +2902,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "color",
-      "community": 78,
+      "community": 93,
       "norm_label": "color"
     },
     {
@@ -2912,7 +2912,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_widgets_custom_buttons_build",
-      "community": 88,
+      "community": 85,
       "norm_label": "build"
     },
     {
@@ -3402,7 +3402,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_widgets_custom_inputs_customdatepicker",
-      "community": 88,
+      "community": 85,
       "norm_label": "customdatepicker"
     },
     {
@@ -3512,7 +3512,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "valuechanged",
-      "community": 75,
+      "community": 157,
       "norm_label": "valuechanged"
     },
     {
@@ -3552,7 +3552,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "list",
-      "community": 146,
+      "community": 173,
       "norm_label": "list"
     },
     {
@@ -3652,7 +3652,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_widgets_custom_states_statuschip",
-      "community": 88,
+      "community": 85,
       "norm_label": "statuschip"
     },
     {
@@ -3662,7 +3662,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_widgets_custom_states_loadingskeleton",
-      "community": 88,
+      "community": 85,
       "norm_label": "loadingskeleton"
     },
     {
@@ -3672,7 +3672,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_widgets_custom_states_emptystate",
-      "community": 88,
+      "community": 85,
       "norm_label": "emptystate"
     },
     {
@@ -3682,7 +3682,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_widgets_custom_states_errorstate",
-      "community": 88,
+      "community": 85,
       "norm_label": "errorstate"
     },
     {
@@ -3692,7 +3692,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_core_widgets_custom_states_sectionheader",
-      "community": 88,
+      "community": 85,
       "norm_label": "sectionheader"
     },
     {
@@ -4582,7 +4582,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_authentication_screens_forgot_password_screen_build",
-      "community": 93,
+      "community": 60,
       "norm_label": "build"
     },
     {
@@ -4772,7 +4772,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_dashboard",
-      "community": 60,
+      "community": 86,
       "norm_label": "route /dashboard"
     },
     {
@@ -4832,7 +4832,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_authentication_screens_otp_verification_screen_otpverificationscreen",
-      "community": 39,
+      "community": 17,
       "norm_label": "otpverificationscreen"
     },
     {
@@ -4842,7 +4842,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_authentication_screens_otp_verification_screen_otpverificationscreenstate",
-      "community": 39,
+      "community": 17,
       "norm_label": "_otpverificationscreenstate"
     },
     {
@@ -5022,7 +5022,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "core_constants_app_colors_dart",
-      "community": 162,
+      "community": 156,
       "norm_label": "../../../core/constants/app_colors.dart"
     },
     {
@@ -5312,7 +5312,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_authentication_screens_splash_screen",
-      "community": 78,
+      "community": 93,
       "norm_label": "splash_screen.dart"
     },
     {
@@ -5322,7 +5322,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_authentication_screens_splash_screen_splashscreen",
-      "community": 78,
+      "community": 17,
       "norm_label": "splashscreen"
     },
     {
@@ -5332,7 +5332,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_authentication_screens_splash_screen_splashscreenstate",
-      "community": 78,
+      "community": 17,
       "norm_label": "_splashscreenstate"
     },
     {
@@ -5342,7 +5342,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_authentication_screens_splash_screen_createstate",
-      "community": 78,
+      "community": 93,
       "norm_label": "createstate"
     },
     {
@@ -5352,7 +5352,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_authentication_screens_splash_screen_initstate",
-      "community": 78,
+      "community": 93,
       "norm_label": "initstate"
     },
     {
@@ -5372,7 +5372,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_welcome",
-      "community": 60,
+      "community": 68,
       "norm_label": "route /welcome"
     },
     {
@@ -5382,7 +5382,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_authentication_screens_splash_screen_build",
-      "community": 78,
+      "community": 93,
       "norm_label": "build"
     },
     {
@@ -5422,7 +5422,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_authentication_screens_success_screen_build",
-      "community": 60,
+      "community": 86,
       "norm_label": "build"
     },
     {
@@ -5892,7 +5892,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_intl_intl_dart",
-      "community": 162,
+      "community": 156,
       "norm_label": "package:intl/intl.dart"
     },
     {
@@ -6062,7 +6062,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "core_services_api_service_dart",
-      "community": 168,
+      "community": 115,
       "norm_label": "../core/services/api_service.dart"
     },
     {
@@ -6692,7 +6692,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_bills_screens_new_bill_screen_initstate",
-      "community": 134,
+      "community": 136,
       "norm_label": "initstate"
     },
     {
@@ -9012,7 +9012,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_credit_notes_screens_new_credit_note_screen_buildcreditnotedetailscard",
-      "community": 58,
+      "community": 145,
       "norm_label": "_buildcreditnotedetailscard"
     },
     {
@@ -10202,7 +10202,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_customers_screens_create_customer_screen_createcustomerscreen",
-      "community": 59,
+      "community": 35,
       "norm_label": "createcustomerscreen"
     },
     {
@@ -10212,7 +10212,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_customers_screens_create_customer_screen_createcustomerscreenstate",
-      "community": 59,
+      "community": 35,
       "norm_label": "_createcustomerscreenstate"
     },
     {
@@ -10222,7 +10222,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "singletickerproviderstatemixin",
-      "community": 59,
+      "community": 35,
       "norm_label": "singletickerproviderstatemixin"
     },
     {
@@ -10262,7 +10262,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "tabcontroller",
-      "community": 77,
+      "community": 99,
       "norm_label": "tabcontroller"
     },
     {
@@ -10492,7 +10492,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_customers_screens_customer_detail_screen_customerdetailscreen",
-      "community": 53,
+      "community": 35,
       "norm_label": "customerdetailscreen"
     },
     {
@@ -10502,7 +10502,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_customers_screens_customer_detail_screen_customerdetailscreenstate",
-      "community": 53,
+      "community": 35,
       "norm_label": "_customerdetailscreenstate"
     },
     {
@@ -10512,7 +10512,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_customers_screens_customer_detail_screen_sliverappbardelegate",
-      "community": 53,
+      "community": 61,
       "norm_label": "_sliverappbardelegate"
     },
     {
@@ -10522,7 +10522,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "sliverpersistentheaderdelegate",
-      "community": 53,
+      "community": 61,
       "norm_label": "sliverpersistentheaderdelegate"
     },
     {
@@ -10532,7 +10532,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_customers_screens_customer_detail_screen_receivepaymentdialog",
-      "community": 53,
+      "community": 17,
       "norm_label": "_receivepaymentdialog"
     },
     {
@@ -10542,7 +10542,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_customers_screens_customer_detail_screen_receivepaymentdialogstate",
-      "community": 53,
+      "community": 17,
       "norm_label": "_receivepaymentdialogstate"
     },
     {
@@ -10762,7 +10762,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_customers_screens_customer_detail_screen_buildoverviewtab",
-      "community": 127,
+      "community": 164,
       "norm_label": "_buildoverviewtab"
     },
     {
@@ -10772,7 +10772,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_invoices_create",
-      "community": 127,
+      "community": 164,
       "norm_label": "route /invoices/create"
     },
     {
@@ -10902,7 +10902,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "invoices_models_invoice_dart",
-      "community": 135,
+      "community": 87,
       "norm_label": "../../invoices/models/invoice.dart"
     },
     {
@@ -11562,7 +11562,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_models_dashboard_reports_salessummaryreport",
-      "community": 175,
+      "community": 168,
       "norm_label": "salessummaryreport"
     },
     {
@@ -11592,7 +11592,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_models_dashboard_reports_profitlossreport",
-      "community": 175,
+      "community": 172,
       "norm_label": "profitlossreport"
     },
     {
@@ -11622,7 +11622,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_models_dashboard_reports_receivablesreport",
-      "community": 126,
+      "community": 165,
       "norm_label": "receivablesreport"
     },
     {
@@ -12142,7 +12142,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_providers_dashboard_provider_dashboardprovider",
-      "community": 56,
+      "community": 135,
       "norm_label": "dashboardprovider"
     },
     {
@@ -12402,7 +12402,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "customers_models_payment_dart",
-      "community": 162,
+      "community": 156,
       "norm_label": "../../customers/models/payment.dart"
     },
     {
@@ -12422,7 +12422,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "models_dashboard_reports_dart",
-      "community": 175,
+      "community": 165,
       "norm_label": "../models/dashboard_reports.dart"
     },
     {
@@ -12442,7 +12442,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_screens_dashboard_screen_dashboardscreen",
-      "community": 17,
+      "community": 135,
       "norm_label": "dashboardscreen"
     },
     {
@@ -12452,7 +12452,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_screens_dashboard_screen_dashboardscreenstate",
-      "community": 17,
+      "community": 135,
       "norm_label": "_dashboardscreenstate"
     },
     {
@@ -12492,7 +12492,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_screens_dashboard_screen_initstate",
-      "community": 56,
+      "community": 134,
       "norm_label": "initstate"
     },
     {
@@ -12502,7 +12502,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_screens_dashboard_screen_showreceivablesbreakdown",
-      "community": 104,
+      "community": 105,
       "norm_label": "_showreceivablesbreakdown"
     },
     {
@@ -12512,7 +12512,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_invoices",
-      "community": 104,
+      "community": 105,
       "norm_label": "route /invoices"
     },
     {
@@ -12552,7 +12552,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_screens_dashboard_screen_build",
-      "community": 58,
+      "community": 164,
       "norm_label": "build"
     },
     {
@@ -12562,7 +12562,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_expenses",
-      "community": 58,
+      "community": 164,
       "norm_label": "route /expenses"
     },
     {
@@ -12766,6 +12766,26 @@
       "norm_label": "salessummary"
     },
     {
+      "label": "invoices",
+      "file_type": "code",
+      "source_file": "lib/features/dashboard/widgets/cash_flow_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_features_dashboard_widgets_cash_flow_card_invoices",
+      "community": 87,
+      "norm_label": "invoices"
+    },
+    {
+      "label": "bills",
+      "file_type": "code",
+      "source_file": "lib/features/dashboard/widgets/cash_flow_card.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_features_dashboard_widgets_cash_flow_card_bills",
+      "community": 87,
+      "norm_label": "bills"
+    },
+    {
       "label": "_selectedFilter",
       "file_type": "code",
       "source_file": "lib/features/dashboard/widgets/cash_flow_card.dart",
@@ -12856,6 +12876,16 @@
       "norm_label": "shouldrepaint"
     },
     {
+      "label": "../../bills/models/bill.dart",
+      "file_type": "code",
+      "source_file": null,
+      "source_location": null,
+      "_origin": "ast",
+      "id": "bills_models_bill_dart",
+      "community": 87,
+      "norm_label": "../../bills/models/bill.dart"
+    },
+    {
       "label": "dashboard_header.dart",
       "file_type": "code",
       "source_file": "lib/features/dashboard/widgets/dashboard_header.dart",
@@ -12922,7 +12952,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_widgets_dashboard_header_build",
-      "community": 160,
+      "community": 105,
       "norm_label": "build"
     },
     {
@@ -12932,7 +12962,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_notifications",
-      "community": 160,
+      "community": 105,
       "norm_label": "route /notifications"
     },
     {
@@ -12942,7 +12972,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_widgets_dashboard_sub_tabs",
-      "community": 75,
+      "community": 157,
       "norm_label": "dashboard_sub_tabs.dart"
     },
     {
@@ -12952,7 +12982,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_widgets_dashboard_sub_tabs_dashboardsubtabs",
-      "community": 75,
+      "community": 157,
       "norm_label": "dashboardsubtabs"
     },
     {
@@ -12962,7 +12992,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_widgets_dashboard_sub_tabs_selectedindex",
-      "community": 75,
+      "community": 157,
       "norm_label": "selectedindex"
     },
     {
@@ -12972,7 +13002,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_widgets_dashboard_sub_tabs_ontabselected",
-      "community": 75,
+      "community": 157,
       "norm_label": "ontabselected"
     },
     {
@@ -12982,7 +13012,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_widgets_dashboard_sub_tabs_build",
-      "community": 75,
+      "community": 157,
       "norm_label": "build"
     },
     {
@@ -12992,7 +13022,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_widgets_dashboard_sub_tabs_buildtab",
-      "community": 75,
+      "community": 157,
       "norm_label": "_buildtab"
     },
     {
@@ -13002,7 +13032,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_widgets_expense_breakdown_card",
-      "community": 175,
+      "community": 172,
       "norm_label": "expense_breakdown_card.dart"
     },
     {
@@ -13012,7 +13042,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_widgets_expense_breakdown_card_expensebreakdowncard",
-      "community": 175,
+      "community": 172,
       "norm_label": "expensebreakdowncard"
     },
     {
@@ -13022,7 +13052,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_widgets_expense_breakdown_card_profitloss",
-      "community": 175,
+      "community": 172,
       "norm_label": "profitloss"
     },
     {
@@ -13032,7 +13062,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_widgets_expense_breakdown_card_palette",
-      "community": 175,
+      "community": 172,
       "norm_label": "_palette"
     },
     {
@@ -13042,7 +13072,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_widgets_expense_breakdown_card_build",
-      "community": 175,
+      "community": 172,
       "norm_label": "build"
     },
     {
@@ -13162,7 +13192,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_widgets_kpi_summary_grid",
-      "community": 175,
+      "community": 168,
       "norm_label": "kpi_summary_grid.dart"
     },
     {
@@ -13172,7 +13202,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_widgets_kpi_summary_grid_kpisummarygrid",
-      "community": 175,
+      "community": 168,
       "norm_label": "kpisummarygrid"
     },
     {
@@ -13182,7 +13212,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_widgets_kpi_summary_grid_salessummary",
-      "community": 175,
+      "community": 168,
       "norm_label": "salessummary"
     },
     {
@@ -13192,7 +13222,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_widgets_kpi_summary_grid_profitloss",
-      "community": 175,
+      "community": 168,
       "norm_label": "profitloss"
     },
     {
@@ -13202,7 +13232,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_widgets_kpi_summary_grid_build",
-      "community": 175,
+      "community": 168,
       "norm_label": "build"
     },
     {
@@ -13212,7 +13242,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_widgets_kpi_summary_grid_buildkpicard",
-      "community": 175,
+      "community": 168,
       "norm_label": "_buildkpicard"
     },
     {
@@ -13222,7 +13252,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_widgets_quick_create_grid",
-      "community": 150,
+      "community": 163,
       "norm_label": "quick_create_grid.dart"
     },
     {
@@ -13232,7 +13262,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_widgets_quick_create_grid_quickcreategrid",
-      "community": 150,
+      "community": 163,
       "norm_label": "quickcreategrid"
     },
     {
@@ -13242,7 +13272,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_widgets_quick_create_grid_onnewcustomer",
-      "community": 150,
+      "community": 163,
       "norm_label": "onnewcustomer"
     },
     {
@@ -13252,7 +13282,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_widgets_quick_create_grid_onnewinvoice",
-      "community": 150,
+      "community": 163,
       "norm_label": "onnewinvoice"
     },
     {
@@ -13262,7 +13292,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_widgets_quick_create_grid_onnewbill",
-      "community": 150,
+      "community": 163,
       "norm_label": "onnewbill"
     },
     {
@@ -13272,7 +13302,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_widgets_quick_create_grid_onnewexpense",
-      "community": 150,
+      "community": 163,
       "norm_label": "onnewexpense"
     },
     {
@@ -13282,7 +13312,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_widgets_quick_create_grid_build",
-      "community": 150,
+      "community": 163,
       "norm_label": "build"
     },
     {
@@ -13292,7 +13322,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_widgets_quick_create_grid_buildactionitem",
-      "community": 150,
+      "community": 163,
       "norm_label": "_buildactionitem"
     },
     {
@@ -13302,7 +13332,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_widgets_receivables_card",
-      "community": 162,
+      "community": 165,
       "norm_label": "receivables_card.dart"
     },
     {
@@ -13312,7 +13342,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_widgets_receivables_card_receivablescard",
-      "community": 162,
+      "community": 165,
       "norm_label": "receivablescard"
     },
     {
@@ -13322,7 +13352,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_widgets_receivables_card_report",
-      "community": 162,
+      "community": 165,
       "norm_label": "report"
     },
     {
@@ -13332,7 +13362,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_widgets_receivables_card_build",
-      "community": 162,
+      "community": 165,
       "norm_label": "build"
     },
     {
@@ -13342,7 +13372,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_widgets_receivables_card_buildbucketitem",
-      "community": 162,
+      "community": 165,
       "norm_label": "_buildbucketitem"
     },
     {
@@ -13352,7 +13382,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_widgets_recent_payments_widget",
-      "community": 162,
+      "community": 156,
       "norm_label": "recent_payments_widget.dart"
     },
     {
@@ -13362,7 +13392,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_widgets_recent_payments_widget_recentpaymentswidget",
-      "community": 162,
+      "community": 85,
       "norm_label": "recentpaymentswidget"
     },
     {
@@ -13372,7 +13402,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_widgets_recent_payments_widget_payments",
-      "community": 162,
+      "community": 156,
       "norm_label": "payments"
     },
     {
@@ -13382,7 +13412,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_widgets_recent_payments_widget_build",
-      "community": 162,
+      "community": 156,
       "norm_label": "build"
     },
     {
@@ -13482,7 +13512,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_widgets_top_customers_widget",
-      "community": 175,
+      "community": 173,
       "norm_label": "top_customers_widget.dart"
     },
     {
@@ -13492,7 +13522,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_widgets_top_customers_widget_topcustomerswidget",
-      "community": 175,
+      "community": 173,
       "norm_label": "topcustomerswidget"
     },
     {
@@ -13502,7 +13532,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_widgets_top_customers_widget_topcustomers",
-      "community": 175,
+      "community": 173,
       "norm_label": "topcustomers"
     },
     {
@@ -13512,7 +13542,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_dashboard_widgets_top_customers_widget_build",
-      "community": 175,
+      "community": 173,
       "norm_label": "build"
     },
     {
@@ -13522,7 +13552,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_customers",
-      "community": 175,
+      "community": 173,
       "norm_label": "route /customers"
     },
     {
@@ -13552,7 +13582,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_models_invoice_invoice",
-      "community": 162,
+      "community": 170,
       "norm_label": "invoice"
     },
     {
@@ -14052,7 +14082,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_providers_invoice_provider_invoiceprovider",
-      "community": 58,
+      "community": 145,
       "norm_label": "invoiceprovider"
     },
     {
@@ -15282,7 +15312,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_screens_create_invoice_screen_buildstickybottombar",
-      "community": 46,
+      "community": 105,
       "norm_label": "_buildstickybottombar"
     },
     {
@@ -15292,7 +15322,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_invoices_preview",
-      "community": 46,
+      "community": 105,
       "norm_label": "route /invoices/preview"
     },
     {
@@ -15372,7 +15402,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_screens_invoice_detail_screen_build",
-      "community": 104,
+      "community": 105,
       "norm_label": "build"
     },
     {
@@ -15452,7 +15482,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_screens_invoice_detail_screen_buildactionbottombar",
-      "community": 104,
+      "community": 105,
       "norm_label": "_buildactionbottombar"
     },
     {
@@ -15462,7 +15492,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_invoices_edit",
-      "community": 104,
+      "community": 105,
       "norm_label": "route /invoices/edit"
     },
     {
@@ -15492,7 +15522,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_screens_invoice_details_invoice_details_screen_invoicedetailsscreen",
-      "community": 92,
+      "community": 17,
       "norm_label": "invoicedetailsscreen"
     },
     {
@@ -15502,7 +15532,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_screens_invoice_details_invoice_details_screen_invoicedetailsscreenstate",
-      "community": 92,
+      "community": 17,
       "norm_label": "_invoicedetailsscreenstate"
     },
     {
@@ -15572,7 +15602,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_screens_invoice_details_invoice_details_screen_build",
-      "community": 104,
+      "community": 105,
       "norm_label": "build"
     },
     {
@@ -15662,7 +15692,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_screens_invoice_list_invoice_list_screen_invoicelistscreen",
-      "community": 65,
+      "community": 17,
       "norm_label": "invoicelistscreen"
     },
     {
@@ -15672,7 +15702,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_screens_invoice_list_invoice_list_screen_invoicelistscreenstate",
-      "community": 65,
+      "community": 17,
       "norm_label": "_invoicelistscreenstate"
     },
     {
@@ -15802,7 +15832,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_screens_invoice_list_invoice_list_screen_build",
-      "community": 65,
+      "community": 105,
       "norm_label": "build"
     },
     {
@@ -15812,7 +15842,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_profile",
-      "community": 65,
+      "community": 105,
       "norm_label": "route /profile"
     },
     {
@@ -16072,7 +16102,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_screens_invoice_preview_screen_buildactionbottombar",
-      "community": 104,
+      "community": 105,
       "norm_label": "_buildactionbottombar"
     },
     {
@@ -16342,7 +16372,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_screens_new_invoice_new_invoice_screen_newinvoicescreen",
-      "community": 62,
+      "community": 145,
       "norm_label": "newinvoicescreen"
     },
     {
@@ -16352,7 +16382,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_screens_new_invoice_new_invoice_screen_newinvoicescreenstate",
-      "community": 62,
+      "community": 145,
       "norm_label": "_newinvoicescreenstate"
     },
     {
@@ -16362,7 +16392,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_screens_new_invoice_new_invoice_screen_cardcontainer",
-      "community": 88,
+      "community": 85,
       "norm_label": "_cardcontainer"
     },
     {
@@ -16372,7 +16402,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_screens_new_invoice_new_invoice_screen_dashedrectcontainer",
-      "community": 88,
+      "community": 85,
       "norm_label": "_dashedrectcontainer"
     },
     {
@@ -16992,7 +17022,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_screens_new_invoice_new_invoice_screen_initstate",
-      "community": 58,
+      "community": 145,
       "norm_label": "initstate"
     },
     {
@@ -17022,7 +17052,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_screens_new_invoice_new_invoice_screen_oncustomerselected",
-      "community": 58,
+      "community": 145,
       "norm_label": "_oncustomerselected"
     },
     {
@@ -17032,7 +17062,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_screens_new_invoice_new_invoice_screen_updateduedatefromterms",
-      "community": 58,
+      "community": 145,
       "norm_label": "_updateduedatefromterms"
     },
     {
@@ -17042,7 +17072,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_screens_new_invoice_new_invoice_screen_selectinvoicedate",
-      "community": 58,
+      "community": 145,
       "norm_label": "_selectinvoicedate"
     },
     {
@@ -17052,7 +17082,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_screens_new_invoice_new_invoice_screen_selectduedate",
-      "community": 58,
+      "community": 145,
       "norm_label": "_selectduedate"
     },
     {
@@ -17072,7 +17102,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_screens_new_invoice_new_invoice_screen_triggerautosave",
-      "community": 58,
+      "community": 145,
       "norm_label": "_triggerautosave"
     },
     {
@@ -17112,7 +17142,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_screens_new_invoice_new_invoice_screen_onwillpop",
-      "community": 58,
+      "community": 145,
       "norm_label": "_onwillpop"
     },
     {
@@ -17122,7 +17152,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_screens_new_invoice_new_invoice_screen_build",
-      "community": 58,
+      "community": 145,
       "norm_label": "build"
     },
     {
@@ -17672,7 +17702,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_widgets_customer_autocomplete_customersuggestiontile",
-      "community": 47,
+      "community": 85,
       "norm_label": "customersuggestiontile"
     },
     {
@@ -17682,7 +17712,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_widgets_customer_autocomplete_customerdetailscard",
-      "community": 47,
+      "community": 85,
       "norm_label": "customerdetailscard"
     },
     {
@@ -18442,7 +18472,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "status_chip_dart",
-      "community": 162,
+      "community": 170,
       "norm_label": "status_chip.dart"
     },
     {
@@ -18452,7 +18482,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_widgets_invoice_header",
-      "community": 162,
+      "community": 170,
       "norm_label": "invoice_header.dart"
     },
     {
@@ -18462,7 +18492,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_widgets_invoice_header_invoiceheader",
-      "community": 162,
+      "community": 170,
       "norm_label": "invoiceheader"
     },
     {
@@ -18472,7 +18502,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_widgets_invoice_header_invoice",
-      "community": 162,
+      "community": 170,
       "norm_label": "invoice"
     },
     {
@@ -18482,7 +18512,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_widgets_invoice_header_outstandingbalance",
-      "community": 162,
+      "community": 170,
       "norm_label": "outstandingbalance"
     },
     {
@@ -18492,7 +18522,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_widgets_invoice_header_build",
-      "community": 162,
+      "community": 170,
       "norm_label": "build"
     },
     {
@@ -18702,7 +18732,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_widgets_payment_history",
-      "community": 162,
+      "community": 156,
       "norm_label": "payment_history.dart"
     },
     {
@@ -18712,7 +18742,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_widgets_payment_history_paymenthistory",
-      "community": 162,
+      "community": 156,
       "norm_label": "paymenthistory"
     },
     {
@@ -18722,7 +18752,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_widgets_payment_history_payments",
-      "community": 162,
+      "community": 156,
       "norm_label": "payments"
     },
     {
@@ -18732,7 +18762,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_widgets_payment_history_invoice",
-      "community": 162,
+      "community": 156,
       "norm_label": "invoice"
     },
     {
@@ -18742,7 +18772,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_widgets_payment_history_build",
-      "community": 162,
+      "community": 156,
       "norm_label": "build"
     },
     {
@@ -18782,7 +18812,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_widgets_product_autocomplete_productsuggestiontile",
-      "community": 51,
+      "community": 85,
       "norm_label": "productsuggestiontile"
     },
     {
@@ -19572,7 +19602,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_navigation_navigation_shell_navigationshell",
-      "community": 17,
+      "community": 79,
       "norm_label": "navigationshell"
     },
     {
@@ -19582,7 +19612,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_navigation_navigation_shell_navigationshellstate",
-      "community": 17,
+      "community": 79,
       "norm_label": "_navigationshellstate"
     },
     {
@@ -19722,7 +19752,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_navigation_navigation_shell_showquickcreate",
-      "community": 58,
+      "community": 164,
       "norm_label": "_showquickcreate"
     },
     {
@@ -19792,7 +19822,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_products_models_product_product",
-      "community": 61,
+      "community": 44,
       "norm_label": "product"
     },
     {
@@ -20832,7 +20862,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_products_screens_product_detail_screen_sliverappbardelegate",
-      "community": 53,
+      "community": 61,
       "norm_label": "_sliverappbardelegate"
     },
     {
@@ -23142,7 +23172,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_proforma_invoices_screens_new_proforma_invoice_screen_buildsummaryandstatuscard",
-      "community": 104,
+      "community": 105,
       "norm_label": "_buildsummaryandstatuscard"
     },
     {
@@ -25832,7 +25862,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_quotations_providers_quotation_provider_converttoinvoice",
-      "community": 58,
+      "community": 145,
       "norm_label": "converttoinvoice"
     },
     {
@@ -25872,7 +25902,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_quotations_screens_new_quotation_screen_newquotationscreen",
-      "community": 172,
+      "community": 127,
       "norm_label": "newquotationscreen"
     },
     {
@@ -25882,7 +25912,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_quotations_screens_new_quotation_screen_newquotationscreenstate",
-      "community": 172,
+      "community": 127,
       "norm_label": "_newquotationscreenstate"
     },
     {
@@ -26712,7 +26742,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_quotations_screens_new_quotation_screen_buildsummaryandstatuscard",
-      "community": 127,
+      "community": 164,
       "norm_label": "_buildsummaryandstatuscard"
     },
     {
@@ -26972,7 +27002,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_quotations_screens_quotations_list_screen_buildactionmenu",
-      "community": 127,
+      "community": 164,
       "norm_label": "_buildactionmenu"
     },
     {
@@ -28572,7 +28602,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "models_app_version_dart",
-      "community": 168,
+      "community": 115,
       "norm_label": "../models/app_version.dart"
     },
     {
@@ -28612,7 +28642,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_screens_app_preferences_settings_screen",
-      "community": 133,
+      "community": 98,
       "norm_label": "app_preferences_settings_screen.dart"
     },
     {
@@ -28622,7 +28652,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_screens_app_preferences_settings_screen_apppreferencessettingsscreen",
-      "community": 133,
+      "community": 98,
       "norm_label": "apppreferencessettingsscreen"
     },
     {
@@ -28632,7 +28662,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_screens_app_preferences_settings_screen_apppreferencessettingsscreenstate",
-      "community": 133,
+      "community": 98,
       "norm_label": "_apppreferencessettingsscreenstate"
     },
     {
@@ -28642,7 +28672,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_screens_app_preferences_settings_screen_smtpformkey",
-      "community": 133,
+      "community": 98,
       "norm_label": "_smtpformkey"
     },
     {
@@ -28652,7 +28682,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_screens_app_preferences_settings_screen_smtphostcontroller",
-      "community": 133,
+      "community": 98,
       "norm_label": "_smtphostcontroller"
     },
     {
@@ -28662,7 +28692,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_screens_app_preferences_settings_screen_smtpportcontroller",
-      "community": 133,
+      "community": 98,
       "norm_label": "_smtpportcontroller"
     },
     {
@@ -28672,7 +28702,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_screens_app_preferences_settings_screen_smtpusernamecontroller",
-      "community": 133,
+      "community": 98,
       "norm_label": "_smtpusernamecontroller"
     },
     {
@@ -28682,7 +28712,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_screens_app_preferences_settings_screen_smtppasswordcontroller",
-      "community": 133,
+      "community": 98,
       "norm_label": "_smtppasswordcontroller"
     },
     {
@@ -28692,7 +28722,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_screens_app_preferences_settings_screen_senderemailcontroller",
-      "community": 133,
+      "community": 98,
       "norm_label": "_senderemailcontroller"
     },
     {
@@ -28702,7 +28732,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_screens_app_preferences_settings_screen_sendernamecontroller",
-      "community": 133,
+      "community": 98,
       "norm_label": "_sendernamecontroller"
     },
     {
@@ -28712,7 +28742,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_screens_app_preferences_settings_screen_replyemailcontroller",
-      "community": 133,
+      "community": 98,
       "norm_label": "_replyemailcontroller"
     },
     {
@@ -28722,7 +28752,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_screens_app_preferences_settings_screen_encryptiontype",
-      "community": 133,
+      "community": 98,
       "norm_label": "_encryptiontype"
     },
     {
@@ -28732,7 +28762,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_screens_app_preferences_settings_screen_defaultpagination",
-      "community": 133,
+      "community": 98,
       "norm_label": "_defaultpagination"
     },
     {
@@ -28742,7 +28772,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_screens_app_preferences_settings_screen_createstate",
-      "community": 133,
+      "community": 98,
       "norm_label": "createstate"
     },
     {
@@ -28752,7 +28782,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_screens_app_preferences_settings_screen_initstate",
-      "community": 133,
+      "community": 98,
       "norm_label": "initstate"
     },
     {
@@ -28762,7 +28792,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_screens_app_preferences_settings_screen_dispose",
-      "community": 133,
+      "community": 98,
       "norm_label": "dispose"
     },
     {
@@ -28772,7 +28802,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_screens_app_preferences_settings_screen_savesmtp",
-      "community": 133,
+      "community": 98,
       "norm_label": "_savesmtp"
     },
     {
@@ -28782,7 +28812,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_screens_app_preferences_settings_screen_triggertestemail",
-      "community": 133,
+      "community": 98,
       "norm_label": "_triggertestemail"
     },
     {
@@ -28792,7 +28822,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_screens_app_preferences_settings_screen_savepagination",
-      "community": 133,
+      "community": 98,
       "norm_label": "_savepagination"
     },
     {
@@ -28812,7 +28842,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "core_theme_theme_provider_dart",
-      "community": 133,
+      "community": 98,
       "norm_label": "core/theme/theme_provider.dart"
     },
     {
@@ -29892,7 +29922,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_screens_profile_business_settings_screen_saveall",
-      "community": 56,
+      "community": 135,
       "norm_label": "_saveall"
     },
     {
@@ -30162,7 +30192,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_screens_tax_settings_screen",
-      "community": 77,
+      "community": 99,
       "norm_label": "tax_settings_screen.dart"
     },
     {
@@ -30172,7 +30202,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_screens_tax_settings_screen_taxsettingsscreen",
-      "community": 77,
+      "community": 99,
       "norm_label": "taxsettingsscreen"
     },
     {
@@ -30182,7 +30212,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_screens_tax_settings_screen_taxsettingsscreenstate",
-      "community": 77,
+      "community": 99,
       "norm_label": "_taxsettingsscreenstate"
     },
     {
@@ -30192,7 +30222,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_screens_tax_settings_screen_formkey",
-      "community": 77,
+      "community": 99,
       "norm_label": "_formkey"
     },
     {
@@ -30202,7 +30232,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_screens_tax_settings_screen_tabcontroller",
-      "community": 77,
+      "community": 99,
       "norm_label": "_tabcontroller"
     },
     {
@@ -30212,7 +30242,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_screens_tax_settings_screen_taxnamecontroller",
-      "community": 77,
+      "community": 99,
       "norm_label": "_taxnamecontroller"
     },
     {
@@ -30222,7 +30252,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_screens_tax_settings_screen_taxpercentagecontroller",
-      "community": 77,
+      "community": 99,
       "norm_label": "_taxpercentagecontroller"
     },
     {
@@ -30232,7 +30262,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_screens_tax_settings_screen_taxtype",
-      "community": 77,
+      "community": 99,
       "norm_label": "_taxtype"
     },
     {
@@ -30242,7 +30272,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_screens_tax_settings_screen_hsnenabled",
-      "community": 77,
+      "community": 99,
       "norm_label": "_hsnenabled"
     },
     {
@@ -30252,7 +30282,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_screens_tax_settings_screen_sacenabled",
-      "community": 77,
+      "community": 99,
       "norm_label": "_sacenabled"
     },
     {
@@ -30262,7 +30292,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_screens_tax_settings_screen_reversecharge",
-      "community": 77,
+      "community": 99,
       "norm_label": "_reversecharge"
     },
     {
@@ -30272,7 +30302,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_screens_tax_settings_screen_defaulttax",
-      "community": 77,
+      "community": 99,
       "norm_label": "_defaulttax"
     },
     {
@@ -30282,7 +30312,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_screens_tax_settings_screen_createstate",
-      "community": 77,
+      "community": 99,
       "norm_label": "createstate"
     },
     {
@@ -30292,7 +30322,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_screens_tax_settings_screen_initstate",
-      "community": 77,
+      "community": 99,
       "norm_label": "initstate"
     },
     {
@@ -30302,7 +30332,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_screens_tax_settings_screen_dispose",
-      "community": 77,
+      "community": 99,
       "norm_label": "dispose"
     },
     {
@@ -30312,7 +30342,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_screens_tax_settings_screen_savepreferences",
-      "community": 77,
+      "community": 99,
       "norm_label": "_savepreferences"
     },
     {
@@ -30322,7 +30352,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_screens_tax_settings_screen_showtaxratedialog",
-      "community": 77,
+      "community": 99,
       "norm_label": "_showtaxratedialog"
     },
     {
@@ -30332,7 +30362,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_screens_tax_settings_screen_deletetaxrate",
-      "community": 77,
+      "community": 99,
       "norm_label": "_deletetaxrate"
     },
     {
@@ -30342,7 +30372,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_settings_screens_tax_settings_screen_build",
-      "community": 77,
+      "community": 99,
       "norm_label": "build"
     },
     {
@@ -30442,7 +30472,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_shared_placeholder_screen",
-      "community": 88,
+      "community": 146,
       "norm_label": "placeholder_screen.dart"
     },
     {
@@ -30452,7 +30482,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_shared_placeholder_screen_placeholderscreen",
-      "community": 88,
+      "community": 146,
       "norm_label": "placeholderscreen"
     },
     {
@@ -30462,7 +30492,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_shared_placeholder_screen_title",
-      "community": 88,
+      "community": 146,
       "norm_label": "title"
     },
     {
@@ -30472,7 +30502,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_shared_placeholder_screen_description",
-      "community": 88,
+      "community": 146,
       "norm_label": "description"
     },
     {
@@ -30482,7 +30512,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_shared_placeholder_screen_icon",
-      "community": 88,
+      "community": 146,
       "norm_label": "icon"
     },
     {
@@ -30492,7 +30522,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_shared_placeholder_screen_build",
-      "community": 88,
+      "community": 146,
       "norm_label": "build"
     },
     {
@@ -33342,7 +33372,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_modules_expenses_screens_add_expense_screen_addexpensescreen",
-      "community": 86,
+      "community": 17,
       "norm_label": "addexpensescreen"
     },
     {
@@ -33352,7 +33382,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_modules_expenses_screens_add_expense_screen_addexpensescreenstate",
-      "community": 86,
+      "community": 17,
       "norm_label": "_addexpensescreenstate"
     },
     {
@@ -33362,7 +33392,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_modules_expenses_screens_add_expense_screen_dynamiccustomersearchfield",
-      "community": 71,
+      "community": 17,
       "norm_label": "_dynamiccustomersearchfield"
     },
     {
@@ -33372,7 +33402,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_modules_expenses_screens_add_expense_screen_dynamiccustomersearchfieldstate",
-      "community": 71,
+      "community": 17,
       "norm_label": "_dynamiccustomersearchfieldstate"
     },
     {
@@ -33382,7 +33412,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_modules_expenses_screens_add_expense_screen_dynamicvendorsearchfield",
-      "community": 86,
+      "community": 17,
       "norm_label": "_dynamicvendorsearchfield"
     },
     {
@@ -33392,7 +33422,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_modules_expenses_screens_add_expense_screen_dynamicvendorsearchfieldstate",
-      "community": 86,
+      "community": 17,
       "norm_label": "_dynamicvendorsearchfieldstate"
     },
     {
@@ -33402,7 +33432,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_modules_expenses_screens_add_expense_screen_dynamicitemrow",
-      "community": 71,
+      "community": 17,
       "norm_label": "_dynamicitemrow"
     },
     {
@@ -33412,7 +33442,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_modules_expenses_screens_add_expense_screen_dynamicitemrowstate",
-      "community": 71,
+      "community": 17,
       "norm_label": "_dynamicitemrowstate"
     },
     {
@@ -34022,7 +34052,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_modules_expenses_screens_add_expense_screen_build",
-      "community": 60,
+      "community": 86,
       "norm_label": "build"
     },
     {
@@ -35392,7 +35422,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_repositories_update_repository",
-      "community": 168,
+      "community": 115,
       "norm_label": "update_repository.dart"
     },
     {
@@ -35412,7 +35442,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_repositories_update_repository_apiservice",
-      "community": 168,
+      "community": 115,
       "norm_label": "_apiservice"
     },
     {
@@ -35422,7 +35452,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_repositories_update_repository_fetchlatestversion",
-      "community": 168,
+      "community": 115,
       "norm_label": "fetchlatestversion"
     },
     {
@@ -35512,7 +35542,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_package_info_plus_package_info_plus_dart",
-      "community": 115,
+      "community": 78,
       "norm_label": "package:package_info_plus/package_info_plus.dart"
     },
     {
@@ -36376,7 +36406,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "test_widget_test",
-      "community": 175,
+      "community": 174,
       "norm_label": "widget_test.dart"
     },
     {
@@ -36386,7 +36416,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "test_widget_test_main",
-      "community": 175,
+      "community": 174,
       "norm_label": "main"
     },
     {
@@ -36396,7 +36426,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_flutter_test_flutter_test_dart",
-      "community": 175,
+      "community": 174,
       "norm_label": "package:flutter_test/flutter_test.dart"
     },
     {
@@ -36406,7 +36436,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_app_main_dart",
-      "community": 175,
+      "community": 174,
       "norm_label": "package:app/main.dart"
     },
     {
@@ -53177,6 +53207,16 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
+      "source_file": "lib/features/dashboard/widgets/cash_flow_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_features_dashboard_widgets_cash_flow_card",
+      "target": "package_intl_intl_dart"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
       "source_file": "lib/features/dashboard/widgets/expense_breakdown_card.dart",
       "source_location": null,
       "weight": 1.0,
@@ -60881,6 +60921,16 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
+      "source_file": "lib/features/dashboard/widgets/cash_flow_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_features_dashboard_widgets_cash_flow_card",
+      "target": "invoices_models_invoice_dart"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
       "source_file": "lib/features/products/screens/product_detail_screen.dart",
       "source_location": null,
       "weight": 1.0,
@@ -63210,6 +63260,17 @@
       "weight": 1.0,
       "context": "bloc_lookup",
       "source": "lib_features_dashboard_screens_dashboard_screen_initstate",
+      "target": "lib_features_invoices_providers_invoice_provider_invoiceprovider"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/features/dashboard/screens/dashboard_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "bloc_lookup",
+      "source": "lib_features_dashboard_screens_dashboard_screen_initstate",
       "target": "lib_features_settings_providers_settings_provider_settingsprovider"
     },
     {
@@ -63461,6 +63522,26 @@
       "target": "authentication_providers_auth_provider_dart"
     },
     {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/features/dashboard/widgets/cash_flow_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_features_dashboard_widgets_cash_flow_card",
+      "target": "bills_models_bill_dart"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/features/dashboard/widgets/cash_flow_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_features_dashboard_widgets_cash_flow_card",
+      "target": "lib_features_dashboard_widgets_cash_flow_card_bills"
+    },
+    {
       "relation": "defines",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
@@ -63519,6 +63600,16 @@
       "weight": 1.0,
       "source": "lib_features_dashboard_widgets_cash_flow_card",
       "target": "lib_features_dashboard_widgets_cash_flow_card_filteroptions"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/features/dashboard/widgets/cash_flow_card.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_features_dashboard_widgets_cash_flow_card",
+      "target": "lib_features_dashboard_widgets_cash_flow_card_invoices"
     },
     {
       "relation": "defines",

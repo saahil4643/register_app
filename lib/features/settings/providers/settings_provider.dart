@@ -185,13 +185,31 @@ class SettingsProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await _apiService.get('/api/v1/settings/organization');
-      if (response['success'] != false) {
-        _companySettings = CompanySettings.fromJson(response);
+      dynamic response;
+      try {
+        response = await _apiService.get('/api/v1/company');
+      } catch (_) {
+        try {
+          response = await _apiService.get('/api/v1/organization');
+        } catch (_) {
+          response = await _apiService.get('/api/v1/settings/organization');
+        }
+      }
+
+      if (response != null && response['success'] != false) {
+        final data = (response is Map<String, dynamic> && response.containsKey('data') && response['data'] is Map<String, dynamic>)
+            ? response['data'] as Map<String, dynamic>
+            : (response is Map<String, dynamic> ? response : <String, dynamic>{});
+        _companySettings = CompanySettings.fromJson(data);
+        if (_companySettings!.companyName.isNotEmpty) {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('company_name', _companySettings!.companyName);
+          await prefs.setString('logged_in_company_name', _companySettings!.companyName);
+        }
         notifyListeners();
         return _companySettings;
       } else {
-        _errorMessage = response['message'] ?? 'Failed to fetch organization settings';
+        _errorMessage = response?['message'] ?? 'Failed to fetch organization settings';
       }
     } catch (e) {
       _errorMessage = 'Error loading organization settings: $e';
@@ -210,9 +228,25 @@ class SettingsProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await _apiService.put('/api/v1/settings/organization', data);
-      if (response['success'] != false) {
-        if (_companySettings != null) {
+      dynamic response;
+      try {
+        response = await _apiService.put('/api/v1/company', data);
+      } catch (_) {
+        try {
+          response = await _apiService.put('/api/v1/organization', data);
+        } catch (_) {
+          response = await _apiService.put('/api/v1/settings/organization', data);
+        }
+      }
+
+      if (response != null && response['success'] != false) {
+        final respData = (response is Map<String, dynamic> && response.containsKey('data') && response['data'] is Map<String, dynamic>)
+            ? response['data'] as Map<String, dynamic>
+            : (response is Map<String, dynamic> ? response : <String, dynamic>{});
+
+        if (respData.isNotEmpty && (respData.containsKey('companyName') || respData.containsKey('company_name'))) {
+          _companySettings = CompanySettings.fromJson(respData);
+        } else if (_companySettings != null) {
           final merged = Map<String, dynamic>.from(_companySettings!.toJson())..addAll(data);
           _companySettings = CompanySettings.fromJson(merged);
         } else {
@@ -226,8 +260,8 @@ class SettingsProvider extends ChangeNotifier {
         notifyListeners();
         return true;
       } else {
-        _errorMessage = response['message'] ?? 'Failed to update organization settings';
-        if (response['details'] is Map<String, dynamic>) {
+        _errorMessage = response?['message'] ?? 'Failed to update organization settings';
+        if (response != null && response['details'] is Map<String, dynamic>) {
           _parseFieldErrors(response['details']);
         }
         return false;
@@ -286,21 +320,41 @@ class SettingsProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await _apiService.put('/api/v1/settings/organization', settings.toOrganizationJson());
-      if (response['success'] != false) {
-        _companySettings = settings;
-        if (settings.companyName.isNotEmpty) {
+      dynamic response;
+      final payload = settings.toJson();
+      try {
+        response = await _apiService.put('/api/v1/company', payload);
+      } catch (_) {
+        try {
+          response = await _apiService.put('/api/v1/organization', payload);
+        } catch (_) {
+          response = await _apiService.put('/api/v1/settings/organization', settings.toOrganizationJson());
+        }
+      }
+
+      if (response != null && response['success'] != false) {
+        final respData = (response is Map<String, dynamic> && response.containsKey('data') && response['data'] is Map<String, dynamic>)
+            ? response['data'] as Map<String, dynamic>
+            : (response is Map<String, dynamic> ? response : <String, dynamic>{});
+
+        if (respData.isNotEmpty && (respData.containsKey('companyName') || respData.containsKey('company_name'))) {
+          _companySettings = CompanySettings.fromJson(respData);
+        } else {
+          _companySettings = settings;
+        }
+
+        if (_companySettings != null && _companySettings!.companyName.isNotEmpty) {
           final prefs = await SharedPreferences.getInstance();
-          await prefs.setString('company_name', settings.companyName);
-          await prefs.setString('logged_in_company_name', settings.companyName);
+          await prefs.setString('company_name', _companySettings!.companyName);
+          await prefs.setString('logged_in_company_name', _companySettings!.companyName);
         }
         notifyListeners();
         return true;
       } else {
-        _errorMessage = response['message'] ?? 'Failed to update company settings';
-        if (response['details'] is Map<String, dynamic>) {
+        _errorMessage = response?['message'] ?? 'Failed to update company settings';
+        if (response != null && response['details'] is Map<String, dynamic>) {
           _parseFieldErrors(response['details']);
-        } else if (response['errors'] is Map<String, dynamic>) {
+        } else if (response != null && response['errors'] is Map<String, dynamic>) {
           _parseFieldErrors(response['errors']);
         }
         return false;

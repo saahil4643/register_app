@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import '../config/env.dart';
 import '../constants/app_colors.dart';
 
 class StatusChip extends StatelessWidget {
@@ -309,21 +311,47 @@ class CustomAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final initials = name.isNotEmpty
-        ? name.trim().split(' ').map((l) => l[0]).take(2).join().toUpperCase()
+        ? name.trim().split(' ').map((l) => l.isNotEmpty ? l[0] : '').take(2).join().toUpperCase()
         : 'U';
     final theme = Theme.of(context);
 
-    Widget avatar = CircleAvatar(
-      radius: radius,
-      backgroundColor: theme.colorScheme.primaryContainer,
-      child: Text(
-        initials,
+    Widget? content;
+    ImageProvider? backgroundImage;
+
+    if (imageUrl != null && imageUrl!.trim().isNotEmpty) {
+      final img = imageUrl!.trim();
+      if (img.startsWith('http')) {
+        backgroundImage = NetworkImage(img);
+      } else if (img.startsWith('/api')) {
+        backgroundImage = NetworkImage('${Env.apiBaseUrl}$img');
+      } else if (img.startsWith('data:image')) {
+        try {
+          final commaIdx = img.indexOf(',');
+          final base64Data = commaIdx != -1 ? img.substring(commaIdx + 1) : img;
+          backgroundImage = MemoryImage(base64Decode(base64Data));
+        } catch (_) {}
+      } else if (img.length <= 4) {
+        // Emoji avatar!
+        content = Text(img, style: TextStyle(fontSize: radius * 1.05));
+      }
+    }
+
+    if (backgroundImage == null && content == null) {
+      content = Text(
+        initials.isNotEmpty ? initials : 'U',
         style: TextStyle(
           color: theme.colorScheme.primary,
           fontWeight: FontWeight.bold,
           fontSize: radius * 0.8,
         ),
-      ),
+      );
+    }
+
+    Widget avatar = CircleAvatar(
+      radius: radius,
+      backgroundColor: theme.colorScheme.primaryContainer,
+      backgroundImage: backgroundImage,
+      child: content,
     );
 
     if (onTap != null) {

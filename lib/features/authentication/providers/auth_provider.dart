@@ -700,13 +700,35 @@ class AuthProvider extends ChangeNotifier {
 
       final url = Uri.parse('${Env.apiBaseUrl}/api/v1/profile');
       final Map<String, dynamic> body = {};
-      if (name != null && name.isNotEmpty) body['name'] = name;
-      if (email != null && email.isNotEmpty) body['email'] = email;
-      if (phone != null && phone.isNotEmpty) body['phone'] = phone;
-      if (designation != null && designation.isNotEmpty) body['designation'] = designation;
-      if (avatar != null && avatar.isNotEmpty) body['avatar'] = avatar;
-      if (timeZone != null && timeZone.isNotEmpty) body['timeZone'] = timeZone;
-      if (theme != null && theme.isNotEmpty) body['theme'] = theme;
+      if (name != null && name.isNotEmpty) {
+        body['name'] = name;
+        body['fullName'] = name;
+        body['full_name'] = name;
+      }
+      if (email != null && email.isNotEmpty) {
+        body['email'] = email;
+      }
+      if (phone != null && phone.isNotEmpty) {
+        body['phone'] = phone;
+        body['phoneNumber'] = phone;
+        body['phone_number'] = phone;
+      }
+      if (designation != null && designation.isNotEmpty) {
+        body['designation'] = designation;
+      }
+      if (avatar != null && avatar.isNotEmpty) {
+        body['avatar'] = avatar;
+        body['avatarIcon'] = avatar;
+        body['avatar_icon'] = avatar;
+      }
+      if (timeZone != null && timeZone.isNotEmpty) {
+        body['timeZone'] = timeZone;
+        body['time_zone'] = timeZone;
+        body['timezone'] = timeZone;
+      }
+      if (theme != null && theme.isNotEmpty) {
+        body['theme'] = theme;
+      }
 
       final response = await http.put(
         url,

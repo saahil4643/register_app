@@ -14,6 +14,7 @@ import '../../features/authentication/screens/welcome_screen.dart';
 import '../../features/dashboard/screens/dashboard_screen.dart';
 import '../../features/navigation/navigation_shell.dart';
 import '../../features/settings/screens/settings_screen.dart';
+import '../../features/settings/screens/profile_business_settings_screen.dart';
 import '../../features/shared/placeholder_screen.dart';
 import '../../features/invoices/screens/invoice_list/invoice_list_screen.dart';
 import '../../features/invoices/screens/new_invoice/new_invoice_screen.dart';
@@ -24,6 +25,8 @@ import '../../features/customers/screens/customers_list_screen.dart';
 import '../../features/products/screens/products_list_screen.dart';
 import '../../features/invoices/screens/new_invoice/add_customer_overlay_screen.dart';
 import '../../modules/expenses/screens/add_expense_screen.dart';
+import '../../modules/expenses/screens/expense_list_screen.dart';
+import '../../modules/expenses/models/expense_model.dart';
 import '../../features/vendors/screens/vendors_list_screen.dart';
 import '../../features/vendors/screens/new_vendor_screen.dart';
 import '../../features/vendors/models/vendor.dart';
@@ -187,7 +190,7 @@ class AppRouter {
               routes: [
                 GoRoute(
                   path: '/expenses',
-                  builder: (context, state) => const AddExpenseScreen(),
+                  builder: (context, state) => const ExpenseListScreen(),
                 ),
               ],
             ),
@@ -253,11 +256,7 @@ class AppRouter {
         GoRoute(
           parentNavigatorKey: _rootNavigatorKey,
           path: '/profile',
-          builder: (context, state) => const PlaceholderScreen(
-            title: 'My Profile',
-            description: 'Configure account credentials, profile photo, signature fields, and login preferences.',
-            icon: Icons.person_outline_rounded,
-          ),
+          builder: (context, state) => const ProfileBusinessSettingsScreen(),
         ),
         GoRoute(
           parentNavigatorKey: _rootNavigatorKey,
@@ -405,6 +404,24 @@ class AppRouter {
             description: 'Record customer payment receipts, bank transactions, and payout settlements.',
             icon: Icons.payments_rounded,
           ),
+        ),
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
+          path: '/expenses/create',
+          builder: (context, state) => const AddExpenseScreen(),
+        ),
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
+          path: '/expenses/add',
+          builder: (context, state) => const AddExpenseScreen(),
+        ),
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
+          path: '/expenses/edit',
+          builder: (context, state) {
+            final expense = state.extra as ExpenseModel?;
+            return AddExpenseScreen(initialExpense: expense);
+          },
         ),
         GoRoute(
           parentNavigatorKey: _rootNavigatorKey,

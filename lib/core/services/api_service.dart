@@ -251,15 +251,36 @@ class ApiService {
     final int statusCode = response.statusCode;
     final String bodyString = response.body;
     
-    Map<String, dynamic> json;
+    dynamic decoded;
     try {
-      json = jsonDecode(bodyString);
+      decoded = jsonDecode(bodyString);
     } catch (e) {
-      json = {
+      return {
         'success': false,
         'message': 'Failed to parse response body. Code: $statusCode',
       };
     }
+
+    if (decoded is List) {
+      if (statusCode >= 200 && statusCode < 300) {
+        return {
+          'success': true,
+          'data': decoded,
+          'statusCode': statusCode,
+        };
+      } else {
+        return {
+          'success': false,
+          'statusCode': statusCode,
+          'message': 'HTTP Error $statusCode',
+          'data': decoded,
+        };
+      }
+    }
+
+    final Map<String, dynamic> json = decoded is Map<String, dynamic>
+        ? decoded
+        : (decoded is Map ? Map<String, dynamic>.from(decoded) : <String, dynamic>{});
 
     if (statusCode >= 200 && statusCode < 300) {
       return json;

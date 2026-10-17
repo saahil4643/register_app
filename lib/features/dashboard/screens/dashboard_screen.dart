@@ -16,6 +16,7 @@ import '../widgets/dashboard_sub_tabs.dart';
 import '../widgets/financial_overview_cards.dart';
 import '../widgets/quick_create_grid.dart';
 import '../widgets/cash_flow_card.dart';
+import '../../navigation/navigation_shell.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -243,7 +244,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       size: 26,
                       color: isDark ? AppColors.darkTextPrimary : const Color(0xFF0F172A),
                     ),
-                    onPressed: () => Scaffold.of(context).openDrawer(),
+                    onPressed: () => NavigationShell.openDrawer(context),
                   ),
                   const SizedBox(width: 4),
                   Expanded(
@@ -441,7 +442,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 context.push('/purchases/bills/new');
                               },
                               onNewExpense: () {
-                                context.push('/expenses');
+                                context.push('/expenses/create');
                               },
                             ),
                           ).animate().fade(delay: 100.ms),

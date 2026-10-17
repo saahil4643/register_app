@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../vendors/models/vendor.dart';
 import '../../vendors/providers/vendor_provider.dart';
-import '../../vendors/screens/new_vendor_screen.dart';
 import '../models/purchase_order.dart';
 import '../providers/purchase_order_provider.dart';
 import '../../invoices/widgets/product_autocomplete.dart';
 import '../../products/models/product.dart';
 import '../../products/providers/product_provider.dart';
+import '../../invoices/widgets/customer_autocomplete.dart';
+import '../../customers/models/customer.dart';
+import '../../customers/providers/customer_provider.dart';
+import '../../customers/widgets/add_customer_dialog.dart';
 
 class NewPurchaseOrderScreen extends StatefulWidget {
   final PurchaseOrder? initialOrder;
@@ -28,7 +30,8 @@ class NewPurchaseOrderScreen extends StatefulWidget {
 class _NewPurchaseOrderScreenState extends State<NewPurchaseOrderScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  // Vendor Details
+  // Customer Details (Exactly like Invoice)
+  Customer? _selectedCustomer;
   String? _selectedVendorId;
   String _selectedVendorName = '';
   late final TextEditingController _vendorSearchController;
@@ -140,9 +143,10 @@ class _NewPurchaseOrderScreenState extends State<NewPurchaseOrderScreen> {
       }
     }
 
-    // Ensure vendors and products are loaded for selection
+    // Ensure vendors, customers, and products are loaded for selection
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<VendorProvider>().fetchVendors();
+      context.read<CustomerProvider>().fetchCustomers();
       context.read<ProductProvider>().fetchProducts();
     });
   }
@@ -458,159 +462,24 @@ class _NewPurchaseOrderScreenState extends State<NewPurchaseOrderScreen> {
     }
   }
 
-  void _openVendorPicker() {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-
-    showModalBottomSheet(
+  Future<void> _openAddPartyDialog({String? initialName}) async {
+    final newCustomer = await showDialog<Customer>(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: theme.scaffoldBackgroundColor,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (ctx) {
-        return SafeArea(
-          child: DraggableScrollableSheet(
-            expand: false,
-            initialChildSize: 0.7,
-            minChildSize: 0.4,
-            maxChildSize: 0.95,
-            builder: (_, scrollController) {
-              return Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Select Vendor',
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
-                        ),
-                        TextButton.icon(
-                          onPressed: () async {
-                            Navigator.pop(ctx);
-                            final newVendor = await Navigator.push<Vendor>(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const NewVendorScreen(),
-                              ),
-                            );
-                            if (newVendor != null) {
-                              setState(() {
-                                _selectedVendorId = newVendor.id;
-                                _selectedVendorName = newVendor.displayName;
-                                _vendorSearchController.text = newVendor.displayName;
-                              });
-                            }
-                          },
-                          icon: const Icon(Icons.add_rounded, size: 18),
-                          label: const Text('+ Add New Vendor'),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const Divider(height: 1),
-                  Expanded(
-                    child: Consumer<VendorProvider>(
-                      builder: (_, vProv, _) {
-                        final list = vProv.vendors;
-                        if (list.isEmpty) {
-                          return Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(Icons.storefront_outlined, size: 48, color: Colors.grey),
-                                const SizedBox(height: 12),
-                                const Text('No vendors found'),
-                                const SizedBox(height: 8),
-                                ElevatedButton(
-                                  onPressed: () async {
-                                    Navigator.pop(ctx);
-                                    final newVendor = await Navigator.push<Vendor>(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => const NewVendorScreen(),
-                                      ),
-                                    );
-                                    if (newVendor != null) {
-                                      setState(() {
-                                        _selectedVendorId = newVendor.id;
-                                        _selectedVendorName = newVendor.displayName;
-                                        _vendorSearchController.text = newVendor.displayName;
-                                      });
-                                    }
-                                  },
-                                  child: const Text('Create First Vendor'),
-                                ),
-                              ],
-                            ),
-                          );
-                        }
-
-                        return ListView.separated(
-                          controller: scrollController,
-                          itemCount: list.length,
-                          separatorBuilder: (_, _) => const Divider(height: 1),
-                          itemBuilder: (context, i) {
-                            final vendor = list[i];
-                            final isSelected = vendor.id == _selectedVendorId ||
-                                vendor.displayName == _selectedVendorName;
-
-                            return ListTile(
-                              leading: CircleAvatar(
-                                backgroundColor: isDark ? Colors.white10 : const Color(0xFFEDE9FE),
-                                child: Text(
-                                  vendor.displayName.isNotEmpty
-                                      ? vendor.displayName[0].toUpperCase()
-                                      : 'V',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xFF6D28D9),
-                                  ),
-                                ),
-                              ),
-                              title: Text(
-                                vendor.displayName,
-                                style: TextStyle(
-                                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                                ),
-                              ),
-                              subtitle: Text(
-                                vendor.companyName.isNotEmpty
-                                    ? vendor.companyName
-                                    : (vendor.email.isNotEmpty ? vendor.email : 'Vendor Account'),
-                                style: const TextStyle(fontSize: 12),
-                              ),
-                              trailing: isSelected
-                                  ? const Icon(Icons.check_circle_rounded, color: Color(0xFF2563EB))
-                                  : null,
-                              onTap: () {
-                                setState(() {
-                                  _selectedVendorId = vendor.id;
-                                  _selectedVendorName = vendor.displayName;
-                                  _vendorSearchController.text = vendor.displayName;
-                                });
-                                Navigator.pop(ctx);
-                              },
-                            );
-                          },
-                        );
-                      },
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
-        );
-      },
+      useRootNavigator: true,
+      barrierDismissible: true,
+      builder: (ctx) => AddCustomerDialog(initialName: initialName),
     );
+
+    if (newCustomer != null && mounted) {
+      setState(() {
+        _selectedCustomer = newCustomer;
+        _selectedVendorId = newCustomer.id;
+        _selectedVendorName = newCustomer.name.isNotEmpty ? newCustomer.name : newCustomer.company;
+        _vendorSearchController.text = _selectedVendorName;
+      });
+    }
   }
+
 
   void _simulateAddAttachment() {
     final fileName = 'Attachment_${_attachedFiles.length + 1}_spec.pdf';
@@ -629,7 +498,7 @@ class _NewPurchaseOrderScreenState extends State<NewPurchaseOrderScreen> {
     if (_selectedVendorName.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please select or enter a vendor name.'),
+          content: Text('Please select or enter a customer name.'),
           backgroundColor: AppColors.error,
         ),
       );
@@ -990,63 +859,150 @@ class _NewPurchaseOrderScreenState extends State<NewPurchaseOrderScreen> {
           ),
           const SizedBox(height: 16),
 
-          // VENDOR NAME *
+          // CUSTOMER NAME * (Dynamic Autocomplete exactly like Invoice)
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                'VENDOR NAME',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  letterSpacing: 0.5,
-                  color: Color(0xFF64748B),
-                ),
+              Row(
+                children: [
+                  Text(
+                    'Customer Name',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: labelBlue,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Text('*', style: TextStyle(color: requiredRed, fontWeight: FontWeight.bold)),
+                ],
               ),
-              const SizedBox(width: 4),
-              Text('*', style: TextStyle(color: requiredRed, fontWeight: FontWeight.bold)),
+              if (_selectedCustomer != null)
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      _selectedCustomer = null;
+                      _selectedVendorId = null;
+                      _selectedVendorName = '';
+                      _vendorSearchController.clear();
+                    });
+                  },
+                  style: TextButton.styleFrom(
+                    padding: EdgeInsets.zero,
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  child: const Text(
+                    'Change Customer',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF2563EB),
+                    ),
+                  ),
+                )
+              else
+                IconButton(
+                  onPressed: () => _openAddPartyDialog(initialName: _vendorSearchController.text.trim()),
+                  icon: const Icon(Icons.add, color: Color(0xFF2563EB), size: 22),
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  tooltip: 'Add New Customer',
+                ),
             ],
           ),
-          const SizedBox(height: 4),
-          InkWell(
-            onTap: _openVendorPicker,
-            borderRadius: BorderRadius.circular(8),
-            child: InputDecorator(
-              decoration: InputDecoration(
-                isDense: true,
-                contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 0),
-                enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: underlineColor, width: 1.2),
-                ),
-                suffixIcon: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (_selectedVendorName.isNotEmpty)
-                      IconButton(
-                        icon: const Icon(Icons.clear, size: 18),
-                        onPressed: () {
-                          setState(() {
-                            _selectedVendorId = null;
-                            _selectedVendorName = '';
-                            _vendorSearchController.clear();
-                          });
-                        },
-                      ),
-                    const Icon(Icons.arrow_drop_down, color: Color(0xFF64748B)),
-                  ],
-                ),
+          const SizedBox(height: 6),
+
+          if (_selectedCustomer == null)
+            CustomerSearchField(
+              controller: _vendorSearchController,
+              initialSelected: null,
+              onSelected: (customer) {
+                setState(() {
+                  _selectedCustomer = customer;
+                  _selectedVendorId = customer?.id;
+                  _selectedVendorName = customer?.name ?? '';
+                  if (customer != null) {
+                    _vendorSearchController.text = customer.name;
+                  }
+                });
+              },
+              onChanged: (text) {
+                setState(() {
+                  _selectedVendorName = text;
+                  if (_selectedCustomer != null && _selectedCustomer!.name != text) {
+                    _selectedCustomer = null;
+                    _selectedVendorId = null;
+                  }
+                });
+              },
+              onCreateNewTap: (query) {
+                _openAddPartyDialog(initialName: query);
+              },
+            )
+          else
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(
+                color: isDark ? Colors.grey[850] : const Color(0xFFF8FAFC),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: isDark ? AppColors.darkBorder : const Color(0xFFE2E8F0)),
               ),
-              child: Text(
-                _selectedVendorName.isNotEmpty ? _selectedVendorName : 'Search or select vendors...',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: _selectedVendorName.isNotEmpty ? FontWeight.w600 : FontWeight.normal,
-                  color: _selectedVendorName.isNotEmpty
-                      ? (isDark ? Colors.white : const Color(0xFF0F172A))
-                      : (isDark ? Colors.white38 : const Color(0xFF94A3B8)),
-                ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF2563EB).withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: const Icon(Icons.person_rounded, color: Color(0xFF2563EB), size: 20),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          _selectedCustomer!.name,
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        if (_selectedCustomer!.company.isNotEmpty && _selectedCustomer!.company != _selectedCustomer!.name) ...[
+                          const SizedBox(height: 2),
+                          Text(
+                            _selectedCustomer!.company,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: isDark ? Colors.grey[400] : Colors.grey[600],
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                        if (_selectedCustomer!.phone.isNotEmpty || _selectedCustomer!.gstNo.isNotEmpty) ...[
+                          const SizedBox(height: 2),
+                          Text(
+                            _selectedCustomer!.phone.isNotEmpty
+                                ? '📞 ${_selectedCustomer!.phone}'
+                                : 'GSTIN: ${_selectedCustomer!.gstNo}',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: isDark ? Colors.grey[400] : const Color(0xFF64748B),
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
-          ),
 
           const SizedBox(height: 18),
 

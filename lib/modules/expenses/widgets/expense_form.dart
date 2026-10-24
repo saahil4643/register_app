@@ -47,15 +47,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
   ];
 
   // Predefined Vendors
-  final List<String> _vendors = [
-    'Phoenix Properties',
-    'Amazon',
-    'Flipkart',
-    'Reliance',
-    'HP',
-    'Dell',
-    'Local Vendor'
-  ];
+  final List<String> _vendors = [];
 
   // Form Fields State
   String? _selectedCategory;

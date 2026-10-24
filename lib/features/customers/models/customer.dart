@@ -29,6 +29,7 @@ class Customer {
   final String shippingState;
   final String shippingPostalCode;
   final String shippingCountry;
+  final String route;
   final String notes;
   final DateTime createdAt;
   final DateTime? updatedAt;
@@ -72,6 +73,7 @@ class Customer {
     this.shippingState = '',
     this.shippingPostalCode = '',
     this.shippingCountry = 'India',
+    this.route = '',
     this.notes = '',
     required this.createdAt,
     this.updatedAt,
@@ -161,6 +163,7 @@ class Customer {
       shippingState: (json['shipping_state'] ?? (sameShipping ? (json['billing_state'] ?? '') : '')).toString(),
       shippingPostalCode: (json['shipping_postal_code'] ?? (sameShipping ? (json['billing_postal_code'] ?? '') : '')).toString(),
       shippingCountry: (json['shipping_country'] ?? 'India').toString(),
+      route: (json['route'] ?? json['beat'] ?? '').toString(),
       notes: (json['notes'] ?? json['internal_notes'] ?? '').toString(),
       createdAt: json['created_at'] != null || json['createdAt'] != null
           ? DateTime.tryParse((json['created_at'] ?? json['createdAt']).toString()) ?? DateTime.now()
@@ -203,6 +206,7 @@ class Customer {
       'shipping_state': shippingSameAsBilling ? billingState : shippingState,
       'shipping_postal_code': shippingSameAsBilling ? billingPostalCode : shippingPostalCode,
       'shipping_country': shippingCountry,
+      if (route.isNotEmpty) 'route': route,
       if (notes.isNotEmpty) 'notes': notes,
       'created_at': createdAt.toIso8601String(),
       if (updatedAt != null) 'updated_at': updatedAt!.toIso8601String(),
@@ -247,6 +251,7 @@ class Customer {
     String? shippingState,
     String? shippingPostalCode,
     String? shippingCountry,
+    String? route,
     String? notes,
     DateTime? createdAt,
     DateTime? updatedAt,
@@ -283,6 +288,7 @@ class Customer {
       shippingState: shippingState ?? this.shippingState,
       shippingPostalCode: shippingPostalCode ?? this.shippingPostalCode,
       shippingCountry: shippingCountry ?? this.shippingCountry,
+      route: route ?? this.route,
       notes: notes ?? this.notes,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,

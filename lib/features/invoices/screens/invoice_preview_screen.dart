@@ -38,8 +38,10 @@ class _InvoicePreviewScreenState extends State<InvoicePreviewScreen> {
     final settingsProvider = context.watch<SettingsProvider>();
     final authProvider = context.watch<AuthProvider>();
     
-    final companyName = settingsProvider.companySettings?.companyName ?? 'Prabhim One';
-    final email = authProvider.currentUserEmail ?? 'admin@prabhim.com';
+    final companyName = (settingsProvider.companySettings?.companyName.isNotEmpty ?? false)
+        ? settingsProvider.companySettings!.companyName
+        : 'My Business';
+    final email = authProvider.currentUserEmail ?? '';
     
     final currencyFormat = NumberFormat.currency(locale: 'en_IN', symbol: '₹');
     final dateFormat = DateFormat('dd MMM yyyy');
@@ -225,14 +227,14 @@ class _InvoicePreviewScreenState extends State<InvoicePreviewScreen> {
 
     final displayCompanyName = (company?.companyName.isNotEmpty ?? false)
         ? company!.companyName
-        : 'Prabhim Technologies (OPC) Pvt. Ltd.';
+        : 'My Business';
     final displayAddress = (company?.address.isNotEmpty ?? false)
         ? '${company!.address}, ${company.city.isNotEmpty ? "${company.city}, " : ""}${company.postalCode.isNotEmpty ? "${company.postalCode}, " : ""}${company.country.isNotEmpty ? company.country : "India"}'
-        : 'FL-1002 A, Utsav Residency Phase 1, Awhalwadi Road,\nWagholi, Pune, 412202, India';
-    final displayPhone = (company?.phone.isNotEmpty ?? false) ? company!.phone : '+91-9403301412';
+        : '';
+    final displayPhone = (company?.phone.isNotEmpty ?? false) ? company!.phone : '';
     final displayEmail = (company?.email.isNotEmpty ?? false) ? company!.email : email;
-    final displayGstn = (company?.gstNumber.isNotEmpty ?? false) ? company!.gstNumber : '27AAPCP6019G1Z5';
-    final displayState = (company?.state.isNotEmpty ?? false) ? company!.state : 'Maharashtra';
+    final displayGstn = (company?.gstNumber.isNotEmpty ?? false) ? company!.gstNumber : '';
+    final displayState = (company?.state.isNotEmpty ?? false) ? company!.state : '';
 
     final int totalQty = provider.selectedItems.fold(0, (sum, item) => sum + item.quantity);
     final double sgst = provider.totalTax / 2;

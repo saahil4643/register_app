@@ -61,25 +61,15 @@ class VendorProvider extends ChangeNotifier {
         }
       }
 
-      if (list.isNotEmpty || response['success'] == true) {
-        _vendors.clear();
-        for (final item in list) {
-          if (item is Map<String, dynamic>) {
-            _vendors.add(Vendor.fromJson(item));
-          }
+      _vendors.clear();
+      for (final item in list) {
+        if (item is Map<String, dynamic>) {
+          _vendors.add(Vendor.fromJson(item));
         }
-      } else if (_vendors.isEmpty) {
-        _populateDefaultVendors();
       }
     } catch (e) {
       _errorMessage = e.toString();
-      if (_vendors.isEmpty) {
-        _populateDefaultVendors();
-      }
     } finally {
-      if (_vendors.isEmpty) {
-        _populateDefaultVendors();
-      }
       _isLoading = false;
       notifyListeners();
     }
@@ -204,52 +194,4 @@ class VendorProvider extends ChangeNotifier {
     }
   }
 
-  void _populateDefaultVendors() {
-    if (_vendors.isNotEmpty) return;
-    final defaults = [
-      Vendor(
-        id: 'v_1',
-        displayName: 'Apex Logistics',
-        companyName: 'Apex Logistics Pvt Ltd',
-        firstName: 'Rajesh',
-        lastName: 'Sharma',
-        email: 'billing@apexlogistics.in',
-        primaryPhone: '022-45892300',
-        secondaryPhone: '9820145892',
-        gstNumber: '27AAPFU0939F1ZV',
-        panNumber: 'AAPFU0939F',
-        taxPreference: 'Taxable',
-        currency: 'INR',
-        paymentTerms: 'Net 30',
-        billingCity: 'Mumbai',
-        billingState: 'Maharashtra',
-        createdAt: DateTime.now().subtract(const Duration(days: 30)),
-      ),
-      Vendor(
-        id: 'v_2',
-        displayName: 'CloudScale Tech',
-        companyName: 'CloudScale Technologies',
-        firstName: 'Pooja',
-        lastName: 'Mehta',
-        email: 'accounts@cloudscale.io',
-        primaryPhone: '9988776655',
-        currency: 'INR',
-        paymentTerms: 'Due on Receipt',
-        billingCity: 'Bengaluru',
-        billingState: 'Karnataka',
-        createdAt: DateTime.now().subtract(const Duration(days: 15)),
-      ),
-      Vendor(
-        id: 'v_3',
-        displayName: 'Bharat Petroleum',
-        companyName: 'Bharat Petroleum Corp Ltd',
-        currency: 'INR',
-        paymentTerms: 'Due on Receipt',
-        billingCity: 'Pune',
-        billingState: 'Maharashtra',
-        createdAt: DateTime.now().subtract(const Duration(days: 5)),
-      ),
-    ];
-    _vendors.addAll(defaults);
-  }
 }

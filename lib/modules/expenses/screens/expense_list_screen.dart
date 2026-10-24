@@ -384,16 +384,16 @@ class _ExpenseListScreenState extends State<ExpenseListScreen> {
     final expenses = expenseProvider.filteredExpenses;
     final currencyFormat = NumberFormat.currency(locale: 'en_IN', symbol: '₹', decimalDigits: 0);
 
-    final email = authProvider.currentUserEmail ?? 'admin@prabhim.com';
+    final email = authProvider.currentUserEmail ?? '';
     final firstName = authProvider.currentUserFirstName ?? '';
     final lastName = authProvider.currentUserLastName ?? '';
     String userName = '$firstName $lastName'.trim();
-    if (userName.isEmpty) {
+    if (userName.isEmpty && email.isNotEmpty) {
       userName = email.split('@')[0];
       userName = userName.split('.').map((s) => s.isNotEmpty ? s[0].toUpperCase() + s.substring(1) : '').join(' ');
     }
     if (userName.isEmpty) {
-      userName = 'Prabhim One Admin';
+      userName = 'User';
     }
     final initials = userName.trim().split(' ').map((l) => l.isNotEmpty ? l[0] : '').take(2).join().toUpperCase();
 

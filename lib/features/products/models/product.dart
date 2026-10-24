@@ -5,8 +5,12 @@ class Product {
   final String productCode;
   final String barcode;
   final String productType; // 'goods' or 'service'
-  final String category; // Category name for display
+  final String company; // Company name (e.g. Wipro, Cadbury, Fena)
+  final String? companyId;
+  final String category; // Category name (e.g. Santoor, Yardley)
   final String? categoryId;
+  final String subcategory; // Subcategory name (e.g. Handwash, Soap, Powder)
+  final String? subcategoryId;
   final String brand; // Brand name for display
   final String? brandId;
   final String unitOfMeasurement;
@@ -34,9 +38,13 @@ class Product {
     this.productCode = '',
     this.barcode = '',
     this.productType = 'goods',
+    String? company,
+    this.companyId,
     required this.category,
     this.categoryId,
-    required this.brand,
+    String? subcategory,
+    this.subcategoryId,
+    String? brand,
     this.brandId,
     this.unitOfMeasurement = 'Pieces',
     this.unitAbbreviation = 'pcs',
@@ -57,7 +65,14 @@ class Product {
     String? imageUrl,
     required this.createdAt,
     this.updatedAt,
-  })  : sellingPrice = sellingPrice ?? price ?? 0.0,
+  })  : company = (company != null && company.isNotEmpty)
+            ? company
+            : ((brand != null && brand.isNotEmpty && brand != 'Generic') ? brand : 'General'),
+        subcategory = (subcategory != null && subcategory.isNotEmpty) ? subcategory : 'General',
+        brand = (brand != null && brand.isNotEmpty)
+            ? brand
+            : ((company != null && company.isNotEmpty) ? company : 'Generic'),
+        sellingPrice = sellingPrice ?? price ?? 0.0,
         image = image ?? imageUrl;
 
   // Getter to prevent breaking any legacy code referencing price and imageUrl
@@ -99,6 +114,20 @@ class Product {
   }
 
   factory Product.fromJson(Map<String, dynamic> json) {
+    // Resolve company name and id
+    String compName = 'General';
+    String? compId;
+    if (json['company'] is Map) {
+      final compMap = json['company'] as Map<String, dynamic>;
+      compName = (compMap['name'] ?? 'General').toString();
+      compId = compMap['id']?.toString();
+    } else if (json['company_name'] != null) {
+      compName = json['company_name'].toString();
+      compId = json['company']?.toString();
+    } else if (json['company'] != null) {
+      compName = json['company'].toString();
+    }
+
     // Resolve category name and id
     String catName = 'General';
     String? catId;
@@ -113,18 +142,36 @@ class Product {
       catName = json['category'].toString();
     }
 
+    // Resolve subcategory name and id
+    String subcatName = 'General';
+    String? subcatId;
+    if (json['subcategory'] is Map) {
+      final subMap = json['subcategory'] as Map<String, dynamic>;
+      subcatName = (subMap['name'] ?? 'General').toString();
+      subcatId = subMap['id']?.toString();
+    } else if (json['subcategory_name'] != null) {
+      subcatName = json['subcategory_name'].toString();
+      subcatId = json['subcategory']?.toString();
+    } else if (json['subcategory'] != null) {
+      subcatName = json['subcategory'].toString();
+    }
+
     // Resolve brand name and id
-    String brandName = 'Generic';
+    String brandName = compName != 'General' ? compName : 'Generic';
     String? bId;
     if (json['brand'] is Map) {
       final brandMap = json['brand'] as Map<String, dynamic>;
-      brandName = (brandMap['name'] ?? 'Generic').toString();
+      brandName = (brandMap['name'] ?? brandName).toString();
       bId = brandMap['id']?.toString();
     } else if (json['brand_name'] != null) {
       brandName = json['brand_name'].toString();
       bId = json['brand']?.toString();
     } else if (json['brand'] != null) {
       brandName = json['brand'].toString();
+    }
+
+    if (compName == 'General' && brandName != 'Generic') {
+      compName = brandName;
     }
 
     // Resolve unit of measurement
@@ -160,8 +207,12 @@ class Product {
       productCode: (json['product_code'] ?? '').toString(),
       barcode: (json['barcode'] ?? '').toString(),
       productType: (json['product_type'] ?? 'goods').toString(),
+      company: compName,
+      companyId: compId,
       category: catName,
       categoryId: catId,
+      subcategory: subcatName,
+      subcategoryId: subcatId,
       brand: brandName,
       brandId: bId,
       unitOfMeasurement: uomName,
@@ -196,10 +247,14 @@ class Product {
       if (productCode.isNotEmpty) 'product_code': productCode,
       if (barcode.isNotEmpty) 'barcode': barcode,
       'product_type': productType,
+      'company': companyId ?? company,
+      'company_name': company,
       'category': categoryId ?? category,
       'category_name': category,
-      'brand': brandId ?? brand,
-      'brand_name': brand,
+      'subcategory': subcategoryId ?? subcategory,
+      'subcategory_name': subcategory,
+      'brand': brandId ?? (company.isNotEmpty ? company : brand),
+      'brand_name': company.isNotEmpty ? company : brand,
       'unit_of_measurement': unitOfMeasurement,
       'unit_abbreviation': unitAbbreviation,
       'warehouse': warehouseId ?? warehouse,
@@ -232,8 +287,12 @@ class Product {
     String? productCode,
     String? barcode,
     String? productType,
+    String? company,
+    String? companyId,
     String? category,
     String? categoryId,
+    String? subcategory,
+    String? subcategoryId,
     String? brand,
     String? brandId,
     String? unitOfMeasurement,
@@ -261,8 +320,12 @@ class Product {
       productCode: productCode ?? this.productCode,
       barcode: barcode ?? this.barcode,
       productType: productType ?? this.productType,
+      company: company ?? this.company,
+      companyId: companyId ?? this.companyId,
       category: category ?? this.category,
       categoryId: categoryId ?? this.categoryId,
+      subcategory: subcategory ?? this.subcategory,
+      subcategoryId: subcategoryId ?? this.subcategoryId,
       brand: brand ?? this.brand,
       brandId: brandId ?? this.brandId,
       unitOfMeasurement: unitOfMeasurement ?? this.unitOfMeasurement,

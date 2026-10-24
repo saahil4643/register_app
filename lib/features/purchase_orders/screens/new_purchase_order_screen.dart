@@ -2,16 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../vendors/models/vendor.dart';
 import '../../vendors/providers/vendor_provider.dart';
+import '../../vendors/screens/new_vendor_screen.dart';
+import '../../vendors/widgets/vendor_autocomplete.dart';
 import '../models/purchase_order.dart';
 import '../providers/purchase_order_provider.dart';
 import '../../invoices/widgets/product_autocomplete.dart';
 import '../../products/models/product.dart';
 import '../../products/providers/product_provider.dart';
-import '../../invoices/widgets/customer_autocomplete.dart';
-import '../../customers/models/customer.dart';
-import '../../customers/providers/customer_provider.dart';
-import '../../customers/widgets/add_customer_dialog.dart';
 
 class NewPurchaseOrderScreen extends StatefulWidget {
   final PurchaseOrder? initialOrder;
@@ -30,8 +29,8 @@ class NewPurchaseOrderScreen extends StatefulWidget {
 class _NewPurchaseOrderScreenState extends State<NewPurchaseOrderScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  // Customer Details (Exactly like Invoice)
-  Customer? _selectedCustomer;
+  // Vendor Details
+  Vendor? _selectedVendor;
   String? _selectedVendorId;
   String _selectedVendorName = '';
   late final TextEditingController _vendorSearchController;
@@ -127,7 +126,7 @@ class _NewPurchaseOrderScreenState extends State<NewPurchaseOrderScreen> {
           '1. Goods received subject to inspection and approval.\n'
               '2. Payment will be processed as per agreed terms.\n'
               '3. Mention PO number on all invoices and delivery notes.\n'
-              '4. All disputes are subject to PUNE jurisdiction only.',
+              '4. All disputes are subject to local jurisdiction only.',
     );
 
     if (initial != null && initial.attachments.isNotEmpty) {
@@ -143,10 +142,22 @@ class _NewPurchaseOrderScreenState extends State<NewPurchaseOrderScreen> {
       }
     }
 
-    // Ensure vendors, customers, and products are loaded for selection
+    // Ensure vendors and products are loaded for selection
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<VendorProvider>().fetchVendors();
-      context.read<CustomerProvider>().fetchCustomers();
+      context.read<VendorProvider>().fetchVendors().then((_) {
+        if (mounted && initial != null && _selectedVendorName.isNotEmpty) {
+          final vList = context.read<VendorProvider>().vendors;
+          final matchingVendor = vList.where((v) =>
+              (v.id.isNotEmpty && v.id == _selectedVendorId) ||
+              v.displayName.toLowerCase() == _selectedVendorName.toLowerCase() ||
+              v.companyName.toLowerCase() == _selectedVendorName.toLowerCase()).firstOrNull;
+          if (matchingVendor != null) {
+            setState(() {
+              _selectedVendor = matchingVendor;
+            });
+          }
+        }
+      });
       context.read<ProductProvider>().fetchProducts();
     });
   }
@@ -463,23 +474,24 @@ class _NewPurchaseOrderScreenState extends State<NewPurchaseOrderScreen> {
   }
 
   Future<void> _openAddPartyDialog({String? initialName}) async {
-    final newCustomer = await showDialog<Customer>(
-      context: context,
-      useRootNavigator: true,
-      barrierDismissible: true,
-      builder: (ctx) => AddCustomerDialog(initialName: initialName),
+    final newVendor = await Navigator.push<Vendor>(
+      context,
+      MaterialPageRoute(
+        builder: (ctx) => NewVendorScreen(initialName: initialName),
+      ),
     );
 
-    if (newCustomer != null && mounted) {
+    if (newVendor != null && mounted) {
       setState(() {
-        _selectedCustomer = newCustomer;
-        _selectedVendorId = newCustomer.id;
-        _selectedVendorName = newCustomer.name.isNotEmpty ? newCustomer.name : newCustomer.company;
+        _selectedVendor = newVendor;
+        _selectedVendorId = newVendor.id;
+        _selectedVendorName = newVendor.displayName.isNotEmpty
+            ? newVendor.displayName
+            : newVendor.companyName;
         _vendorSearchController.text = _selectedVendorName;
       });
     }
   }
-
 
   void _simulateAddAttachment() {
     final fileName = 'Attachment_${_attachedFiles.length + 1}_spec.pdf';
@@ -498,7 +510,7 @@ class _NewPurchaseOrderScreenState extends State<NewPurchaseOrderScreen> {
     if (_selectedVendorName.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please select or enter a customer name.'),
+          content: Text('Please select or enter a vendor name.'),
           backgroundColor: AppColors.error,
         ),
       );
@@ -859,14 +871,14 @@ class _NewPurchaseOrderScreenState extends State<NewPurchaseOrderScreen> {
           ),
           const SizedBox(height: 16),
 
-          // CUSTOMER NAME * (Dynamic Autocomplete exactly like Invoice)
+          // VENDOR NAME *
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Row(
                 children: [
                   Text(
-                    'Customer Name',
+                    'Vendor Name',
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.w600,
@@ -877,11 +889,11 @@ class _NewPurchaseOrderScreenState extends State<NewPurchaseOrderScreen> {
                   Text('*', style: TextStyle(color: requiredRed, fontWeight: FontWeight.bold)),
                 ],
               ),
-              if (_selectedCustomer != null)
+              if (_selectedVendor != null)
                 TextButton(
                   onPressed: () {
                     setState(() {
-                      _selectedCustomer = null;
+                      _selectedVendor = null;
                       _selectedVendorId = null;
                       _selectedVendorName = '';
                       _vendorSearchController.clear();
@@ -893,7 +905,7 @@ class _NewPurchaseOrderScreenState extends State<NewPurchaseOrderScreen> {
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
                   child: const Text(
-                    'Change Customer',
+                    'Change Vendor',
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
@@ -907,31 +919,35 @@ class _NewPurchaseOrderScreenState extends State<NewPurchaseOrderScreen> {
                   icon: const Icon(Icons.add, color: Color(0xFF2563EB), size: 22),
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
-                  tooltip: 'Add New Customer',
+                  tooltip: 'Add New Vendor',
                 ),
             ],
           ),
           const SizedBox(height: 6),
 
-          if (_selectedCustomer == null)
-            CustomerSearchField(
+          if (_selectedVendor == null)
+            VendorSearchField(
               controller: _vendorSearchController,
               initialSelected: null,
-              onSelected: (customer) {
+              onSelected: (vendor) {
                 setState(() {
-                  _selectedCustomer = customer;
-                  _selectedVendorId = customer?.id;
-                  _selectedVendorName = customer?.name ?? '';
-                  if (customer != null) {
-                    _vendorSearchController.text = customer.name;
+                  _selectedVendor = vendor;
+                  _selectedVendorId = vendor?.id;
+                  _selectedVendorName = vendor != null
+                      ? (vendor.displayName.isNotEmpty ? vendor.displayName : vendor.companyName)
+                      : '';
+                  if (vendor != null) {
+                    _vendorSearchController.text = _selectedVendorName;
                   }
                 });
               },
               onChanged: (text) {
                 setState(() {
                   _selectedVendorName = text;
-                  if (_selectedCustomer != null && _selectedCustomer!.name != text) {
-                    _selectedCustomer = null;
+                  if (_selectedVendor != null &&
+                      _selectedVendor!.displayName != text &&
+                      _selectedVendor!.companyName != text) {
+                    _selectedVendor = null;
                     _selectedVendorId = null;
                   }
                 });
@@ -957,7 +973,7 @@ class _NewPurchaseOrderScreenState extends State<NewPurchaseOrderScreen> {
                       color: const Color(0xFF2563EB).withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    child: const Icon(Icons.person_rounded, color: Color(0xFF2563EB), size: 20),
+                    child: const Icon(Icons.business_rounded, color: Color(0xFF2563EB), size: 20),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -966,15 +982,18 @@ class _NewPurchaseOrderScreenState extends State<NewPurchaseOrderScreen> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          _selectedCustomer!.name,
+                          _selectedVendor!.displayName.isNotEmpty
+                              ? _selectedVendor!.displayName
+                              : _selectedVendor!.companyName,
                           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        if (_selectedCustomer!.company.isNotEmpty && _selectedCustomer!.company != _selectedCustomer!.name) ...[
+                        if (_selectedVendor!.companyName.isNotEmpty &&
+                            _selectedVendor!.companyName != _selectedVendor!.displayName) ...[
                           const SizedBox(height: 2),
                           Text(
-                            _selectedCustomer!.company,
+                            _selectedVendor!.companyName,
                             style: TextStyle(
                               fontSize: 12,
                               color: isDark ? Colors.grey[400] : Colors.grey[600],
@@ -983,12 +1002,13 @@ class _NewPurchaseOrderScreenState extends State<NewPurchaseOrderScreen> {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ],
-                        if (_selectedCustomer!.phone.isNotEmpty || _selectedCustomer!.gstNo.isNotEmpty) ...[
+                        if (_selectedVendor!.primaryPhone.isNotEmpty ||
+                            _selectedVendor!.gstNumber.isNotEmpty) ...[
                           const SizedBox(height: 2),
                           Text(
-                            _selectedCustomer!.phone.isNotEmpty
-                                ? '📞 ${_selectedCustomer!.phone}'
-                                : 'GSTIN: ${_selectedCustomer!.gstNo}',
+                            _selectedVendor!.primaryPhone.isNotEmpty
+                                ? '📞 ${_selectedVendor!.primaryPhone}'
+                                : 'GSTIN: ${_selectedVendor!.gstNumber}',
                             style: TextStyle(
                               fontSize: 11,
                               color: isDark ? Colors.grey[400] : const Color(0xFF64748B),

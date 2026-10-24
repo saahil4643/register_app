@@ -547,18 +547,20 @@ class _NavigationShellState extends State<NavigationShell> {
     final location = GoRouterState.of(context).uri.path;
     final bottomNavIndex = _calculateBottomNavIndex(location, widget.navigationShell.currentIndex);
 
-    final email = authProvider.currentUserEmail ?? 'admin@prabhim.com';
+    final email = authProvider.currentUserEmail ?? '';
     final firstName = authProvider.currentUserFirstName ?? '';
     final lastName = authProvider.currentUserLastName ?? '';
     String userName = '$firstName $lastName'.trim();
-    if (userName.isEmpty) {
+    if (userName.isEmpty && email.isNotEmpty) {
       userName = email.split('@')[0];
       userName = userName.split('.').map((s) => s.isNotEmpty ? s[0].toUpperCase() + s.substring(1) : '').join(' ');
     }
     if (userName.isEmpty) {
-      userName = 'Prabhim One Admin';
+      userName = 'User';
     }
-    final companyName = settingsProvider.companySettings?.companyName ?? 'Prabhim One';
+    final companyName = settingsProvider.companySettings?.companyName.isNotEmpty == true
+        ? settingsProvider.companySettings!.companyName
+        : 'My Business';
 
     return Scaffold(
       key: NavigationShell.scaffoldKey,

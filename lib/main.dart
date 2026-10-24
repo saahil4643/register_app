@@ -21,10 +21,12 @@ import 'features/quotations/providers/quotation_provider.dart';
 import 'features/credit_notes/providers/credit_note_provider.dart';
 import 'features/proforma_invoices/providers/proforma_invoice_provider.dart';
 import 'modules/expenses/providers/expense_provider.dart';
+import 'core/services/offline_data_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Env.init();
+  await OfflineDataService().init();
   runApp(
     MultiProvider(
       providers: [

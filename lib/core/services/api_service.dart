@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config/env.dart';
+import 'offline_data_service.dart';
 
 class ApiService {
   static final ApiService _instance = ApiService._internal();
@@ -30,6 +31,16 @@ class ApiService {
     }
     
     return headers;
+  }
+
+  bool _isOnlineAuthPath(String path) {
+    final p = path.toLowerCase();
+    return p.contains('/auth/login') ||
+        p.contains('/auth/register') ||
+        p.contains('/auth/verify-otp') ||
+        p.contains('/auth/forgot-password') ||
+        p.contains('/auth/reset-password') ||
+        p.contains('/auth/token/refresh');
   }
 
   Future<Map<String, dynamic>> get(String path) async {
@@ -70,6 +81,20 @@ class ApiService {
     Map<String, String>? fields,
   }) async {
     final resolvedPath = _resolvePath(path);
+
+    // If offline business module, return successful local mock response immediately
+    if (!_isOnlineAuthPath(resolvedPath)) {
+      debugPrint('ApiService postMultipart (Offline): $resolvedPath');
+      return {
+        'success': true,
+        'message': 'File uploaded locally',
+        'data': {
+          'file_url': 'local_attachment',
+          'url': 'local_attachment',
+        },
+      };
+    }
+
     final url = resolvedPath.startsWith('http') ? Uri.parse(resolvedPath) : Uri.parse('${Env.apiBaseUrl}$resolvedPath');
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('access_token');
@@ -111,10 +136,16 @@ class ApiService {
     Map<String, dynamic>? body,
   }) async {
     final resolvedPath = _resolvePath(path);
+
+    // Route all non-auth endpoints to the OfflineDataService
+    if (!_isOnlineAuthPath(resolvedPath)) {
+      return await OfflineDataService().handleRequest(method, resolvedPath, body: body);
+    }
+
     final url = resolvedPath.startsWith('http') ? Uri.parse(resolvedPath) : Uri.parse('${Env.apiBaseUrl}$resolvedPath');
     var headers = await _getHeaders();
 
-    debugPrint('ApiService $method: $url');
+    debugPrint('ApiService $method (Online Auth): $url');
     http.Response response;
     
     if (method == 'GET') {
@@ -159,6 +190,13 @@ class ApiService {
 
   Future<Uint8List?> getBytes(String path) async {
     final resolvedPath = _resolvePath(path);
+
+    // Return dummy PDF document bytes offline so previews and downloads succeed
+    if (!_isOnlineAuthPath(resolvedPath)) {
+      debugPrint('ApiService getBytes (Offline): $resolvedPath');
+      return Uint8List.fromList(utf8.encode('%PDF-1.4 Mock Offline Invoice Document'));
+    }
+
     final url = resolvedPath.startsWith('http') ? Uri.parse(resolvedPath) : Uri.parse('${Env.apiBaseUrl}$resolvedPath');
     var headers = await _getHeaders();
     

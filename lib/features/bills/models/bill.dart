@@ -292,7 +292,7 @@ class Bill {
 
     final rawBillNo = json['bill_number']?.toString() ??
         json['bill_no']?.toString() ??
-        'BILL-001';
+        '';
 
     return Bill(
       id: json['id']?.toString() ?? json['db_id']?.toString() ?? '',

@@ -438,8 +438,8 @@ class _ProductSearchFieldState extends State<ProductSearchField> {
                 focusNode: _focusNode,
                 onChanged: _onTextChanged,
                 decoration: InputDecoration(
-                  labelText: 'Search Product / SKU',
-                  hintText: 'Type product name or SKU...',
+                  labelText: 'Search Product / Company / Category / SKU',
+                  hintText: 'Search product, company, category, subcategory...',
                   prefixIcon: const Icon(Icons.shopping_bag_outlined),
                   suffixIcon: _controller.text.isNotEmpty
                       ? IconButton(
@@ -603,21 +603,6 @@ class ProductSuggestionTile extends StatelessWidget {
     required this.onTap,
   });
 
-  Color _getCategoryColor(String category) {
-    switch (category) {
-      case 'Services':
-        return const Color(0xFF6D28D9); // Purple
-      case 'Hardware':
-        return const Color(0xFF3B82F6); // Blue
-      case 'Software':
-        return const Color(0xFF10B981); // Green
-      case 'Consulting':
-        return const Color(0xFFF59E0B); // Orange
-      default:
-        return Colors.grey;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -688,15 +673,15 @@ class ProductSuggestionTile extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
-                          color: _getCategoryColor(product.category).withValues(alpha: 0.1),
+                          color: theme.colorScheme.primary.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
-                          product.category,
+                          '${product.company} › ${product.category} › ${product.subcategory}',
                           style: TextStyle(
-                            fontSize: 9,
+                            fontSize: 10,
                             fontWeight: FontWeight.bold,
-                            color: _getCategoryColor(product.category),
+                            color: theme.colorScheme.primary,
                           ),
                         ),
                       ),

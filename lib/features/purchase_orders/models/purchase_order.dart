@@ -319,7 +319,7 @@ class PurchaseOrder {
 
     return PurchaseOrder(
       id: id,
-      poNumber: poNum.isNotEmpty ? poNum : 'PO-001',
+      poNumber: poNum,
       vendorId: json['vendor_id']?.toString() ?? '',
       vendorName: vendor,
       category: cat,

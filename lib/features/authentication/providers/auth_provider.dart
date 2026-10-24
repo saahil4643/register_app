@@ -70,7 +70,7 @@ class AuthProvider extends ChangeNotifier {
       _pendingVerificationEmail = prefs.getString('pending_verification_email');
       _currentUserCompanyName = prefs.getString(_userCompanyNameKey) ?? prefs.getString('company_name');
       if (_isAuthenticated) {
-        _currentUserEmail = prefs.getString(_userEmailKey) ?? 'admin@prabhim.com';
+        _currentUserEmail = prefs.getString(_userEmailKey) ?? '';
         _currentUserFirstName = prefs.getString(_userFirstNameKey);
         _currentUserLastName = prefs.getString(_userLastNameKey);
         _currentUserProfileImage = prefs.getString(_userProfileImageKey);

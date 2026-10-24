@@ -211,7 +211,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> with SingleTi
                         textAlign: TextAlign.center,
                       ),
                       Text(
-                        'SKU: ${product.sku} • Brand: ${product.brand.isNotEmpty ? product.brand : "Generic"}',
+                        'SKU: ${product.sku} • ${product.company} › ${product.category} › ${product.subcategory}',
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
                         ),
@@ -351,9 +351,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> with SingleTi
                 children: [
                   const Text('Catalog Properties', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
                   const Divider(height: 20),
+                  _buildDetailRow('Company / Brand', product.company),
+                  const SizedBox(height: 8),
                   _buildDetailRow('Category', product.category),
                   const SizedBox(height: 8),
-                  _buildDetailRow('Brand', product.brand.isNotEmpty ? product.brand : 'Generic'),
+                  _buildDetailRow('Subcategory', product.subcategory),
                   const SizedBox(height: 8),
                   _buildDetailRow('Barcode', product.barcode.isNotEmpty ? product.barcode : 'N/A'),
                   const SizedBox(height: 8),

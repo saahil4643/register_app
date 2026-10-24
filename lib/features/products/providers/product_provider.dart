@@ -64,6 +64,8 @@ class ProductProvider extends ChangeNotifier {
     String? productType,
     String? categoryId,
     String? brandId,
+    String? company,
+    String? subcategory,
     String? status,
     bool? trackInventory,
     String? stockAvailability,
@@ -96,8 +98,14 @@ class ProductProvider extends ChangeNotifier {
         if (productType != null && productType.isNotEmpty) {
           queryParams.add('product_type=$productType');
         }
+        if (company != null && company.isNotEmpty) {
+          queryParams.add('company=${Uri.encodeComponent(company)}');
+        }
         if (categoryId != null && categoryId.isNotEmpty) {
           queryParams.add('category=$categoryId');
+        }
+        if (subcategory != null && subcategory.isNotEmpty) {
+          queryParams.add('subcategory=${Uri.encodeComponent(subcategory)}');
         }
         if (brandId != null && brandId.isNotEmpty) {
           queryParams.add('brand=$brandId');
@@ -253,7 +261,12 @@ class ProductProvider extends ChangeNotifier {
         if (product.sku.isNotEmpty) 'sku': product.sku,
         if (product.barcode.isNotEmpty) 'barcode': product.barcode,
         'product_type': product.productType.isNotEmpty ? product.productType : 'goods',
+        if (product.company.isNotEmpty) 'company': product.company,
+        if (product.company.isNotEmpty) 'company_name': product.company,
         if (product.category.isNotEmpty) 'category': product.category,
+        if (product.category.isNotEmpty) 'category_name': product.category,
+        if (product.subcategory.isNotEmpty) 'subcategory': product.subcategory,
+        if (product.subcategory.isNotEmpty) 'subcategory_name': product.subcategory,
         if (product.brand.isNotEmpty) 'brand': product.brand,
         'unit_of_measurement': product.unitOfMeasurement.isNotEmpty ? product.unitOfMeasurement : 'Pieces',
         'warehouse': product.warehouse.isNotEmpty ? product.warehouse : 'Main Warehouse',
@@ -277,6 +290,8 @@ class ProductProvider extends ChangeNotifier {
           id: newProduct.id.isNotEmpty ? newProduct.id : product.id,
           sku: newProduct.sku.isNotEmpty ? newProduct.sku : product.sku,
           status: newProduct.status.isNotEmpty ? newProduct.status : product.status,
+          company: newProduct.company.isNotEmpty ? newProduct.company : product.company,
+          subcategory: newProduct.subcategory.isNotEmpty ? newProduct.subcategory : product.subcategory,
         );
 
         _products.insert(0, merged);
@@ -315,7 +330,12 @@ class ProductProvider extends ChangeNotifier {
         if (product.sku.isNotEmpty) 'sku': product.sku,
         if (product.barcode.isNotEmpty) 'barcode': product.barcode,
         'product_type': product.productType,
+        if (product.company.isNotEmpty) 'company': product.company,
+        if (product.company.isNotEmpty) 'company_name': product.company,
         if (product.category.isNotEmpty) 'category': product.category,
+        if (product.category.isNotEmpty) 'category_name': product.category,
+        if (product.subcategory.isNotEmpty) 'subcategory': product.subcategory,
+        if (product.subcategory.isNotEmpty) 'subcategory_name': product.subcategory,
         if (product.brand.isNotEmpty) 'brand': product.brand,
         'unit_of_measurement': product.unitOfMeasurement,
         'warehouse': product.warehouse,

@@ -89,7 +89,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       }
     });
 
-    _expenseIdController = TextEditingController(text: 'EXP-001');
+    _expenseIdController = TextEditingController(text: '');
     _amountController = TextEditingController(text: '');
     _gstRateController = TextEditingController(text: '');
     _referenceController = TextEditingController();

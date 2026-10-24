@@ -88,10 +88,8 @@ class _UploadWidgetState extends State<UploadWidget> {
 
   Future<void> _simulateMockFile() async {
     final mockFiles = [
-      {'name': 'invoice_rent_phoenix.pdf', 'size': '1.24 MB'},
-      {'name': 'aws_receipt_july.png', 'size': '0.85 MB'},
-      {'name': 'fuel_bill_hp.jpg', 'size': '2.10 MB'},
-      {'name': 'reliance_internet_wifi.pdf', 'size': '3.40 MB'},
+      {'name': 'expense_receipt.pdf', 'size': '1.02 MB'},
+      {'name': 'payment_voucher.pdf', 'size': '0.85 MB'},
     ];
     // Select a random mock file
     final selected = (mockFiles..shuffle()).first;

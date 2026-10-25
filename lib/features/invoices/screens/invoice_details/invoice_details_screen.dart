@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
@@ -10,7 +9,6 @@ import '../../widgets/action_buttons.dart';
 import '../../widgets/invoice_header.dart';
 import '../../widgets/payment_history.dart';
 import '../../widgets/customer_card.dart';
-import '../../../customers/models/payment.dart';
 
 class InvoiceDetailsScreen extends StatefulWidget {
   final String invoiceId;
@@ -65,7 +63,6 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
     final isDark = theme.brightness == Brightness.dark;
     final provider = context.watch<InvoiceProvider>();
     final currencyFormat = NumberFormat.currency(locale: 'en_IN', symbol: '₹');
-    final dateFormat = DateFormat('dd MMM yyyy');
 
     if (_isLoadingDetails && provider.invoices.indexWhere((inv) => inv.id == widget.invoiceId) < 0) {
       return Scaffold(

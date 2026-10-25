@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/widgets/custom_cards.dart';
@@ -11,7 +10,6 @@ import '../../invoices/models/invoice.dart';
 import '../models/customer.dart';
 import '../models/payment.dart';
 import '../providers/customer_provider.dart';
-import '../../products/models/product.dart';
 import 'create_customer_screen.dart';
 
 class CustomerDetailScreen extends StatefulWidget {

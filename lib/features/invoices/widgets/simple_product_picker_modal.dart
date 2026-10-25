@@ -52,19 +52,10 @@ class _SimpleProductPickerModalState extends State<SimpleProductPickerModal> {
     super.initState();
     _hierarchyService.init().then((_) {
       if (mounted) {
-        final companies = _hierarchyService.getCompanyNames();
         setState(() {
-          if (companies.isNotEmpty) {
-            _selectedCompany = companies.first;
-            final cats = _hierarchyService.getCategoryNames(_selectedCompany);
-            if (cats.isNotEmpty) {
-              _selectedCategory = cats.first;
-              final subs = _hierarchyService.getSubcategoryNames(_selectedCompany, _selectedCategory);
-              if (subs.isNotEmpty) {
-                _selectedSubcategory = subs.first;
-              }
-            }
-          }
+          _selectedCompany = 'All';
+          _selectedCategory = 'All';
+          _selectedSubcategory = 'All';
         });
       }
     });
@@ -210,13 +201,14 @@ class _SimpleProductPickerModalState extends State<SimpleProductPickerModal> {
     final isDark = theme.brightness == Brightness.dark;
     final productProvider = context.watch<ProductProvider>();
 
-    final companies = _hierarchyService.getCompanyNames();
-    final categories = _selectedCompany.isNotEmpty
-        ? _hierarchyService.getCategoryNames(_selectedCompany)
-        : <String>[];
+    final rawCompanies = _hierarchyService.getCompanyNames();
+    final companies = ['All', ...rawCompanies];
+    final categories = (_selectedCompany.isNotEmpty && _selectedCompany != 'All')
+        ? ['All', ..._hierarchyService.getCategoryNames(_selectedCompany)]
+        : <String>['All'];
     final subcategories = (_selectedCompany.isNotEmpty && _selectedCategory.isNotEmpty && _selectedCategory != 'All')
-        ? _hierarchyService.getSubcategoryNames(_selectedCompany, _selectedCategory)
-        : <String>[];
+        ? ['All', ..._hierarchyService.getSubcategoryNames(_selectedCompany, _selectedCategory)]
+        : <String>['All'];
 
     // Filter products
     final allProducts = productProvider.products;

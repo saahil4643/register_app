@@ -563,6 +563,63 @@ class InvoiceProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void addOrIncrementProduct(Product product, {int quantity = 1, double? price, String? unit}) {
+    final effectivePrice = price ?? (product.price > 0 ? product.price : (product.sellingPrice > 0 ? product.sellingPrice : 10.0));
+    final index = _selectedItems.indexWhere((item) =>
+      item.product.id == product.id ||
+      (product.id.isNotEmpty && item.id == product.id) ||
+      item.product.name.trim().toLowerCase() == product.name.trim().toLowerCase()
+    );
+    if (index >= 0) {
+      final current = _selectedItems[index];
+      _selectedItems[index] = current.copyWith(
+        quantity: current.quantity + quantity,
+      );
+    } else {
+      final itemId = 'item_${DateTime.now().millisecondsSinceEpoch}_${_selectedItems.length + 1}';
+      _selectedItems.add(
+        InvoiceItem(
+          id: itemId,
+          product: product,
+          quantity: quantity,
+          unitPrice: effectivePrice,
+          taxPercentage: product.gst > 0 ? product.gst : 18.0,
+          unit: unit ?? (product.unitAbbreviation.isNotEmpty ? product.unitAbbreviation : 'Pcs'),
+          itemName: product.name,
+          description: product.name,
+          hsnSac: product.hsnSacCode,
+        ),
+      );
+    }
+    notifyListeners();
+  }
+
+  void addCustomItem({
+    required String name,
+    required double price,
+    int quantity = 1,
+    double taxPercentage = 18.0,
+    String unit = 'Pcs',
+  }) {
+    final customProduct = Product(
+      id: 'custom_${DateTime.now().millisecondsSinceEpoch}',
+      name: name.trim(),
+      sku: '',
+      barcode: '',
+      category: 'General',
+      brand: '',
+      purchasePrice: 0.0,
+      sellingPrice: price,
+      stock: 999,
+      minStock: 0,
+      gst: taxPercentage,
+      unitAbbreviation: unit,
+      createdAt: DateTime.now(),
+    );
+
+    addOrIncrementProduct(customProduct, quantity: quantity, price: price, unit: unit);
+  }
+
   void removeProduct(String productId) {
     _selectedItems.removeWhere((item) =>
       item.product.id == productId ||
@@ -1118,11 +1175,22 @@ class InvoiceProvider extends ChangeNotifier {
     String? notes,
     String? termsAndConditions,
   }) async {
-    if (_selectedCustomer == null || _selectedItems.isEmpty) {
-      _errorMessage = 'Please select a customer and add at least one line item.';
+    if (_selectedItems.isEmpty) {
+      _errorMessage = 'Please add at least one line item to the invoice.';
       notifyListeners();
       return false;
     }
+
+    // Default to Walk-in Customer if none explicitly selected
+    _selectedCustomer ??= Customer(
+      id: 'CUST-WALKIN',
+      displayName: 'Walk-in Customer',
+      companyName: 'Cash Sale',
+      primaryPhone: mobileNumber ?? '',
+      billingCity: '',
+      billingState: '',
+      createdAt: DateTime.now(),
+    );
 
     _isLoading = true;
     _fieldErrors.clear();

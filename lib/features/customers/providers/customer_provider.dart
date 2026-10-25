@@ -22,6 +22,7 @@ class CustomerProvider extends ChangeNotifier {
 
   // Getters
   List<Customer> get customers => _customers;
+  bool get hasMore => _hasMore;
   bool get isLoading => _isLoading;
   bool get isSaving => _isSaving;
   String? get errorMessage => _errorMessage;

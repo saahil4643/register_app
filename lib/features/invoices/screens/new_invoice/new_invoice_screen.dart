@@ -2,12 +2,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../providers/invoice_provider.dart';
 import '../../../customers/providers/customer_provider.dart';
 import '../../../customers/models/customer.dart';
 import '../../../products/providers/product_provider.dart';
+import '../../../products/models/product.dart';
 import '../../services/route_service.dart';
 import '../../widgets/simple_product_picker_modal.dart';
 
@@ -28,27 +30,37 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
   final NumberFormat _currency = NumberFormat.currency(locale: 'en_IN', symbol: '₹', decimalDigits: 2);
   final RouteService _routeService = RouteService();
 
-  // Step 1: Date (Auto-selected to Today)
+  // Mode: Quick Bill (POS) vs Route Distribution
+  bool _isQuickPosMode = true;
+
+  // Invoice Date & Number
   late DateTime _invoiceDate;
-
-  // Step 2: Invoice No (Auto-generated)
   late TextEditingController _invoiceNumberController;
-  final bool _isManualInvoiceNo = false;
 
-  // Step 3: Route Selection
+  // Quick POS Customer fields
+  bool _isWalkInCustomer = true;
+  final TextEditingController _walkInNameController = TextEditingController(text: 'Walk-in Customer');
+  final TextEditingController _walkInPhoneController = TextEditingController();
+  Customer? _selectedRegisteredCustomer;
+  final TextEditingController _customerSearchController = TextEditingController();
+
+  // Route & Outlet selection (for Distribution Mode)
   String _selectedRoute = 'Route 1 - Market Yard & Main Bazar';
-
-  // Step 4: Outlet Selection
   Customer? _selectedOutlet;
+  final Map<String, List<Customer>> _routeOutletsMap = {};
 
-  // Step 6: Calculations & Payment Options
+  // Inline Product Search & Quick Custom Item
+  final TextEditingController _productSearchController = TextEditingController();
+  final TextEditingController _customItemNameController = TextEditingController();
+  final TextEditingController _customItemPriceController = TextEditingController();
+  final TextEditingController _customItemQtyController = TextEditingController(text: '1');
+  bool _showCustomItemForm = false;
+
+  // Payment Options
   String _selectedPaymentMode = 'Cash';
-  bool _markAsPaid = false;
+  bool _markAsPaid = true;
   final bool _roundOff = true;
   bool _isSaving = false;
-
-  // Pre-seeded standard distribution outlets per route (ensures outlets are available immediately)
-  final Map<String, List<Customer>> _routeOutletsMap = {};
 
   @override
   void initState() {
@@ -69,17 +81,20 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
       _invoiceNumberController = TextEditingController(
         text: editing?.invoiceNumber ?? invoiceProvider.invoiceNumber,
       );
-      _selectedOutlet = editing?.customer ?? invoiceProvider.selectedCustomer;
+      final customer = editing?.customer ?? invoiceProvider.selectedCustomer;
+      if (customer != null && customer.displayName != 'Walk-in Customer') {
+        _isWalkInCustomer = false;
+        _selectedRegisteredCustomer = customer;
+        _selectedOutlet = customer;
+      }
       _markAsPaid = invoiceProvider.isPaid;
     }
 
     _routeService.init().then((_) {
-      if (mounted) {
-        if (_routeService.routes.isNotEmpty) {
-          setState(() {
-            _selectedRoute = _routeService.routes.first;
-          });
-        }
+      if (mounted && _routeService.routes.isNotEmpty) {
+        setState(() {
+          _selectedRoute = _routeService.routes.first;
+        });
       }
     });
 
@@ -87,7 +102,7 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
       context.read<CustomerProvider>().fetchCustomers();
       context.read<ProductProvider>().fetchProducts();
       invoiceProvider.loadNextInvoiceNumber().then((_) {
-        if (!_isManualInvoiceNo && invoiceProvider.invoiceNumber.isNotEmpty && invoiceProvider.invoiceNumber != 'Auto-Generated') {
+        if (invoiceProvider.invoiceNumber.isNotEmpty && invoiceProvider.invoiceNumber != 'Auto-Generated') {
           if (mounted) {
             setState(() {
               _invoiceNumberController.text = invoiceProvider.invoiceNumber;
@@ -127,79 +142,22 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
         route: 'Route 1 - Market Yard & Main Bazar',
         createdAt: now,
       ),
-      Customer(
-        id: 'OUTLET-003',
-        displayName: 'Om Sai Provision Store',
-        companyName: 'Om Sai Retail',
-        primaryPhone: '9423123456',
-        billingAddressLine1: 'Station Road, Near Bus Stand',
-        billingCity: 'Pune',
-        billingState: 'Maharashtra',
-        route: 'Route 1 - Market Yard & Main Bazar',
-        createdAt: now,
-      ),
-    ];
-
-    _routeOutletsMap['Route 2 - Station Road & Commercial Zone'] = [
-      Customer(
-        id: 'OUTLET-004',
-        displayName: 'Station Kirana & General Stores',
-        companyName: 'Station Kirana',
-        primaryPhone: '9890123456',
-        billingAddressLine1: 'Commercial Complex, Station Road',
-        billingCity: 'Pune',
-        billingState: 'Maharashtra',
-        route: 'Route 2 - Station Road & Commercial Zone',
-        createdAt: now,
-      ),
-      Customer(
-        id: 'OUTLET-005',
-        displayName: 'Balaji Mart',
-        companyName: 'Balaji Retailers Pvt Ltd',
-        primaryPhone: '9881234567',
-        billingAddressLine1: 'Near Railway Platform 1',
-        billingCity: 'Pune',
-        billingState: 'Maharashtra',
-        gstNumber: '27AAECB1122Q1Z5',
-        route: 'Route 2 - Station Road & Commercial Zone',
-        createdAt: now,
-      ),
-    ];
-
-    _routeOutletsMap['Route 3 - Highway & Industrial Estate'] = [
-      Customer(
-        id: 'OUTLET-006',
-        displayName: 'Highway Super Mart',
-        companyName: 'Highway Retail Hub',
-        primaryPhone: '9765432109',
-        billingAddressLine1: 'NH-48 Bypass Junction',
-        billingCity: 'Pune',
-        billingState: 'Maharashtra',
-        route: 'Route 3 - Highway & Industrial Estate',
-        createdAt: now,
-      ),
-      Customer(
-        id: 'OUTLET-007',
-        displayName: 'Apex Canteen & Stores',
-        companyName: 'Apex Enterprise',
-        primaryPhone: '9765001122',
-        billingAddressLine1: 'MIDC Industrial Area, Phase 2',
-        billingCity: 'Pune',
-        billingState: 'Maharashtra',
-        gstNumber: '27AAGCB5544R1Z7',
-        route: 'Route 3 - Highway & Industrial Estate',
-        createdAt: now,
-      ),
     ];
   }
 
   @override
   void dispose() {
     _invoiceNumberController.dispose();
+    _walkInNameController.dispose();
+    _walkInPhoneController.dispose();
+    _customerSearchController.dispose();
+    _productSearchController.dispose();
+    _customItemNameController.dispose();
+    _customItemPriceController.dispose();
+    _customItemQtyController.dispose();
     super.dispose();
   }
 
-  // Pick Date Modal
   Future<void> _pickDate() async {
     final picked = await showDatePicker(
       context: context,
@@ -219,129 +177,60 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
         );
       },
     );
-    if (picked != null) {
-      if (mounted) {
-        setState(() {
-          _invoiceDate = picked;
-        });
-        context.read<InvoiceProvider>().updateInvoiceDate(picked);
-      }
+    if (picked != null && mounted) {
+      setState(() => _invoiceDate = picked);
+      context.read<InvoiceProvider>().updateInvoiceDate(picked);
     }
   }
 
-  // Quick dialog to add a new route
-  void _showAddNewRouteDialog() {
-    final controller = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (dialogCtx) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Row(
-          children: [
-            Icon(Icons.alt_route_rounded, color: Color(0xFF2563EB)),
-            SizedBox(width: 8),
-            Text('Add New Route'),
-          ],
-        ),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          decoration: const InputDecoration(
-            labelText: 'Route Name *',
-            hintText: 'e.g. Route 6 - West End Market',
-            border: OutlineInputBorder(),
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogCtx).pop(),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              final name = controller.text.trim();
-              if (name.isNotEmpty) {
-                await _routeService.addRoute(name);
-                setState(() {
-                  _selectedRoute = name;
-                });
-                if (dialogCtx.mounted) Navigator.of(dialogCtx).pop();
-              }
-            },
-            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2563EB), foregroundColor: Colors.white),
-            child: const Text('Add Route'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Quick dialog to add a new outlet to current route
-  void _showAddNewOutletDialog() {
+  void _showQuickAddCustomerDialog() {
     final nameCtrl = TextEditingController();
     final phoneCtrl = TextEditingController();
-    final addressCtrl = TextEditingController();
     final gstCtrl = TextEditingController();
 
     showDialog(
       context: context,
       builder: (dialogCtx) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        title: Row(
+        title: const Row(
           children: [
-            const Icon(Icons.storefront_rounded, color: Color(0xFF2563EB)),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(
-                'Add Outlet to $_selectedRoute',
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            Icon(Icons.person_add_rounded, color: Color(0xFF2563EB)),
+            SizedBox(width: 8),
+            Text('Quick Add Customer', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: nameCtrl,
+              autofocus: true,
+              decoration: const InputDecoration(
+                labelText: 'Customer / Business Name *',
+                hintText: 'e.g. Ramesh Kumar',
+                prefixIcon: Icon(Icons.person_outline),
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: phoneCtrl,
+              keyboardType: TextInputType.phone,
+              decoration: const InputDecoration(
+                labelText: 'Phone Number (Optional)',
+                hintText: 'e.g. 9876543210',
+                prefixIcon: Icon(Icons.phone_outlined),
+              ),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: gstCtrl,
+              decoration: const InputDecoration(
+                labelText: 'GSTIN (Optional)',
+                hintText: 'e.g. 27AAAAA0000A1Z5',
+                prefixIcon: Icon(Icons.badge_outlined),
               ),
             ),
           ],
-        ),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: nameCtrl,
-                autofocus: true,
-                decoration: const InputDecoration(
-                  labelText: 'Outlet / Shop Name *',
-                  hintText: 'e.g. Krishna Kirana Store',
-                  prefixIcon: Icon(Icons.store),
-                ),
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: phoneCtrl,
-                keyboardType: TextInputType.phone,
-                decoration: const InputDecoration(
-                  labelText: 'Mobile Number *',
-                  hintText: 'e.g. 9876543210',
-                  prefixIcon: Icon(Icons.phone),
-                ),
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: addressCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'Shop Address',
-                  hintText: 'e.g. Main Chowk, Bazar Road',
-                  prefixIcon: Icon(Icons.location_on_outlined),
-                ),
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: gstCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'GSTIN (Optional)',
-                  hintText: 'e.g. 27AAAAA0000A1Z5',
-                  prefixIcon: Icon(Icons.badge_outlined),
-                ),
-              ),
-            ],
-          ),
         ),
         actions: [
           TextButton(
@@ -351,65 +240,88 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
           ElevatedButton(
             onPressed: () async {
               final name = nameCtrl.text.trim();
-              final phone = phoneCtrl.text.trim();
               if (name.isEmpty) return;
 
               final newCust = Customer(
                 id: 'CUST-${DateTime.now().millisecondsSinceEpoch}',
                 displayName: name,
                 companyName: name,
-                primaryPhone: phone,
-                billingAddressLine1: addressCtrl.text.trim(),
+                primaryPhone: phoneCtrl.text.trim(),
                 gstNumber: gstCtrl.text.trim(),
-                route: _selectedRoute,
                 createdAt: DateTime.now(),
               );
 
-              // Add to customer provider and local route map
               final customerProvider = context.read<CustomerProvider>();
               await customerProvider.createCustomer(newCust);
 
-              if (_routeOutletsMap[_selectedRoute] == null) {
-                _routeOutletsMap[_selectedRoute] = [];
-              }
-              _routeOutletsMap[_selectedRoute]!.insert(0, newCust);
-
               if (mounted) {
                 setState(() {
-                  _selectedOutlet = newCust;
+                  _isWalkInCustomer = false;
+                  _selectedRegisteredCustomer = newCust;
                 });
                 context.read<InvoiceProvider>().selectCustomer(newCust);
               }
-
               if (dialogCtx.mounted) Navigator.of(dialogCtx).pop();
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF2563EB),
               foregroundColor: Colors.white,
             ),
-            child: const Text('Save Outlet'),
+            child: const Text('Save Customer'),
           ),
         ],
       ),
     );
   }
 
-  // Get outlets for the currently selected route
+  void _addCustomItemDirectly() {
+    final name = _customItemNameController.text.trim();
+    final price = double.tryParse(_customItemPriceController.text.trim()) ?? 0.0;
+    final qty = int.tryParse(_customItemQtyController.text.trim()) ?? 1;
+
+    if (name.isEmpty || price <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter valid item name and price.'),
+          backgroundColor: AppColors.error,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+
+    context.read<InvoiceProvider>().addCustomItem(
+      name: name,
+      price: price,
+      quantity: qty > 0 ? qty : 1,
+    );
+
+    _customItemNameController.clear();
+    _customItemPriceController.clear();
+    _customItemQtyController.text = '1';
+    setState(() => _showCustomItemForm = false);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('✓ Added "$name" to bill!'),
+        backgroundColor: AppColors.success,
+        duration: const Duration(seconds: 1),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
   List<Customer> _getOutletsForRoute(CustomerProvider customerProvider) {
     final List<Customer> results = [];
     final seenIds = <String>{};
 
-    // 1. From CustomerProvider customers
     for (var cust in customerProvider.customers) {
-      if (cust.route.isNotEmpty) {
-        if (cust.route.trim().toLowerCase() == _selectedRoute.trim().toLowerCase()) {
-          results.add(cust);
-          seenIds.add(cust.id);
-        }
+      if (cust.route.isNotEmpty && cust.route.trim().toLowerCase() == _selectedRoute.trim().toLowerCase()) {
+        results.add(cust);
+        seenIds.add(cust.id);
       }
     }
 
-    // 2. From pre-seeded route outlets map
     final preseeded = _routeOutletsMap[_selectedRoute] ?? [];
     for (var cust in preseeded) {
       if (!seenIds.contains(cust.id)) {
@@ -418,7 +330,6 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
       }
     }
 
-    // 3. Fallback: if route has no outlets yet, include general customers
     if (results.isEmpty && customerProvider.customers.isNotEmpty) {
       for (var cust in customerProvider.customers) {
         if (!seenIds.contains(cust.id)) {
@@ -431,25 +342,13 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
     return results;
   }
 
-  // Save Invoice method
   Future<void> _saveInvoice({required bool isDraft}) async {
     final invoiceProvider = context.read<InvoiceProvider>();
-
-    if (_selectedOutlet == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please select an Outlet from the chosen Route.'),
-          backgroundColor: AppColors.error,
-          behavior: SnackBarBehavior.floating,
-        ),
-      );
-      return;
-    }
 
     if (invoiceProvider.selectedItems.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please add at least one Product to the invoice.'),
+          content: Text('Please add at least one product to the bill.'),
           backgroundColor: AppColors.error,
           behavior: SnackBarBehavior.floating,
         ),
@@ -457,9 +356,40 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
       return;
     }
 
+    // Resolve Customer
+    Customer effectiveCustomer;
+    if (_isQuickPosMode) {
+      if (_isWalkInCustomer || _selectedRegisteredCustomer == null) {
+        final walkInName = _walkInNameController.text.trim().isNotEmpty
+            ? _walkInNameController.text.trim()
+            : 'Walk-in Customer';
+        effectiveCustomer = Customer(
+          id: 'CUST-WALKIN',
+          displayName: walkInName,
+          companyName: 'Cash Sale',
+          primaryPhone: _walkInPhoneController.text.trim(),
+          createdAt: DateTime.now(),
+        );
+      } else {
+        effectiveCustomer = _selectedRegisteredCustomer!;
+      }
+    } else {
+      if (_selectedOutlet == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please select an outlet from the route.'),
+            backgroundColor: AppColors.error,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+        return;
+      }
+      effectiveCustomer = _selectedOutlet!;
+    }
+
     setState(() => _isSaving = true);
 
-    invoiceProvider.selectCustomer(_selectedOutlet);
+    invoiceProvider.selectCustomer(effectiveCustomer);
     invoiceProvider.updateInvoiceDate(_invoiceDate);
     invoiceProvider.updateInvoiceNumber(_invoiceNumberController.text.trim());
 
@@ -468,28 +398,18 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
       markAsFullyPaid: _markAsPaid,
       paymentMode: _selectedPaymentMode,
       isRoundOff: _roundOff,
+      mobileNumber: effectiveCustomer.primaryPhone,
     );
 
     setState(() => _isSaving = false);
 
     if (mounted) {
       if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              isDraft
-                  ? 'Invoice saved as Draft!'
-                  : 'Invoice #${_invoiceNumberController.text} saved successfully!',
-            ),
-            backgroundColor: AppColors.success,
-            behavior: SnackBarBehavior.floating,
-          ),
-        );
-        Navigator.of(context).pop();
+        _showSuccessBillSheet(effectiveCustomer, isDraft);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(invoiceProvider.errorMessage ?? 'Failed to save invoice'),
+            content: Text(invoiceProvider.errorMessage ?? 'Failed to save bill'),
             backgroundColor: AppColors.error,
             behavior: SnackBarBehavior.floating,
           ),
@@ -498,17 +418,119 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
     }
   }
 
+  void _showSuccessBillSheet(Customer customer, bool isDraft) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final invoiceNumber = _invoiceNumberController.text.trim();
+    final grandTotal = context.read<InvoiceProvider>().grandTotal;
+
+    showModalBottomSheet(
+      context: context,
+      isDismissible: false,
+      enableDrag: false,
+      backgroundColor: isDark ? AppColors.darkSurface : Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 64,
+                  height: 64,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF10B981).withValues(alpha: 0.15),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.check_circle_rounded, color: Color(0xFF10B981), size: 40),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  isDraft ? 'Draft Saved!' : 'Bill Completed Successfully!',
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  'Invoice #$invoiceNumber • ${_currency.format(grandTotal)}',
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Color(0xFF2563EB)),
+                ),
+                Text(
+                  'Customer: ${customer.displayName}',
+                  style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    // Start Next Bill Button
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.pop(ctx);
+                          final inv = context.read<InvoiceProvider>();
+                          inv.startNewInvoice();
+                          setState(() {
+                            _isWalkInCustomer = true;
+                            _selectedRegisteredCustomer = null;
+                            _selectedOutlet = null;
+                            _walkInPhoneController.clear();
+                            _walkInNameController.text = 'Walk-in Customer';
+                            _invoiceDate = DateTime.now();
+                          });
+                          inv.loadNextInvoiceNumber().then((_) {
+                            if (mounted && inv.invoiceNumber.isNotEmpty && inv.invoiceNumber != 'Auto-Generated') {
+                              setState(() => _invoiceNumberController.text = inv.invoiceNumber);
+                            }
+                          });
+                        },
+                        icon: const Icon(Icons.add_rounded, size: 20),
+                        label: const Text('New Bill', style: TextStyle(fontWeight: FontWeight.bold)),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF10B981),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+
+                    // View Invoices List Button
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () {
+                          Navigator.pop(ctx);
+                          if (mounted) context.go('/invoices');
+                        },
+                        icon: const Icon(Icons.receipt_long_rounded, size: 20),
+                        label: const Text('View Invoices', style: TextStyle(fontWeight: FontWeight.bold)),
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final invoiceProvider = context.watch<InvoiceProvider>();
     final customerProvider = context.watch<CustomerProvider>();
+    final productProvider = context.watch<ProductProvider>();
 
-    final routes = _routeService.routes;
-    final outlets = _getOutletsForRoute(customerProvider);
-
-    // Exact GST & Net Amount calculation
     final double taxableSubtotal = invoiceProvider.subtotal;
     final double totalTax = invoiceProvider.totalTax;
     final double rawGrandTotal = taxableSubtotal + totalTax;
@@ -520,23 +542,35 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
       appBar: AppBar(
         backgroundColor: isDark ? theme.colorScheme.surface : Colors.white,
         elevation: 0,
-        title: Text(
-          widget.isEditing ? 'Edit Invoice' : 'New Invoice',
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              widget.isEditing ? 'Edit Bill / Invoice' : 'Quick Register & Bill',
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+            ),
+            Text(
+              'Simple 1-Touch Checkout',
+              style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+            ),
+          ],
         ),
         actions: [
           TextButton.icon(
             onPressed: _isSaving ? null : () => _saveInvoice(isDraft: true),
-            icon: const Icon(Icons.drafts_outlined, size: 18),
-            label: const Text('Draft', style: TextStyle(fontWeight: FontWeight.bold)),
+            icon: const Icon(Icons.drafts_outlined, size: 16),
+            label: const Text('Draft', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
           ),
           IconButton(
             icon: const Icon(Icons.refresh_rounded),
-            tooltip: 'Reset Items',
+            tooltip: 'Clear & Reset',
             onPressed: () {
               invoiceProvider.startNewInvoice();
               setState(() {
+                _isWalkInCustomer = true;
+                _selectedRegisteredCustomer = null;
                 _selectedOutlet = null;
+                _walkInPhoneController.clear();
               });
             },
           ),
@@ -552,32 +586,35 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
           children: [
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 10.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // ─────────────────────────────────────────────────────────
-                    // STEP 1 & 2: DATE & INVOICE NO (Auto-selected & Auto-generated)
-                    // ─────────────────────────────────────────────────────────
-                    _buildHeaderCard(theme, isDark),
+                    // Mode Switcher: Quick Bill (POS) vs Route Distribution
+                    _buildModeSwitcher(theme, isDark),
+                    const SizedBox(height: 10),
+
+                    // Bill Details Bar: Date & Invoice Number
+                    _buildInvoiceMetadataBar(theme, isDark),
                     const SizedBox(height: 12),
 
-                    // ─────────────────────────────────────────────────────────
-                    // STEP 3 & 4: SELECT ROUTE & SELECT OUTLET
-                    // ─────────────────────────────────────────────────────────
-                    _buildRouteAndOutletCard(theme, isDark, routes, outlets),
+                    // Customer Section
+                    if (_isQuickPosMode)
+                      _buildQuickCustomerSection(theme, isDark, customerProvider)
+                    else
+                      _buildRouteDistributionCustomerSection(theme, isDark, customerProvider),
                     const SizedBox(height: 12),
 
-                    // ─────────────────────────────────────────────────────────
-                    // STEP 5: ADD PRODUCT & ITEMS LIST
-                    // ─────────────────────────────────────────────────────────
-                    _buildProductsCard(theme, isDark, invoiceProvider),
+                    // Products & Item Adding Section
+                    _buildProductSelectionSection(theme, isDark, invoiceProvider, productProvider),
                     const SizedBox(height: 12),
 
-                    // ─────────────────────────────────────────────────────────
-                    // STEP 6: NET AMOUNT CALCULATION (Correct GST Breakdown)
-                    // ─────────────────────────────────────────────────────────
-                    _buildCalculationCard(
+                    // Items Cart List
+                    _buildItemsCartSection(theme, isDark, invoiceProvider),
+                    const SizedBox(height: 12),
+
+                    // Billing Summary & Payment Section
+                    _buildBillingSummarySection(
                       theme,
                       isDark,
                       taxableSubtotal,
@@ -586,14 +623,14 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
                       netAmount,
                       roundOffDifference,
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),
             ),
 
-            // Sticky Bottom Action Bar
-            _buildStickyBottomBar(theme, isDark, invoiceProvider, netAmount),
+            // Sticky Bottom Checkout Bar
+            _buildStickyCheckoutBar(theme, isDark, invoiceProvider, netAmount),
           ],
         ),
       ),
@@ -601,100 +638,92 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
   }
 
   // ─────────────────────────────────────────────────────────────────────────
-  // STEP 1 & 2 WIDGET: DATE & INVOICE NO
+  // 1. MODE SWITCHER: QUICK BILL (POS) vs ROUTE DISTRIBUTION
   // ─────────────────────────────────────────────────────────────────────────
-  Widget _buildHeaderCard(ThemeData theme, bool isDark) {
+  Widget _buildModeSwitcher(ThemeData theme, bool isDark) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: isDark ? Colors.grey[850] : Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: isDark ? AppColors.darkBorder : const Color(0xFFE2E8F0)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+        color: isDark ? Colors.grey[900] : const Color(0xFFE2E8F0),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
         children: [
-          // 1. Date (Auto Selected)
           Expanded(
-            child: InkWell(
-              borderRadius: BorderRadius.circular(10),
-              onTap: _pickDate,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            child: GestureDetector(
+              onTap: () => setState(() => _isQuickPosMode = true),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 150),
+                padding: const EdgeInsets.symmetric(vertical: 8),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF2563EB).withValues(alpha: 0.06),
+                  color: _isQuickPosMode
+                      ? (isDark ? Colors.grey[800] : Colors.white)
+                      : Colors.transparent,
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: const Color(0xFF2563EB).withValues(alpha: 0.2)),
+                  boxShadow: _isQuickPosMode
+                      ? [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 4, offset: const Offset(0, 2))]
+                      : null,
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Row(
-                      children: [
-                        const Icon(Icons.calendar_today_rounded, size: 14, color: Color(0xFF2563EB)),
-                        const SizedBox(width: 4),
-                        Text(
-                          '1. Invoice Date (Auto)',
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey[700],
-                          ),
-                        ),
-                      ],
+                    Icon(
+                      Icons.bolt_rounded,
+                      size: 16,
+                      color: _isQuickPosMode ? const Color(0xFF2563EB) : Colors.grey[600],
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(width: 6),
                     Text(
-                      DateFormat('dd MMM yyyy').format(_invoiceDate),
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Color(0xFF1E3A8A)),
+                      '⚡ Quick Bill (POS)',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: _isQuickPosMode ? FontWeight.bold : FontWeight.w600,
+                        color: _isQuickPosMode
+                            ? (_isQuickPosMode ? const Color(0xFF2563EB) : (isDark ? Colors.white : Colors.black87))
+                            : Colors.grey[600],
+                      ),
                     ),
                   ],
                 ),
               ),
             ),
           ),
-          const SizedBox(width: 10),
-
-          // 2. Invoice No (Auto Generated)
           Expanded(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-              decoration: BoxDecoration(
-                color: const Color(0xFF10B981).withValues(alpha: 0.06),
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: const Color(0xFF10B981).withValues(alpha: 0.2)),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      const Icon(Icons.receipt_long_rounded, size: 14, color: Color(0xFF10B981)),
-                      const SizedBox(width: 4),
-                      Text(
-                        '2. Invoice No (Auto)',
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey[700],
-                        ),
+            child: GestureDetector(
+              onTap: () => setState(() => _isQuickPosMode = false),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 150),
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                decoration: BoxDecoration(
+                  color: !_isQuickPosMode
+                      ? (isDark ? Colors.grey[800] : Colors.white)
+                      : Colors.transparent,
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: !_isQuickPosMode
+                      ? [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 4, offset: const Offset(0, 2))]
+                      : null,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.alt_route_rounded,
+                      size: 16,
+                      color: !_isQuickPosMode ? const Color(0xFF2563EB) : Colors.grey[600],
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      '🚚 Route Distribution',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: !_isQuickPosMode ? FontWeight.bold : FontWeight.w600,
+                        color: !_isQuickPosMode
+                            ? (const Color(0xFF2563EB))
+                            : Colors.grey[600],
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    _invoiceNumberController.text.isNotEmpty ? _invoiceNumberController.text : 'Auto-Gen',
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: Color(0xFF065F46)),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -704,55 +733,304 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
   }
 
   // ─────────────────────────────────────────────────────────────────────────
-  // STEP 3 & 4 WIDGET: SELECT ROUTE & SELECT OUTLET
+  // 2. INVOICE METADATA: DATE & NUMBER
   // ─────────────────────────────────────────────────────────────────────────
-  Widget _buildRouteAndOutletCard(
-    ThemeData theme,
-    bool isDark,
-    List<String> routes,
-    List<Customer> outlets,
-  ) {
+  Widget _buildInvoiceMetadataBar(ThemeData theme, bool isDark) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
         color: isDark ? Colors.grey[850] : Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(14),
         border: Border.all(color: isDark ? AppColors.darkBorder : const Color(0xFFE2E8F0)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          // Date Chip
+          InkWell(
+            onTap: _pickDate,
+            borderRadius: BorderRadius.circular(8),
+            child: Row(
+              children: [
+                const Icon(Icons.calendar_today_rounded, size: 15, color: Color(0xFF2563EB)),
+                const SizedBox(width: 6),
+                Text(
+                  DateFormat('dd MMM yyyy').format(_invoiceDate),
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                ),
+                const Icon(Icons.arrow_drop_down, size: 16, color: Colors.grey),
+              ],
+            ),
+          ),
+
+          // Bill # Badge
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: const Color(0xFF10B981).withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: const Color(0xFF10B981).withValues(alpha: 0.25)),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.receipt_rounded, size: 14, color: Color(0xFF10B981)),
+                const SizedBox(width: 4),
+                Text(
+                  _invoiceNumberController.text.isNotEmpty ? _invoiceNumberController.text : 'Auto-Gen',
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Color(0xFF047857)),
+                ),
+              ],
+            ),
           ),
         ],
+      ),
+    );
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // 3. QUICK POS CUSTOMER SECTION (WALK-IN DEFAULT + QUICK SEARCH)
+  // ─────────────────────────────────────────────────────────────────────────
+  Widget _buildQuickCustomerSection(ThemeData theme, bool isDark, CustomerProvider customerProvider) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: isDark ? Colors.grey[850] : Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: isDark ? AppColors.darkBorder : const Color(0xFFE2E8F0)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Step 3 Header & Route Selector
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Row(
+              Row(
                 children: [
-                  Icon(Icons.alt_route_rounded, size: 18, color: Color(0xFF2563EB)),
-                  SizedBox(width: 6),
-                  Text(
-                    '3. Select Route',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                  Icon(
+                    _isWalkInCustomer ? Icons.person_pin_circle_rounded : Icons.person_rounded,
+                    size: 18,
+                    color: const Color(0xFF2563EB),
+                  ),
+                  const SizedBox(width: 6),
+                  const Text('Customer', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                ],
+              ),
+              Row(
+                children: [
+                  ChoiceChip(
+                    label: const Text('Walk-in (Cash)'),
+                    selected: _isWalkInCustomer,
+                    onSelected: (val) {
+                      setState(() {
+                        _isWalkInCustomer = true;
+                        _selectedRegisteredCustomer = null;
+                      });
+                    },
+                    selectedColor: const Color(0xFF2563EB).withValues(alpha: 0.15),
+                    labelStyle: TextStyle(
+                      fontSize: 11,
+                      fontWeight: _isWalkInCustomer ? FontWeight.bold : FontWeight.normal,
+                      color: _isWalkInCustomer ? const Color(0xFF2563EB) : null,
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  ChoiceChip(
+                    label: const Text('Registered'),
+                    selected: !_isWalkInCustomer,
+                    onSelected: (val) {
+                      setState(() {
+                        _isWalkInCustomer = false;
+                      });
+                    },
+                    selectedColor: const Color(0xFF2563EB).withValues(alpha: 0.15),
+                    labelStyle: TextStyle(
+                      fontSize: 11,
+                      fontWeight: !_isWalkInCustomer ? FontWeight.bold : FontWeight.normal,
+                      color: !_isWalkInCustomer ? const Color(0xFF2563EB) : null,
+                    ),
                   ),
                 ],
               ),
-              TextButton.icon(
-                onPressed: _showAddNewRouteDialog,
-                icon: const Icon(Icons.add, size: 16),
-                label: const Text('New Route', style: TextStyle(fontSize: 12)),
-                style: TextButton.styleFrom(padding: EdgeInsets.zero, minimumSize: Size.zero),
-              ),
             ],
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 10),
 
+          // Walk-in form: Simple optional phone number
+          if (_isWalkInCustomer) ...[
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: const Color(0xFF10B981).withValues(alpha: 0.06),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: const Color(0xFF10B981).withValues(alpha: 0.2)),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.check_circle_outline, color: Color(0xFF10B981), size: 18),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Default: Walk-in Cash Customer (Ready to Bill)',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: isDark ? Colors.white70 : const Color(0xFF065F46),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _walkInPhoneController,
+              keyboardType: TextInputType.phone,
+              decoration: InputDecoration(
+                isDense: true,
+                hintText: 'Customer Phone (Optional for SMS receipt)',
+                hintStyle: TextStyle(fontSize: 12, color: Colors.grey[500]),
+                prefixIcon: const Icon(Icons.phone_android_rounded, size: 16),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              ),
+            ),
+          ] else ...[
+            // Registered customer selector
+            if (_selectedRegisteredCustomer != null)
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF2563EB).withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: const Color(0xFF2563EB).withValues(alpha: 0.3)),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.person, color: Color(0xFF2563EB), size: 20),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _selectedRegisteredCustomer!.name,
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                          ),
+                          if (_selectedRegisteredCustomer!.phone.isNotEmpty)
+                            Text(
+                              _selectedRegisteredCustomer!.phone,
+                              style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+                            ),
+                        ],
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () => setState(() => _selectedRegisteredCustomer = null),
+                      child: const Text('Change', style: TextStyle(fontSize: 12)),
+                    ),
+                  ],
+                ),
+              )
+            else ...[
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _customerSearchController,
+                      onChanged: (val) => setState(() {}),
+                      decoration: InputDecoration(
+                        isDense: true,
+                        hintText: 'Search customer by name or phone...',
+                        hintStyle: TextStyle(fontSize: 12, color: Colors.grey[500]),
+                        prefixIcon: const Icon(Icons.search, size: 16),
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  ElevatedButton.icon(
+                    onPressed: _showQuickAddCustomerDialog,
+                    icon: const Icon(Icons.add, size: 16),
+                    label: const Text('New', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF2563EB),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                    ),
+                  ),
+                ],
+              ),
+              // Search Results Dropdown
+              if (_customerSearchController.text.trim().isNotEmpty) ...[
+                const SizedBox(height: 6),
+                Container(
+                  constraints: const BoxConstraints(maxHeight: 160),
+                  decoration: BoxDecoration(
+                    color: isDark ? Colors.grey[900] : const Color(0xFFF1F5F9),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
+                  ),
+                  child: ListView(
+                    shrinkWrap: true,
+                    children: customerProvider.customers
+                        .where((c) {
+                          final q = _customerSearchController.text.trim().toLowerCase();
+                          return c.name.toLowerCase().contains(q) ||
+                              c.phone.toLowerCase().contains(q) ||
+                              c.companyName.toLowerCase().contains(q);
+                        })
+                        .take(6)
+                        .map((c) => ListTile(
+                              dense: true,
+                              title: Text(c.name, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+                              subtitle: Text(c.phone.isNotEmpty ? c.phone : 'No phone', style: const TextStyle(fontSize: 11)),
+                              trailing: const Icon(Icons.chevron_right, size: 18),
+                              onTap: () {
+                                setState(() {
+                                  _selectedRegisteredCustomer = c;
+                                  _customerSearchController.clear();
+                                });
+                                context.read<InvoiceProvider>().selectCustomer(c);
+                              },
+                            ))
+                        .toList(),
+                  ),
+                ),
+              ],
+            ],
+          ],
+        ],
+      ),
+    );
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // ROUTE DISTRIBUTION CUSTOMER SECTION
+  // ─────────────────────────────────────────────────────────────────────────
+  Widget _buildRouteDistributionCustomerSection(ThemeData theme, bool isDark, CustomerProvider customerProvider) {
+    final routes = _routeService.routes;
+    final outlets = _getOutletsForRoute(customerProvider);
+
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: isDark ? Colors.grey[850] : Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: isDark ? AppColors.darkBorder : const Color(0xFFE2E8F0)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Row(
+            children: [
+              Icon(Icons.alt_route_rounded, size: 18, color: Color(0xFF2563EB)),
+              SizedBox(width: 6),
+              Text('Route Distribution Selection', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+            ],
+          ),
+          const SizedBox(height: 10),
           // Route Dropdown
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -765,268 +1043,332 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
               child: DropdownButton<String>(
                 value: routes.contains(_selectedRoute) ? _selectedRoute : (routes.isNotEmpty ? routes.first : null),
                 isExpanded: true,
-                icon: const Icon(Icons.arrow_drop_down_rounded, color: Color(0xFF2563EB)),
-                items: routes.map((route) {
-                  return DropdownMenuItem<String>(
-                    value: route,
-                    child: Text(
-                      route,
-                      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
-                    ),
-                  );
-                }).toList(),
+                items: routes.map((r) => DropdownMenuItem(value: r, child: Text(r, style: const TextStyle(fontSize: 13)))).toList(),
                 onChanged: (val) {
                   if (val != null) {
                     setState(() {
                       _selectedRoute = val;
-                      _selectedOutlet = null; // reset outlet when route changes
+                      _selectedOutlet = null;
                     });
                   }
                 },
               ),
             ),
           ),
-          const SizedBox(height: 16),
-
-          // Step 4 Header & Outlet Selector
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Row(
-                children: [
-                  Icon(Icons.storefront_rounded, size: 18, color: Color(0xFF10B981)),
-                  SizedBox(width: 6),
-                  Text(
-                    '4. Select Outlet (From Route)',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                  ),
-                ],
-              ),
-              TextButton.icon(
-                onPressed: _showAddNewOutletDialog,
-                icon: const Icon(Icons.add, size: 16, color: Color(0xFF10B981)),
-                label: const Text(
-                  'Add Outlet',
-                  style: TextStyle(fontSize: 12, color: Color(0xFF10B981)),
-                ),
-                style: TextButton.styleFrom(padding: EdgeInsets.zero, minimumSize: Size.zero),
-              ),
-            ],
-          ),
-          const SizedBox(height: 6),
-
-          // Outlet Dropdown / Selected Tile
-          if (_selectedOutlet != null)
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: const Color(0xFF10B981).withValues(alpha: 0.08),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFF10B981).withValues(alpha: 0.4)),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF10B981).withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Icon(Icons.store_rounded, color: Color(0xFF10B981), size: 20),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          _selectedOutlet!.name,
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                        ),
-                        if (_selectedOutlet!.phone.isNotEmpty)
-                          Text(
-                            '📞 ${_selectedOutlet!.phone}',
-                            style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                          ),
-                        if (_selectedOutlet!.address.isNotEmpty)
-                          Text(
-                            '📍 ${_selectedOutlet!.address}',
-                            style: TextStyle(fontSize: 11, color: Colors.grey[500]),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                      ],
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      setState(() {
-                        _selectedOutlet = null;
-                      });
-                    },
-                    child: const Text('Change', style: TextStyle(fontSize: 12, color: Color(0xFF2563EB))),
-                  ),
-                ],
-              ),
-            )
-          else
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              decoration: BoxDecoration(
-                color: isDark ? Colors.grey[900] : const Color(0xFFF1F5F9),
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Colors.grey.withValues(alpha: 0.25)),
-              ),
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<Customer>(
-                  hint: Text(
-                    outlets.isNotEmpty
-                        ? 'Select Outlet from $_selectedRoute (${outlets.length} available)'
-                        : 'No outlets on this route yet. Click + Add Outlet',
-                    style: TextStyle(fontSize: 13, color: Colors.grey[600]),
-                  ),
-                  isExpanded: true,
-                  icon: const Icon(Icons.arrow_drop_down_rounded, color: Color(0xFF10B981)),
-                  items: outlets.map((outlet) {
-                    return DropdownMenuItem<Customer>(
-                      value: outlet,
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              outlet.name,
-                              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          if (outlet.phone.isNotEmpty)
-                            Text(
-                              outlet.phone,
-                              style: TextStyle(fontSize: 11, color: Colors.grey[500]),
-                            ),
-                        ],
-                      ),
-                    );
-                  }).toList(),
-                  onChanged: (val) {
-                    if (val != null) {
-                      setState(() {
-                        _selectedOutlet = val;
-                      });
-                      context.read<InvoiceProvider>().selectCustomer(val);
-                    }
-                  },
-                ),
+          const SizedBox(height: 10),
+          // Outlet Dropdown
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            decoration: BoxDecoration(
+              color: isDark ? Colors.grey[900] : const Color(0xFFF1F5F9),
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: Colors.grey.withValues(alpha: 0.25)),
+            ),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<Customer>(
+                value: outlets.contains(_selectedOutlet) ? _selectedOutlet : null,
+                hint: Text('Select Outlet from Route (${outlets.length} available)', style: const TextStyle(fontSize: 13)),
+                isExpanded: true,
+                items: outlets.map((o) => DropdownMenuItem(value: o, child: Text(o.name, style: const TextStyle(fontSize: 13)))).toList(),
+                onChanged: (val) {
+                  if (val != null) {
+                    setState(() => _selectedOutlet = val);
+                    context.read<InvoiceProvider>().selectCustomer(val);
+                  }
+                },
               ),
             ),
+          ),
         ],
       ),
     );
   }
 
   // ─────────────────────────────────────────────────────────────────────────
-  // STEP 5 WIDGET: ADD PRODUCT & ITEMS LIST
+  // 4. PRODUCT SELECTION & ADDING (INSTANT SEARCH + QUICK CUSTOM ITEM + CATALOG)
   // ─────────────────────────────────────────────────────────────────────────
-  Widget _buildProductsCard(ThemeData theme, bool isDark, InvoiceProvider provider) {
-    final items = provider.selectedItems;
+  Widget _buildProductSelectionSection(
+    ThemeData theme,
+    bool isDark,
+    InvoiceProvider invoiceProvider,
+    ProductProvider productProvider,
+  ) {
+    final searchQuery = _productSearchController.text.trim().toLowerCase();
+    final matchingProducts = searchQuery.isNotEmpty
+        ? productProvider.products
+            .where((p) => p.name.toLowerCase().contains(searchQuery) || p.sku.toLowerCase().contains(searchQuery))
+            .take(6)
+            .toList()
+        : <Product>[];
 
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: isDark ? Colors.grey[850] : Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(14),
         border: Border.all(color: isDark ? AppColors.darkBorder : const Color(0xFFE2E8F0)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header with Add Product button
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Row(
+                children: [
+                  Icon(Icons.inventory_2_rounded, size: 18, color: Color(0xFF2563EB)),
+                  SizedBox(width: 6),
+                  Text('Add Products', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                ],
+              ),
+              Row(
+                children: [
+                  TextButton.icon(
+                    onPressed: () => setState(() => _showCustomItemForm = !_showCustomItemForm),
+                    icon: Icon(_showCustomItemForm ? Icons.remove : Icons.add_box_outlined, size: 16),
+                    label: Text(_showCustomItemForm ? 'Close Custom' : '+ Quick Custom Item', style: const TextStyle(fontSize: 12)),
+                    style: TextButton.styleFrom(padding: const EdgeInsets.symmetric(horizontal: 6)),
+                  ),
+                  const SizedBox(width: 4),
+                  ElevatedButton.icon(
+                    onPressed: () => SimpleProductPickerModal.show(context),
+                    icon: const Icon(Icons.grid_view_rounded, size: 14),
+                    label: const Text('Catalog', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF2563EB),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+
+          // Instant Search Bar
+          TextField(
+            controller: _productSearchController,
+            onChanged: (val) => setState(() {}),
+            decoration: InputDecoration(
+              isDense: true,
+              hintText: '🔍 Type product name to add to bill...',
+              hintStyle: TextStyle(fontSize: 13, color: Colors.grey[500]),
+              prefixIcon: const Icon(Icons.search_rounded, size: 18),
+              suffixIcon: _productSearchController.text.isNotEmpty
+                  ? IconButton(
+                      icon: const Icon(Icons.clear, size: 16),
+                      onPressed: () => setState(() => _productSearchController.clear()),
+                    )
+                  : null,
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            ),
+          ),
+
+          // Search Results Dropdown List
+          if (matchingProducts.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Container(
+              decoration: BoxDecoration(
+                color: isDark ? Colors.grey[900] : const Color(0xFFF8FAFC),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: const Color(0xFF2563EB).withValues(alpha: 0.3)),
+              ),
+              child: ListView.separated(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: matchingProducts.length,
+                separatorBuilder: (ctx, i) => const Divider(height: 1),
+                itemBuilder: (context, idx) {
+                  final p = matchingProducts[idx];
+                  final price = p.price > 0 ? p.price : (p.sellingPrice > 0 ? p.sellingPrice : 10.0);
+                  return ListTile(
+                    dense: true,
+                    title: Text(p.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                    subtitle: Text(
+                      '${_currency.format(price)} | GST: ${p.gst.toStringAsFixed(0)}% | ${p.unitAbbreviation}',
+                      style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+                    ),
+                    trailing: ElevatedButton.icon(
+                      onPressed: () {
+                        invoiceProvider.addOrIncrementProduct(p);
+                        setState(() => _productSearchController.clear());
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('✓ Added "${p.name}" to bill!'),
+                            duration: const Duration(milliseconds: 800),
+                            backgroundColor: AppColors.success,
+                            behavior: SnackBarBehavior.floating,
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.add, size: 14),
+                      label: const Text('Add', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF10B981),
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+
+          // Quick Custom Item Form
+          if (_showCustomItemForm) ...[
+            const SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: const Color(0xFF2563EB).withValues(alpha: 0.05),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: const Color(0xFF2563EB).withValues(alpha: 0.2)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Quick Custom Item (No database required)', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: TextField(
+                          controller: _customItemNameController,
+                          decoration: InputDecoration(
+                            isDense: true,
+                            hintText: 'Item Name',
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        flex: 2,
+                        child: TextField(
+                          controller: _customItemPriceController,
+                          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                          decoration: InputDecoration(
+                            isDense: true,
+                            hintText: 'Price (₹)',
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        flex: 1,
+                        child: TextField(
+                          controller: _customItemQtyController,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            isDense: true,
+                            hintText: 'Qty',
+                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      ElevatedButton(
+                        onPressed: _addCustomItemDirectly,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF2563EB),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        ),
+                        child: const Text('Add', style: TextStyle(fontWeight: FontWeight.bold)),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // 5. ITEMS CART SECTION WITH LIVE STEPPER CONTROLS
+  // ─────────────────────────────────────────────────────────────────────────
+  Widget _buildItemsCartSection(ThemeData theme, bool isDark, InvoiceProvider provider) {
+    final items = provider.selectedItems;
+
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: isDark ? Colors.grey[850] : Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: isDark ? AppColors.darkBorder : const Color(0xFFE2E8F0)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Row(
                 children: [
-                  const Icon(Icons.inventory_2_rounded, size: 18, color: Color(0xFF2563EB)),
+                  const Icon(Icons.shopping_cart_checkout_rounded, size: 18, color: Color(0xFF10B981)),
                   const SizedBox(width: 6),
-                  const Text(
-                    '5. Products',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
-                  ),
-                  if (items.isNotEmpty) ...[
-                    const SizedBox(width: 6),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF2563EB).withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        '${items.length} items',
-                        style: const TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF2563EB),
-                        ),
-                      ),
+                  const Text('Items in Bill', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                  const SizedBox(width: 6),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF10B981).withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                  ],
+                    child: Text(
+                      '${items.length} items',
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: Color(0xFF047857)),
+                    ),
+                  ),
                 ],
               ),
-              ElevatedButton.icon(
-                onPressed: () => SimpleProductPickerModal.show(context),
-                icon: const Icon(Icons.add, size: 18),
-                label: const Text('+ Add Product', style: TextStyle(fontWeight: FontWeight.bold)),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF2563EB),
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                  elevation: 0,
+              if (items.isNotEmpty)
+                TextButton(
+                  onPressed: () => provider.startNewInvoice(),
+                  child: const Text('Clear All', style: TextStyle(color: Colors.red, fontSize: 12)),
                 ),
-              ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
 
-          // Items List
           if (items.isEmpty)
-            InkWell(
-              borderRadius: BorderRadius.circular(12),
-              onTap: () => SimpleProductPickerModal.show(context),
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: isDark ? Colors.grey[900] : const Color(0xFFF8FAFC),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: const Color(0xFF2563EB).withValues(alpha: 0.3),
-                    style: BorderStyle.solid,
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+              decoration: BoxDecoration(
+                color: isDark ? Colors.grey[900] : const Color(0xFFF8FAFC),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
+              ),
+              child: Column(
+                children: [
+                  Icon(Icons.add_shopping_cart_rounded, size: 36, color: Colors.grey[400]),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'No items in bill yet',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                   ),
-                ),
-                child: Column(
-                  children: [
-                    const Icon(Icons.add_shopping_cart_rounded, size: 36, color: Color(0xFF2563EB)),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'No products added yet',
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Click "+ Add Product" to select Company › Category › Subcategory › Unit (Pcs, Box, Outer)',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                    ),
-                  ],
-                ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Search product above or tap + Quick Custom Item to begin billing',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                  ),
+                ],
               ),
             )
           else
@@ -1034,80 +1376,84 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: items.length,
-              separatorBuilder: (ctx, index) => const Divider(height: 16),
+              separatorBuilder: (ctx, i) => const Divider(height: 16),
               itemBuilder: (context, idx) {
                 final item = items[idx];
-                final unitLabel = item.unit != null && item.unit!.isNotEmpty ? item.unit! : 'Pcs';
+                final displayName = item.itemName != null && item.itemName!.isNotEmpty
+                    ? item.itemName!
+                    : (item.product.name.isNotEmpty ? item.product.name : 'Item');
 
                 return Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // Unit Badge
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: unitLabel == 'Outer'
-                            ? const Color(0xFF8B5CF6).withValues(alpha: 0.15)
-                            : (unitLabel == 'Box'
-                                ? const Color(0xFFF59E0B).withValues(alpha: 0.15)
-                                : const Color(0xFF2563EB).withValues(alpha: 0.15)),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        unitLabel,
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          color: unitLabel == 'Outer'
-                              ? const Color(0xFF7C3AED)
-                              : (unitLabel == 'Box' ? const Color(0xFFD97706) : const Color(0xFF2563EB)),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-
-                    // Product Details
+                    // Item details
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            item.product.name.isNotEmpty ? item.product.name : (item.itemName ?? 'Product'),
-                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                            displayName,
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            '${item.quantity} × ${_currency.format(item.unitPrice)} | GST: ${item.taxPercentage.toStringAsFixed(0)}% (${_currency.format(item.taxAmount)})',
-                            style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                            '${_currency.format(item.unitPrice)} each | GST: ${item.taxPercentage.toStringAsFixed(0)}%',
+                            style: TextStyle(fontSize: 11, color: Colors.grey[600]),
                           ),
                         ],
                       ),
                     ),
 
-                    // Total for this item (Net amount after GST)
+                    // Live Interactive Quantity Stepper
+                    Container(
+                      decoration: BoxDecoration(
+                        color: isDark ? Colors.grey[900] : const Color(0xFFF1F5F9),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.remove, size: 16),
+                            padding: const EdgeInsets.all(4),
+                            constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+                            onPressed: () => provider.updateItemQty(item.product.id, item.quantity - 1),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 6),
+                            child: Text(
+                              '${item.quantity}',
+                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.add, size: 16),
+                            padding: const EdgeInsets.all(4),
+                            constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+                            onPressed: () => provider.updateItemQty(item.product.id, item.quantity + 1),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+
+                    // Item Total & Delete button
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Text(
                           _currency.format(item.total),
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
                         ),
-                        Text(
-                          'Taxable: ${_currency.format(item.subtotal)}',
-                          style: TextStyle(fontSize: 10, color: Colors.grey[500]),
+                        IconButton(
+                          icon: const Icon(Icons.delete_outline, size: 16, color: Colors.red),
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                          onPressed: () => provider.removeProduct(item.product.id),
                         ),
                       ],
-                    ),
-
-                    // Remove button
-                    IconButton(
-                      icon: const Icon(Icons.delete_outline_rounded, color: AppColors.error, size: 20),
-                      onPressed: () {
-                        provider.removeProduct(item.id);
-                      },
-                      padding: const EdgeInsets.only(left: 8),
-                      constraints: const BoxConstraints(),
-                      tooltip: 'Remove',
                     ),
                   ],
                 );
@@ -1119,9 +1465,9 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
   }
 
   // ─────────────────────────────────────────────────────────────────────────
-  // STEP 6 WIDGET: NET AMOUNT CALCULATION (Exact GST Handling)
+  // 6. BILLING SUMMARY & PAYMENT METHOD
   // ─────────────────────────────────────────────────────────────────────────
-  Widget _buildCalculationCard(
+  Widget _buildBillingSummarySection(
     ThemeData theme,
     bool isDark,
     double taxableSubtotal,
@@ -1130,130 +1476,55 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
     double netAmount,
     double roundOffDifference,
   ) {
-    final halfGst = totalTax / 2;
-
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: isDark ? Colors.grey[850] : Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(14),
         border: Border.all(color: isDark ? AppColors.darkBorder : const Color(0xFFE2E8F0)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.03),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          const Text('Billing & Payment', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+          const SizedBox(height: 10),
+
+          _buildSummaryLine('Subtotal (Taxable)', _currency.format(taxableSubtotal)),
+          const SizedBox(height: 4),
+          _buildSummaryLine('GST Amount', _currency.format(totalTax)),
+          if (roundOffDifference != 0.0) ...[
+            const SizedBox(height: 4),
+            _buildSummaryLine('Round Off', (roundOffDifference > 0 ? '+' : '') + _currency.format(roundOffDifference)),
+          ],
+          const Divider(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Icon(Icons.calculate_rounded, size: 18, color: Color(0xFF2563EB)),
-              SizedBox(width: 6),
+              const Text('TOTAL PAYABLE', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
               Text(
-                '6. Calculation & Net Amount',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                _currency.format(netAmount),
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Color(0xFF10B981)),
               ),
             ],
           ),
-          const Divider(height: 18),
+          const SizedBox(height: 12),
 
-          // Subtotal
-          _buildCalculationRow(
-            label: 'Taxable Subtotal:',
-            value: _currency.format(taxableSubtotal),
-            isBold: false,
-          ),
-          const SizedBox(height: 6),
-
-          // CGST & SGST (Half each)
-          _buildCalculationRow(
-            label: 'CGST (Central GST):',
-            value: _currency.format(halfGst),
-            valueColor: const Color(0xFFD97706),
-            isBold: false,
-          ),
-          const SizedBox(height: 6),
-          _buildCalculationRow(
-            label: 'SGST (State GST):',
-            value: _currency.format(halfGst),
-            valueColor: const Color(0xFFD97706),
-            isBold: false,
-          ),
-          const SizedBox(height: 6),
-
-          // Total GST
-          _buildCalculationRow(
-            label: 'Total GST Amount:',
-            value: _currency.format(totalTax),
-            valueColor: const Color(0xFFD97706),
-            isBold: true,
-          ),
-          const SizedBox(height: 6),
-
-          // Round Off
-          if (_roundOff && roundOffDifference.abs() > 0.001) ...[
-            _buildCalculationRow(
-              label: 'Round Off:',
-              value: '${roundOffDifference >= 0 ? '+' : ''}${_currency.format(roundOffDifference)}',
-              isBold: false,
-            ),
-            const SizedBox(height: 6),
-          ],
-
-          const Divider(height: 18),
-
-          // NET AMOUNT (Highlight)
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: const Color(0xFF10B981).withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: const Color(0xFF10B981).withValues(alpha: 0.3)),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'NET AMOUNT',
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF047857)),
-                    ),
-                    Text(
-                      '(Total Payable after GST)',
-                      style: TextStyle(fontSize: 10, color: Color(0xFF047857)),
-                    ),
-                  ],
-                ),
-                Text(
-                  _currency.format(netAmount),
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF047857),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
-
-          // Payment Mode Options
-          const Text('Payment Mode:', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+          // Payment Mode Selector Pills
+          const Text('Payment Mode', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 12)),
           const SizedBox(height: 6),
           Wrap(
             spacing: 8,
-            children: ['Cash', 'UPI', 'Cheque', 'Credit / Due'].map((mode) {
+            children: ['Cash', 'UPI', 'Card', 'Credit / Due'].map((mode) {
               final isSelected = _selectedPaymentMode == mode;
               return ChoiceChip(
                 label: Text(mode),
                 selected: isSelected,
-                onSelected: (_) => setState(() => _selectedPaymentMode = mode),
+                onSelected: (_) {
+                  setState(() {
+                    _selectedPaymentMode = mode;
+                    _markAsPaid = mode != 'Credit / Due';
+                  });
+                },
                 selectedColor: const Color(0xFF2563EB).withValues(alpha: 0.15),
                 labelStyle: TextStyle(
                   color: isSelected ? const Color(0xFF2563EB) : null,
@@ -1263,11 +1534,10 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
               );
             }).toList(),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 6),
 
-          // Mark as Paid Checkbox
           CheckboxListTile(
-            title: const Text('Mark invoice as Fully Paid', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+            title: const Text('Mark invoice as Fully Paid', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
             value: _markAsPaid,
             onChanged: (val) => setState(() => _markAsPaid = val ?? false),
             contentPadding: EdgeInsets.zero,
@@ -1279,46 +1549,27 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
     );
   }
 
-  Widget _buildCalculationRow({
-    required String label,
-    required String value,
-    Color? valueColor,
-    bool isBold = false,
-  }) {
+  Widget _buildSummaryLine(String label, String value) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-            color: Colors.grey[700],
-          ),
-        ),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: isBold ? FontWeight.bold : FontWeight.w600,
-            color: valueColor,
-          ),
-        ),
+        Text(label, style: TextStyle(fontSize: 12, color: Colors.grey[700])),
+        Text(value, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
       ],
     );
   }
 
   // ─────────────────────────────────────────────────────────────────────────
-  // STICKY BOTTOM BAR
+  // 7. STICKY BOTTOM CHECKOUT ACTION BAR
   // ─────────────────────────────────────────────────────────────────────────
-  Widget _buildStickyBottomBar(
+  Widget _buildStickyCheckoutBar(
     ThemeData theme,
     bool isDark,
     InvoiceProvider provider,
     double netAmount,
   ) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
         color: isDark ? Colors.grey[900] : Colors.white,
         boxShadow: [
@@ -1332,7 +1583,6 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
       child: SafeArea(
         child: Row(
           children: [
-            // Net Amount Summary
             Expanded(
               flex: 4,
               child: Column(
@@ -1340,13 +1590,13 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Net Amount (${provider.selectedItems.length} items):',
+                    '${provider.selectedItems.length} items in cart',
                     style: TextStyle(fontSize: 11, color: Colors.grey[600]),
                   ),
                   Text(
                     _currency.format(netAmount),
                     style: const TextStyle(
-                      fontSize: 18,
+                      fontSize: 19,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF10B981),
                     ),
@@ -1354,9 +1604,7 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
                 ],
               ),
             ),
-            const SizedBox(width: 12),
-
-            // Save Invoice Button
+            const SizedBox(width: 10),
             Expanded(
               flex: 5,
               child: ElevatedButton.icon(
@@ -1367,9 +1615,9 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
                         height: 18,
                         child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
                       )
-                    : const Icon(Icons.check_circle_rounded, size: 20),
+                    : const Icon(Icons.flash_on_rounded, size: 20),
                 label: Text(
-                  _isSaving ? 'Saving...' : 'Save Invoice',
+                  _isSaving ? 'Processing...' : 'Complete Bill',
                   style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                 ),
                 style: ElevatedButton.styleFrom(

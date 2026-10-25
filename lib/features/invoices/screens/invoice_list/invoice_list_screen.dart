@@ -1,4 +1,4 @@
-import 'dart:math';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
@@ -7,14 +7,10 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/custom_states.dart';
 import '../../../../core/widgets/custom_dialogs.dart';
 import '../../../authentication/providers/auth_provider.dart';
-import '../../models/invoice.dart';
 import '../../providers/invoice_provider.dart';
 import '../../widgets/invoice_card.dart';
 import '../../widgets/statistics_card.dart';
-import '../../../customers/models/payment.dart';
 import '../../../navigation/navigation_shell.dart';
-
-import 'dart:async';
 
 class InvoiceListScreen extends StatefulWidget {
   const InvoiceListScreen({super.key});
@@ -273,10 +269,10 @@ class _InvoiceListScreenState extends State<InvoiceListScreen> {
           invoiceProvider.startNewInvoice();
           context.push('/invoices/create');
         },
-        backgroundColor: theme.colorScheme.primary,
+        backgroundColor: const Color(0xFF2563EB),
         foregroundColor: Colors.white,
-        icon: const Icon(Icons.add_rounded),
-        label: const Text('New Invoice', style: TextStyle(fontWeight: FontWeight.bold)),
+        icon: const Icon(Icons.flash_on_rounded),
+        label: const Text('⚡ Quick Bill', style: TextStyle(fontWeight: FontWeight.bold)),
       ),
       body: Column(
         children: [

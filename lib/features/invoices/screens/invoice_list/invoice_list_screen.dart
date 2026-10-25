@@ -269,10 +269,10 @@ class _InvoiceListScreenState extends State<InvoiceListScreen> {
           invoiceProvider.startNewInvoice();
           context.push('/invoices/create');
         },
-        backgroundColor: const Color(0xFF2563EB),
+        backgroundColor: AppColors.lightPrimary,
         foregroundColor: Colors.white,
-        icon: const Icon(Icons.flash_on_rounded),
-        label: const Text('⚡ Quick Bill', style: TextStyle(fontWeight: FontWeight.bold)),
+        icon: const Icon(Icons.add_rounded),
+        label: const Text('New Invoice', style: TextStyle(fontWeight: FontWeight.bold)),
       ),
       body: Column(
         children: [

@@ -87,95 +87,57 @@ class AuthProvider extends ChangeNotifier {
     _isEmailUnverified = false;
     notifyListeners();
 
-    try {
-      final url = Uri.parse('${Env.apiBaseUrl}/api/v1/auth/login');
-      final response = await http.post(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: jsonEncode({
-          'email': email.trim(),
-          'password': password,
-        }),
-      );
+    // Small simulated delay for responsive user feedback
+    await Future.delayed(const Duration(milliseconds: 300));
 
-      final dynamic responseData = jsonDecode(response.body);
+    final normalizedUser = email.trim().toLowerCase();
+    final isUserValid = normalizedUser == 'admin' || normalizedUser == 'admin@prabhim.com';
+    final isPasswordValid = password == 'Pass123';
 
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        final bool isSuccess = (responseData is Map && responseData['success'] == true) || response.statusCode == 200;
-        if (isSuccess) {
-          final data = (responseData is Map) ? (responseData['data'] ?? {}) : {};
-          final accessToken = data['access'] ?? '';
-          final refreshToken = data['refresh'] ?? '';
-          final user = data['user'] ?? {};
-          final userEmail = user['email'] ?? email.trim();
-          final userFirstName = user['firstName'] ?? user['first_name'] ?? '';
-          final userLastName = user['lastName'] ?? user['last_name'] ?? '';
-          final userProfileImage = user['profile_image'] ?? user['profileImage'] ?? user['profilePic'] ?? '';
-          final userCompany = (user['companyName'] ?? user['company_name'] ?? user['businessName'] ?? user['business_name'] ?? user['organization']?['companyName'] ?? user['organization']?['name'] ?? data['organization']?['companyName'] ?? data['company']?['companyName'] ?? data['company']?['name'])?.toString();
-          if (userCompany != null && userCompany.trim().isNotEmpty) {
-            _currentUserCompanyName = userCompany.trim();
-          }
+    if (isUserValid && isPasswordValid) {
+      const userEmail = 'admin@prabhim.com';
+      const userFirstName = 'Admin';
+      const userLastName = '';
+      const accessToken = 'local_admin_token';
+      const refreshToken = 'local_admin_refresh_token';
 
-          _isAuthenticated = true;
-          _currentUserEmail = userEmail;
-          _currentUserFirstName = userFirstName;
-          _currentUserLastName = userLastName;
-          _currentUserProfileImage = userProfileImage;
-          _pendingVerificationEmail = null;
-          _isEmailUnverified = false;
-          _isLoading = false;
-
-          try {
-            final prefs = await SharedPreferences.getInstance();
-            await prefs.setBool(_authKey, true);
-            await prefs.setString(_userEmailKey, userEmail);
-            await prefs.setString(_userFirstNameKey, userFirstName);
-            await prefs.setString(_userLastNameKey, userLastName);
-            await prefs.setString(_userProfileImageKey, userProfileImage);
-            if (_currentUserCompanyName != null && _currentUserCompanyName!.isNotEmpty) {
-              await prefs.setString(_userCompanyNameKey, _currentUserCompanyName!);
-              await prefs.setString('company_name', _currentUserCompanyName!);
-            }
-            await prefs.setString('access_token', accessToken);
-            await prefs.setString('refresh_token', refreshToken);
-            await prefs.remove('pending_verification_email');
-          } catch (e) {
-            debugPrint('Error saving login state: $e');
-          }
-
-          notifyListeners();
-          return true;
-        } else {
-          _errorMessage = _extractErrorMessage(responseData, response.statusCode);
-          _isLoading = false;
-          notifyListeners();
-          return false;
-        }
-      } else {
-        final bodyLower = response.body.toLowerCase();
-        if (bodyLower.contains('email not verified') || bodyLower.contains('verify your email')) {
-          _isEmailUnverified = true;
-          _tempEmail = email.trim();
-          _pendingVerificationEmail = email.trim();
-          try {
-            final prefs = await SharedPreferences.getInstance();
-            await prefs.setString('pending_verification_email', email.trim());
-          } catch (e) {
-            debugPrint('Error saving pending verification email: $e');
-          }
-        }
-
-        _errorMessage = _extractErrorMessage(responseData, response.statusCode);
-        _isLoading = false;
-        notifyListeners();
-        return false;
-      }
-    } catch (e) {
-      _errorMessage = 'Connection error. Please check your backend connection. Details: $e';
+      _isAuthenticated = true;
+      _currentUserId = '1';
+      _currentUserName = 'admin';
+      _currentUserEmail = userEmail;
+      _currentUserFirstName = userFirstName;
+      _currentUserLastName = userLastName;
+      _currentUserRole = 'ADMIN';
+      _currentUserDesignation = 'Administrator';
+      _currentUserCompanyName ??= 'Prabhim Technologies';
+      _pendingVerificationEmail = null;
+      _isEmailUnverified = false;
       _isLoading = false;
+
+      try {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setBool(_authKey, true);
+        await prefs.setString(_userEmailKey, userEmail);
+        await prefs.setString(_userFirstNameKey, userFirstName);
+        await prefs.setString(_userLastNameKey, userLastName);
+        await prefs.setString('logged_in_user_id', '1');
+        await prefs.setString('user_role', 'ADMIN');
+        if (_currentUserCompanyName != null && _currentUserCompanyName!.isNotEmpty) {
+          await prefs.setString(_userCompanyNameKey, _currentUserCompanyName!);
+          await prefs.setString('company_name', _currentUserCompanyName!);
+        }
+        await prefs.setString('access_token', accessToken);
+        await prefs.setString('refresh_token', refreshToken);
+        await prefs.remove('pending_verification_email');
+      } catch (e) {
+        debugPrint('Error saving login state: $e');
+      }
+
+      notifyListeners();
+      return true;
+    } else {
+      _isLoading = false;
+      _errorMessage = 'Invalid username or password. Please use admin and Pass123.';
       notifyListeners();
       return false;
     }
@@ -486,7 +448,7 @@ class AuthProvider extends ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       final refreshToken = prefs.getString('refresh_token');
-      if (refreshToken == null || refreshToken.isEmpty) return false;
+      if (refreshToken == null || refreshToken.isEmpty || refreshToken.startsWith('local_')) return false;
 
       final url = Uri.parse('${Env.apiBaseUrl}/api/v1/auth/token/refresh');
       final response = await http.post(
@@ -526,7 +488,7 @@ class AuthProvider extends ChangeNotifier {
       final refreshToken = prefs.getString('refresh_token');
       final accessToken = prefs.getString('access_token');
 
-      if (refreshToken != null && refreshToken.isNotEmpty) {
+      if (refreshToken != null && refreshToken.isNotEmpty && !refreshToken.startsWith('local_')) {
         final url = Uri.parse('${Env.apiBaseUrl}/api/v1/auth/logout');
         await http.post(
           url,
@@ -569,7 +531,7 @@ class AuthProvider extends ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       final token = prefs.getString('access_token');
-      if (token == null || token.isEmpty) return null;
+      if (token == null || token.isEmpty || token.startsWith('local_')) return null;
 
       final url = Uri.parse('${Env.apiBaseUrl}/api/v1/auth/me');
       final response = await http.get(
@@ -618,6 +580,29 @@ class AuthProvider extends ChangeNotifier {
         _isLoading = false;
         notifyListeners();
         return null;
+      }
+
+      if (token.startsWith('local_')) {
+        _currentUserId ??= '1';
+        _currentUserName ??= 'admin';
+        _currentUserFirstName ??= 'Admin';
+        _currentUserLastName ??= '';
+        _currentUserEmail ??= 'admin@prabhim.com';
+        _currentUserRole ??= 'ADMIN';
+        _currentUserDesignation ??= 'Administrator';
+        _currentUserCompanyName ??= 'Prabhim Technologies';
+        _isLoading = false;
+        notifyListeners();
+        return {
+          'id': _currentUserId,
+          'name': _currentUserName,
+          'firstName': _currentUserFirstName,
+          'lastName': _currentUserLastName,
+          'email': _currentUserEmail,
+          'role': _currentUserRole,
+          'designation': _currentUserDesignation,
+          'companyName': _currentUserCompanyName,
+        };
       }
 
       final url = Uri.parse('${Env.apiBaseUrl}/api/v1/profile');

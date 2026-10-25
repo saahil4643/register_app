@@ -812,7 +812,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "features_navigation_navigation_shell_dart",
-      "community": 105,
+      "community": 5,
       "norm_label": "../../../features/navigation/navigation_shell.dart"
     },
     {
@@ -1392,7 +1392,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_core_constants_app_constants_dart",
-      "community": 76,
+      "community": 103,
       "norm_label": "app_constants.dart"
     },
     {
@@ -1402,7 +1402,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_core_constants_app_constants_appconstants",
-      "community": 76,
+      "community": 103,
       "norm_label": "appconstants"
     },
     {
@@ -1412,7 +1412,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_core_constants_app_constants_currencysymbol",
-      "community": 76,
+      "community": 103,
       "norm_label": "currencysymbol"
     },
     {
@@ -1422,7 +1422,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "static_const_string",
-      "community": 76,
+      "community": 103,
       "norm_label": "static const string"
     },
     {
@@ -1432,7 +1432,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_core_constants_app_constants_maxinvoicefilesizemb",
-      "community": 76,
+      "community": 103,
       "norm_label": "maxinvoicefilesizemb"
     },
     {
@@ -1442,7 +1442,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "static_const_int",
-      "community": 76,
+      "community": 103,
       "norm_label": "static const int"
     },
     {
@@ -1452,7 +1452,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_core_constants_app_constants_allowedinvoiceextensions",
-      "community": 76,
+      "community": 103,
       "norm_label": "allowedinvoiceextensions"
     },
     {
@@ -2112,7 +2112,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "dart_async",
-      "community": 58,
+      "community": 131,
       "norm_label": "dart:async"
     },
     {
@@ -2482,7 +2482,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "list",
-      "community": 95,
+      "community": 146,
       "norm_label": "list"
     },
     {
@@ -2602,7 +2602,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "map",
-      "community": 84,
+      "community": 160,
       "norm_label": "map"
     },
     {
@@ -3172,7 +3172,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "changenotifier",
-      "community": 57,
+      "community": 115,
       "norm_label": "changenotifier"
     },
     {
@@ -3512,7 +3512,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_core_widgets_custom_buttons_dart",
-      "community": 27,
+      "community": 49,
       "norm_label": "custom_buttons.dart"
     },
     {
@@ -3522,7 +3522,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_core_widgets_custom_buttons_customprimarybutton",
-      "community": 27,
+      "community": 49,
       "norm_label": "customprimarybutton"
     },
     {
@@ -3532,7 +3532,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "statelesswidget",
-      "community": 27,
+      "community": 49,
       "norm_label": "statelesswidget"
     },
     {
@@ -3542,7 +3542,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_core_widgets_custom_buttons_customsecondarybutton",
-      "community": 27,
+      "community": 49,
       "norm_label": "customsecondarybutton"
     },
     {
@@ -3552,7 +3552,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_core_widgets_custom_buttons_customoutlinedbutton",
-      "community": 27,
+      "community": 49,
       "norm_label": "customoutlinedbutton"
     },
     {
@@ -3562,7 +3562,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_core_widgets_custom_buttons_customtextbutton",
-      "community": 27,
+      "community": 49,
       "norm_label": "customtextbutton"
     },
     {
@@ -3572,7 +3572,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_core_widgets_custom_buttons_text",
-      "community": 27,
+      "community": 49,
       "norm_label": "text"
     },
     {
@@ -3582,7 +3582,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_core_widgets_custom_buttons_onpressed",
-      "community": 27,
+      "community": 49,
       "norm_label": "onpressed"
     },
     {
@@ -3592,7 +3592,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_core_widgets_custom_buttons_isloading",
-      "community": 27,
+      "community": 49,
       "norm_label": "isloading"
     },
     {
@@ -3602,7 +3602,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_core_widgets_custom_buttons_icon",
-      "community": 27,
+      "community": 49,
       "norm_label": "icon"
     },
     {
@@ -3612,7 +3612,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "icondata",
-      "community": 146,
+      "community": 166,
       "norm_label": "icondata"
     },
     {
@@ -3622,7 +3622,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_core_widgets_custom_buttons_width",
-      "community": 27,
+      "community": 49,
       "norm_label": "width"
     },
     {
@@ -3632,7 +3632,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "double",
-      "community": 27,
+      "community": 49,
       "norm_label": "double?"
     },
     {
@@ -3642,7 +3642,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_core_widgets_custom_buttons_color",
-      "community": 27,
+      "community": 49,
       "norm_label": "color"
     },
     {
@@ -3652,7 +3652,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "color",
-      "community": 74,
+      "community": 49,
       "norm_label": "color"
     },
     {
@@ -3662,7 +3662,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_core_widgets_custom_buttons_build",
-      "community": 27,
+      "community": 49,
       "norm_label": "build"
     },
     {
@@ -4061,9 +4061,19 @@
       "source_file": "lib/core/widgets/custom_inputs.dart",
       "source_location": null,
       "_origin": "ast",
-      "id": "d_flutter_tut_app_lib_core_widgets_custom_inputs_dart",
+      "id": "lib_core_widgets_custom_inputs",
       "community": 34,
       "norm_label": "custom_inputs.dart"
+    },
+    {
+      "label": "CustomTextField",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/custom_inputs.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_custom_inputs_customtextfield",
+      "community": 34,
+      "norm_label": "customtextfield"
     },
     {
       "label": "CustomEmailField",
@@ -4071,7 +4081,7 @@
       "source_file": "lib/core/widgets/custom_inputs.dart",
       "source_location": null,
       "_origin": "ast",
-      "id": "d_flutter_tut_app_lib_core_widgets_custom_inputs_customemailfield",
+      "id": "lib_core_widgets_custom_inputs_customemailfield",
       "community": 34,
       "norm_label": "customemailfield"
     },
@@ -4081,8 +4091,8 @@
       "source_file": "lib/core/widgets/custom_inputs.dart",
       "source_location": null,
       "_origin": "ast",
-      "id": "d_flutter_tut_app_lib_core_widgets_custom_inputs_custompasswordfield",
-      "community": 34,
+      "id": "lib_core_widgets_custom_inputs_custompasswordfield",
+      "community": 135,
       "norm_label": "custompasswordfield"
     },
     {
@@ -4092,7 +4102,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "statefulwidget",
-      "community": 84,
+      "community": 135,
       "norm_label": "statefulwidget"
     },
     {
@@ -4101,8 +4111,8 @@
       "source_file": "lib/core/widgets/custom_inputs.dart",
       "source_location": null,
       "_origin": "ast",
-      "id": "d_flutter_tut_app_lib_core_widgets_custom_inputs_custompasswordfieldstate",
-      "community": 34,
+      "id": "lib_core_widgets_custom_inputs_custompasswordfieldstate",
+      "community": 135,
       "norm_label": "_custompasswordfieldstate"
     },
     {
@@ -4112,7 +4122,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "state",
-      "community": 84,
+      "community": 135,
       "norm_label": "state"
     },
     {
@@ -4121,7 +4131,7 @@
       "source_file": "lib/core/widgets/custom_inputs.dart",
       "source_location": null,
       "_origin": "ast",
-      "id": "d_flutter_tut_app_lib_core_widgets_custom_inputs_customsearchfield",
+      "id": "lib_core_widgets_custom_inputs_customsearchfield",
       "community": 34,
       "norm_label": "customsearchfield"
     },
@@ -4131,8 +4141,8 @@
       "source_file": "lib/core/widgets/custom_inputs.dart",
       "source_location": null,
       "_origin": "ast",
-      "id": "d_flutter_tut_app_lib_core_widgets_custom_inputs_customnumberfield",
-      "community": 27,
+      "id": "lib_core_widgets_custom_inputs_customnumberfield",
+      "community": 49,
       "norm_label": "customnumberfield"
     },
     {
@@ -4141,8 +4151,8 @@
       "source_file": "lib/core/widgets/custom_inputs.dart",
       "source_location": null,
       "_origin": "ast",
-      "id": "d_flutter_tut_app_lib_core_widgets_custom_inputs_customdropdown",
-      "community": 34,
+      "id": "lib_core_widgets_custom_inputs_customdropdown",
+      "community": 49,
       "norm_label": "customdropdown"
     },
     {
@@ -4151,8 +4161,8 @@
       "source_file": "lib/core/widgets/custom_inputs.dart",
       "source_location": null,
       "_origin": "ast",
-      "id": "d_flutter_tut_app_lib_core_widgets_custom_inputs_customdatepicker",
-      "community": 34,
+      "id": "lib_core_widgets_custom_inputs_customdatepicker",
+      "community": 49,
       "norm_label": "customdatepicker"
     },
     {
@@ -4161,7 +4171,7 @@
       "source_file": "lib/core/widgets/custom_inputs.dart",
       "source_location": null,
       "_origin": "ast",
-      "id": "d_flutter_tut_app_lib_core_widgets_custom_inputs_controller",
+      "id": "lib_core_widgets_custom_inputs_controller",
       "community": 34,
       "norm_label": "controller"
     },
@@ -4172,7 +4182,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "texteditingcontroller",
-      "community": 85,
+      "community": 58,
       "norm_label": "texteditingcontroller"
     },
     {
@@ -4181,7 +4191,7 @@
       "source_file": "lib/core/widgets/custom_inputs.dart",
       "source_location": null,
       "_origin": "ast",
-      "id": "d_flutter_tut_app_lib_core_widgets_custom_inputs_label",
+      "id": "lib_core_widgets_custom_inputs_label",
       "community": 34,
       "norm_label": "label"
     },
@@ -4191,9 +4201,19 @@
       "source_file": "lib/core/widgets/custom_inputs.dart",
       "source_location": null,
       "_origin": "ast",
-      "id": "d_flutter_tut_app_lib_core_widgets_custom_inputs_hint",
+      "id": "lib_core_widgets_custom_inputs_hint",
       "community": 34,
       "norm_label": "hint"
+    },
+    {
+      "label": "prefixIcon",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/custom_inputs.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_custom_inputs_prefixicon",
+      "community": 34,
+      "norm_label": "prefixicon"
     },
     {
       "label": "validator",
@@ -4201,7 +4221,7 @@
       "source_file": "lib/core/widgets/custom_inputs.dart",
       "source_location": null,
       "_origin": "ast",
-      "id": "d_flutter_tut_app_lib_core_widgets_custom_inputs_validator",
+      "id": "lib_core_widgets_custom_inputs_validator",
       "community": 34,
       "norm_label": "validator"
     },
@@ -4216,12 +4236,32 @@
       "norm_label": "formfieldvalidator"
     },
     {
+      "label": "keyboardType",
+      "file_type": "code",
+      "source_file": "lib/core/widgets/custom_inputs.dart",
+      "source_location": null,
+      "_origin": "ast",
+      "id": "lib_core_widgets_custom_inputs_keyboardtype",
+      "community": 34,
+      "norm_label": "keyboardtype"
+    },
+    {
+      "label": "TextInputType",
+      "file_type": "code",
+      "source_file": null,
+      "source_location": null,
+      "_origin": "ast",
+      "id": "textinputtype",
+      "community": 34,
+      "norm_label": "textinputtype"
+    },
+    {
       "label": "textInputAction",
       "file_type": "code",
       "source_file": "lib/core/widgets/custom_inputs.dart",
       "source_location": null,
       "_origin": "ast",
-      "id": "d_flutter_tut_app_lib_core_widgets_custom_inputs_textinputaction",
+      "id": "lib_core_widgets_custom_inputs_textinputaction",
       "community": 34,
       "norm_label": "textinputaction"
     },
@@ -4241,7 +4281,7 @@
       "source_file": "lib/core/widgets/custom_inputs.dart",
       "source_location": null,
       "_origin": "ast",
-      "id": "d_flutter_tut_app_lib_core_widgets_custom_inputs_obscuretext",
+      "id": "lib_core_widgets_custom_inputs_obscuretext",
       "community": 34,
       "norm_label": "_obscuretext"
     },
@@ -4251,7 +4291,7 @@
       "source_file": "lib/core/widgets/custom_inputs.dart",
       "source_location": null,
       "_origin": "ast",
-      "id": "d_flutter_tut_app_lib_core_widgets_custom_inputs_onchanged",
+      "id": "lib_core_widgets_custom_inputs_onchanged",
       "community": 34,
       "norm_label": "onchanged"
     },
@@ -4271,7 +4311,7 @@
       "source_file": "lib/core/widgets/custom_inputs.dart",
       "source_location": null,
       "_origin": "ast",
-      "id": "d_flutter_tut_app_lib_core_widgets_custom_inputs_onclear",
+      "id": "lib_core_widgets_custom_inputs_onclear",
       "community": 34,
       "norm_label": "onclear"
     },
@@ -4281,7 +4321,7 @@
       "source_file": "lib/core/widgets/custom_inputs.dart",
       "source_location": null,
       "_origin": "ast",
-      "id": "d_flutter_tut_app_lib_core_widgets_custom_inputs_value",
+      "id": "lib_core_widgets_custom_inputs_value",
       "community": 34,
       "norm_label": "value"
     },
@@ -4291,7 +4331,7 @@
       "source_file": "lib/core/widgets/custom_inputs.dart",
       "source_location": null,
       "_origin": "ast",
-      "id": "d_flutter_tut_app_lib_core_widgets_custom_inputs_items",
+      "id": "lib_core_widgets_custom_inputs_items",
       "community": 34,
       "norm_label": "items"
     },
@@ -4301,7 +4341,7 @@
       "source_file": "lib/core/widgets/custom_inputs.dart",
       "source_location": null,
       "_origin": "ast",
-      "id": "d_flutter_tut_app_lib_core_widgets_custom_inputs_selecteddate",
+      "id": "lib_core_widgets_custom_inputs_selecteddate",
       "community": 34,
       "norm_label": "selecteddate"
     },
@@ -4321,7 +4361,7 @@
       "source_file": "lib/core/widgets/custom_inputs.dart",
       "source_location": null,
       "_origin": "ast",
-      "id": "d_flutter_tut_app_lib_core_widgets_custom_inputs_ondateselected",
+      "id": "lib_core_widgets_custom_inputs_ondateselected",
       "community": 34,
       "norm_label": "ondateselected"
     },
@@ -4331,7 +4371,7 @@
       "source_file": "lib/core/widgets/custom_inputs.dart",
       "source_location": null,
       "_origin": "ast",
-      "id": "d_flutter_tut_app_lib_core_widgets_custom_inputs_firstdate",
+      "id": "lib_core_widgets_custom_inputs_firstdate",
       "community": 34,
       "norm_label": "firstdate"
     },
@@ -4341,7 +4381,7 @@
       "source_file": "lib/core/widgets/custom_inputs.dart",
       "source_location": null,
       "_origin": "ast",
-      "id": "d_flutter_tut_app_lib_core_widgets_custom_inputs_lastdate",
+      "id": "lib_core_widgets_custom_inputs_lastdate",
       "community": 34,
       "norm_label": "lastdate"
     },
@@ -4351,7 +4391,7 @@
       "source_file": "lib/core/widgets/custom_inputs.dart",
       "source_location": null,
       "_origin": "ast",
-      "id": "d_flutter_tut_app_lib_core_widgets_custom_inputs_build",
+      "id": "lib_core_widgets_custom_inputs_build",
       "community": 34,
       "norm_label": "build"
     },
@@ -4361,7 +4401,7 @@
       "source_file": "lib/core/widgets/custom_inputs.dart",
       "source_location": null,
       "_origin": "ast",
-      "id": "d_flutter_tut_app_lib_core_widgets_custom_inputs_createstate",
+      "id": "lib_core_widgets_custom_inputs_createstate",
       "community": 34,
       "norm_label": "createstate"
     },
@@ -4371,7 +4411,7 @@
       "source_file": "lib/core/widgets/custom_inputs.dart",
       "source_location": null,
       "_origin": "ast",
-      "id": "d_flutter_tut_app_lib_core_widgets_custom_inputs_selectdate",
+      "id": "lib_core_widgets_custom_inputs_selectdate",
       "community": 34,
       "norm_label": "_selectdate"
     },
@@ -4392,7 +4432,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_core_widgets_custom_states_statuschip",
-      "community": 27,
+      "community": 49,
       "norm_label": "statuschip"
     },
     {
@@ -4402,7 +4442,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_core_widgets_custom_states_loadingskeleton",
-      "community": 27,
+      "community": 49,
       "norm_label": "loadingskeleton"
     },
     {
@@ -4412,7 +4452,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_core_widgets_custom_states_emptystate",
-      "community": 27,
+      "community": 49,
       "norm_label": "emptystate"
     },
     {
@@ -4952,7 +4992,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "bool_get",
-      "community": 68,
+      "community": 142,
       "norm_label": "bool get"
     },
     {
@@ -4962,7 +5002,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "string_get",
-      "community": 142,
+      "community": 68,
       "norm_label": "string? get"
     },
     {
@@ -5332,7 +5372,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_flutter_animate_flutter_animate_dart",
-      "community": 84,
+      "community": 149,
       "norm_label": "package:flutter_animate/flutter_animate.dart"
     },
     {
@@ -5372,7 +5412,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "providers_auth_provider_dart",
-      "community": 84,
+      "community": 74,
       "norm_label": "../providers/auth_provider.dart"
     },
     {
@@ -5391,7 +5431,7 @@
       "source_file": "lib/features/authentication/screens/login_screen.dart",
       "source_location": null,
       "_origin": "ast",
-      "id": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_dart",
+      "id": "lib_features_authentication_screens_login_screen",
       "community": 84,
       "norm_label": "login_screen.dart"
     },
@@ -5401,7 +5441,7 @@
       "source_file": "lib/features/authentication/screens/login_screen.dart",
       "source_location": null,
       "_origin": "ast",
-      "id": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_loginscreen",
+      "id": "lib_features_authentication_screens_login_screen_loginscreen",
       "community": 84,
       "norm_label": "loginscreen"
     },
@@ -5411,19 +5451,9 @@
       "source_file": "lib/features/authentication/screens/login_screen.dart",
       "source_location": null,
       "_origin": "ast",
-      "id": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_loginscreenstate",
+      "id": "lib_features_authentication_screens_login_screen_loginscreenstate",
       "community": 84,
       "norm_label": "_loginscreenstate"
-    },
-    {
-      "label": "@prabhim",
-      "file_type": "concept",
-      "source_file": null,
-      "source_location": null,
-      "_origin": "ast",
-      "id": "annotation_prabhim",
-      "community": 49,
-      "norm_label": "@prabhim"
     },
     {
       "label": "_formKey",
@@ -5431,19 +5461,19 @@
       "source_file": "lib/features/authentication/screens/login_screen.dart",
       "source_location": null,
       "_origin": "ast",
-      "id": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_formkey",
+      "id": "lib_features_authentication_screens_login_screen_formkey",
       "community": 84,
       "norm_label": "_formkey"
     },
     {
-      "label": "_emailController",
+      "label": "_usernameController",
       "file_type": "code",
       "source_file": "lib/features/authentication/screens/login_screen.dart",
       "source_location": null,
       "_origin": "ast",
-      "id": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_emailcontroller",
+      "id": "lib_features_authentication_screens_login_screen_usernamecontroller",
       "community": 84,
-      "norm_label": "_emailcontroller"
+      "norm_label": "_usernamecontroller"
     },
     {
       "label": "_passwordController",
@@ -5451,7 +5481,7 @@
       "source_file": "lib/features/authentication/screens/login_screen.dart",
       "source_location": null,
       "_origin": "ast",
-      "id": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_passwordcontroller",
+      "id": "lib_features_authentication_screens_login_screen_passwordcontroller",
       "community": 84,
       "norm_label": "_passwordcontroller"
     },
@@ -5461,7 +5491,7 @@
       "source_file": "lib/features/authentication/screens/login_screen.dart",
       "source_location": null,
       "_origin": "ast",
-      "id": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_rememberme",
+      "id": "lib_features_authentication_screens_login_screen_rememberme",
       "community": 84,
       "norm_label": "_rememberme"
     },
@@ -5471,7 +5501,7 @@
       "source_file": "lib/features/authentication/screens/login_screen.dart",
       "source_location": null,
       "_origin": "ast",
-      "id": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_createstate",
+      "id": "lib_features_authentication_screens_login_screen_createstate",
       "community": 84,
       "norm_label": "createstate"
     },
@@ -5481,7 +5511,7 @@
       "source_file": "lib/features/authentication/screens/login_screen.dart",
       "source_location": null,
       "_origin": "ast",
-      "id": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_initstate",
+      "id": "lib_features_authentication_screens_login_screen_initstate",
       "community": 84,
       "norm_label": "initstate"
     },
@@ -5491,7 +5521,7 @@
       "source_file": "lib/features/authentication/screens/login_screen.dart",
       "source_location": null,
       "_origin": "ast",
-      "id": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_dispose",
+      "id": "lib_features_authentication_screens_login_screen_dispose",
       "community": 84,
       "norm_label": "dispose"
     },
@@ -5501,7 +5531,7 @@
       "source_file": "lib/features/authentication/screens/login_screen.dart",
       "source_location": null,
       "_origin": "ast",
-      "id": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_handlelogin",
+      "id": "lib_features_authentication_screens_login_screen_handlelogin",
       "community": 60,
       "norm_label": "_handlelogin"
     },
@@ -5521,7 +5551,7 @@
       "source_file": "lib/features/authentication/screens/login_screen.dart",
       "source_location": null,
       "_origin": "ast",
-      "id": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_showsocialmock",
+      "id": "lib_features_authentication_screens_login_screen_showsocialmock",
       "community": 84,
       "norm_label": "_showsocialmock"
     },
@@ -5531,8 +5561,8 @@
       "source_file": "lib/features/authentication/screens/login_screen.dart",
       "source_location": null,
       "_origin": "ast",
-      "id": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_build",
-      "community": 60,
+      "id": "lib_features_authentication_screens_login_screen_build",
+      "community": 84,
       "norm_label": "build"
     },
     {
@@ -5542,7 +5572,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_forgot_password",
-      "community": 60,
+      "community": 84,
       "norm_label": "route /forgot-password"
     },
     {
@@ -5552,7 +5582,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_signup",
-      "community": 60,
+      "community": 84,
       "norm_label": "route /signup"
     },
     {
@@ -5562,7 +5592,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_authentication_screens_otp_verification_screen_dart",
-      "community": 60,
+      "community": 131,
       "norm_label": "otp_verification_screen.dart"
     },
     {
@@ -5572,7 +5602,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_authentication_screens_otp_verification_screen_otpverificationscreen",
-      "community": 60,
+      "community": 131,
       "norm_label": "otpverificationscreen"
     },
     {
@@ -5582,7 +5612,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_authentication_screens_otp_verification_screen_otpverificationscreenstate",
-      "community": 60,
+      "community": 131,
       "norm_label": "_otpverificationscreenstate"
     },
     {
@@ -5592,7 +5622,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_authentication_screens_otp_verification_screen_arguments",
-      "community": 60,
+      "community": 131,
       "norm_label": "arguments"
     },
     {
@@ -5602,7 +5632,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_authentication_screens_otp_verification_screen_controllers",
-      "community": 60,
+      "community": 131,
       "norm_label": "_controllers"
     },
     {
@@ -5612,7 +5642,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_authentication_screens_otp_verification_screen_focusnodes",
-      "community": 60,
+      "community": 131,
       "norm_label": "_focusnodes"
     },
     {
@@ -5622,7 +5652,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_authentication_screens_otp_verification_screen_timerseconds",
-      "community": 60,
+      "community": 131,
       "norm_label": "_timerseconds"
     },
     {
@@ -5632,7 +5662,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_authentication_screens_otp_verification_screen_timer",
-      "community": 60,
+      "community": 131,
       "norm_label": "_timer"
     },
     {
@@ -5642,7 +5672,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "timer",
-      "community": 60,
+      "community": 131,
       "norm_label": "timer?"
     },
     {
@@ -5652,7 +5682,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_authentication_screens_otp_verification_screen_createstate",
-      "community": 60,
+      "community": 131,
       "norm_label": "createstate"
     },
     {
@@ -5662,7 +5692,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_authentication_screens_otp_verification_screen_initstate",
-      "community": 60,
+      "community": 131,
       "norm_label": "initstate"
     },
     {
@@ -5672,7 +5702,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_authentication_screens_otp_verification_screen_starttimer",
-      "community": 60,
+      "community": 131,
       "norm_label": "_starttimer"
     },
     {
@@ -5682,7 +5712,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_authentication_screens_otp_verification_screen_dispose",
-      "community": 60,
+      "community": 131,
       "norm_label": "dispose"
     },
     {
@@ -5692,7 +5722,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_authentication_screens_otp_verification_screen_onkeypress",
-      "community": 60,
+      "community": 131,
       "norm_label": "_onkeypress"
     },
     {
@@ -5702,7 +5732,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_authentication_screens_otp_verification_screen_getotpcode",
-      "community": 60,
+      "community": 131,
       "norm_label": "_getotpcode"
     },
     {
@@ -5752,7 +5782,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "core_constants_app_colors_dart",
-      "community": 165,
+      "community": 149,
       "norm_label": "../../../core/constants/app_colors.dart"
     },
     {
@@ -5762,7 +5792,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_authentication_screens_reset_password_screen_dart",
-      "community": 84,
+      "community": 60,
       "norm_label": "reset_password_screen.dart"
     },
     {
@@ -5772,7 +5802,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_authentication_screens_reset_password_screen_resetpasswordscreen",
-      "community": 84,
+      "community": 60,
       "norm_label": "resetpasswordscreen"
     },
     {
@@ -5782,7 +5812,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_authentication_screens_reset_password_screen_resetpasswordscreenstate",
-      "community": 84,
+      "community": 60,
       "norm_label": "_resetpasswordscreenstate"
     },
     {
@@ -5792,7 +5822,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_authentication_screens_reset_password_screen_arguments",
-      "community": 84,
+      "community": 60,
       "norm_label": "arguments"
     },
     {
@@ -5802,7 +5832,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_authentication_screens_reset_password_screen_formkey",
-      "community": 84,
+      "community": 60,
       "norm_label": "_formkey"
     },
     {
@@ -5812,7 +5842,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_authentication_screens_reset_password_screen_emailcontroller",
-      "community": 84,
+      "community": 60,
       "norm_label": "_emailcontroller"
     },
     {
@@ -5822,7 +5852,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_authentication_screens_reset_password_screen_otpcontroller",
-      "community": 84,
+      "community": 60,
       "norm_label": "_otpcontroller"
     },
     {
@@ -5832,7 +5862,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_authentication_screens_reset_password_screen_passwordcontroller",
-      "community": 84,
+      "community": 60,
       "norm_label": "_passwordcontroller"
     },
     {
@@ -5842,7 +5872,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_authentication_screens_reset_password_screen_confirmpasswordcontroller",
-      "community": 84,
+      "community": 60,
       "norm_label": "_confirmpasswordcontroller"
     },
     {
@@ -5852,7 +5882,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_authentication_screens_reset_password_screen_createstate",
-      "community": 84,
+      "community": 60,
       "norm_label": "createstate"
     },
     {
@@ -5862,7 +5892,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_authentication_screens_reset_password_screen_initstate",
-      "community": 84,
+      "community": 60,
       "norm_label": "initstate"
     },
     {
@@ -5872,7 +5902,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_authentication_screens_reset_password_screen_dispose",
-      "community": 84,
+      "community": 60,
       "norm_label": "dispose"
     },
     {
@@ -5892,7 +5922,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_authentication_screens_reset_password_screen_build",
-      "community": 84,
+      "community": 60,
       "norm_label": "build"
     },
     {
@@ -5902,7 +5932,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_authentication_screens_signup_screen_dart",
-      "community": 84,
+      "community": 74,
       "norm_label": "signup_screen.dart"
     },
     {
@@ -5912,7 +5942,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_authentication_screens_signup_screen_signupscreen",
-      "community": 84,
+      "community": 74,
       "norm_label": "signupscreen"
     },
     {
@@ -5922,7 +5952,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_authentication_screens_signup_screen_signupscreenstate",
-      "community": 84,
+      "community": 74,
       "norm_label": "_signupscreenstate"
     },
     {
@@ -5932,7 +5962,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_authentication_screens_signup_screen_formkey",
-      "community": 84,
+      "community": 74,
       "norm_label": "_formkey"
     },
     {
@@ -5942,7 +5972,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_authentication_screens_signup_screen_namecontroller",
-      "community": 84,
+      "community": 74,
       "norm_label": "_namecontroller"
     },
     {
@@ -5952,7 +5982,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_authentication_screens_signup_screen_businessnamecontroller",
-      "community": 84,
+      "community": 74,
       "norm_label": "_businessnamecontroller"
     },
     {
@@ -5962,7 +5992,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_authentication_screens_signup_screen_phonecontroller",
-      "community": 84,
+      "community": 74,
       "norm_label": "_phonecontroller"
     },
     {
@@ -5972,7 +6002,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_authentication_screens_signup_screen_emailcontroller",
-      "community": 84,
+      "community": 74,
       "norm_label": "_emailcontroller"
     },
     {
@@ -5982,7 +6012,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_authentication_screens_signup_screen_passwordcontroller",
-      "community": 84,
+      "community": 74,
       "norm_label": "_passwordcontroller"
     },
     {
@@ -5992,7 +6022,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_authentication_screens_signup_screen_agreeterms",
-      "community": 84,
+      "community": 74,
       "norm_label": "_agreeterms"
     },
     {
@@ -6002,7 +6032,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_authentication_screens_signup_screen_createstate",
-      "community": 84,
+      "community": 74,
       "norm_label": "createstate"
     },
     {
@@ -6012,7 +6042,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_authentication_screens_signup_screen_dispose",
-      "community": 84,
+      "community": 74,
       "norm_label": "dispose"
     },
     {
@@ -6102,7 +6132,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_welcome",
-      "community": 98,
+      "community": 60,
       "norm_label": "route /welcome"
     },
     {
@@ -6122,7 +6152,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_authentication_screens_success_screen_dart",
-      "community": 84,
+      "community": 149,
       "norm_label": "success_screen.dart"
     },
     {
@@ -6132,7 +6162,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_authentication_screens_success_screen_successscreen",
-      "community": 84,
+      "community": 49,
       "norm_label": "successscreen"
     },
     {
@@ -6142,7 +6172,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_authentication_screens_success_screen_arguments",
-      "community": 84,
+      "community": 149,
       "norm_label": "arguments"
     },
     {
@@ -6182,7 +6212,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_authentication_screens_welcome_screen_build",
-      "community": 60,
+      "community": 84,
       "norm_label": "build"
     },
     {
@@ -6322,7 +6352,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "double_get",
-      "community": 61,
+      "community": 44,
       "norm_label": "double get"
     },
     {
@@ -6642,7 +6672,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "package_intl_intl_dart",
-      "community": 165,
+      "community": 37,
       "norm_label": "package:intl/intl.dart"
     },
     {
@@ -6822,7 +6852,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "models_bill_dart",
-      "community": 142,
+      "community": 85,
       "norm_label": "../models/bill.dart"
     },
     {
@@ -6992,7 +7022,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_bills_screens_new_bill_screen_newbillscreen",
-      "community": 73,
+      "community": 85,
       "norm_label": "newbillscreen"
     },
     {
@@ -7002,7 +7032,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_bills_screens_new_bill_screen_newbillscreenstate",
-      "community": 73,
+      "community": 85,
       "norm_label": "_newbillscreenstate"
     },
     {
@@ -7682,7 +7712,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "vendors_models_vendor_dart",
-      "community": 40,
+      "community": 73,
       "norm_label": "../../vendors/models/vendor.dart"
     },
     {
@@ -7692,7 +7722,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "vendors_providers_vendor_provider_dart",
-      "community": 40,
+      "community": 73,
       "norm_label": "../../vendors/providers/vendor_provider.dart"
     },
     {
@@ -7702,7 +7732,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "vendors_screens_new_vendor_screen_dart",
-      "community": 73,
+      "community": 40,
       "norm_label": "../../vendors/screens/new_vendor_screen.dart"
     },
     {
@@ -7712,7 +7742,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "vendors_widgets_vendor_autocomplete_dart",
-      "community": 73,
+      "community": 40,
       "norm_label": "../../vendors/widgets/vendor_autocomplete.dart"
     },
     {
@@ -8342,7 +8372,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "customers_models_customer_dart",
-      "community": 58,
+      "community": 145,
       "norm_label": "../../customers/models/customer.dart"
     },
     {
@@ -9782,7 +9812,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_credit_notes_screens_new_credit_note_screen_buildcreditnotedetailscard",
-      "community": 65,
+      "community": 115,
       "norm_label": "_buildcreditnotedetailscard"
     },
     {
@@ -9992,7 +10022,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "settings_providers_settings_provider_dart",
-      "community": 98,
+      "community": 35,
       "norm_label": "../../settings/providers/settings_provider.dart"
     },
     {
@@ -10012,7 +10042,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_customers_models_customer_customer",
-      "community": 58,
+      "community": 145,
       "norm_label": "customer"
     },
     {
@@ -11042,7 +11072,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "tabcontroller",
-      "community": 77,
+      "community": 128,
       "norm_label": "tabcontroller"
     },
     {
@@ -11292,7 +11322,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_customers_screens_customer_detail_screen_sliverappbardelegate",
-      "community": 115,
+      "community": 61,
       "norm_label": "_sliverappbardelegate"
     },
     {
@@ -11302,7 +11332,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "sliverpersistentheaderdelegate",
-      "community": 115,
+      "community": 61,
       "norm_label": "sliverpersistentheaderdelegate"
     },
     {
@@ -11542,7 +11572,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_customers_screens_customer_detail_screen_buildoverviewtab",
-      "community": 127,
+      "community": 90,
       "norm_label": "_buildoverviewtab"
     },
     {
@@ -11552,7 +11582,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_invoices_create",
-      "community": 127,
+      "community": 90,
       "norm_label": "route /invoices/create"
     },
     {
@@ -12342,7 +12372,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_dashboard_models_dashboard_reports_salessummaryreport",
-      "community": 165,
+      "community": 162,
       "norm_label": "salessummaryreport"
     },
     {
@@ -12372,7 +12402,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_dashboard_models_dashboard_reports_profitlossreport",
-      "community": 165,
+      "community": 167,
       "norm_label": "profitlossreport"
     },
     {
@@ -12402,7 +12432,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_dashboard_models_dashboard_reports_receivablesreport",
-      "community": 165,
+      "community": 156,
       "norm_label": "receivablesreport"
     },
     {
@@ -13182,7 +13212,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "customers_models_payment_dart",
-      "community": 165,
+      "community": 37,
       "norm_label": "../../customers/models/payment.dart"
     },
     {
@@ -13202,7 +13232,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "models_dashboard_reports_dart",
-      "community": 165,
+      "community": 156,
       "norm_label": "../models/dashboard_reports.dart"
     },
     {
@@ -13282,7 +13312,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_dashboard_screens_dashboard_screen_showreceivablesbreakdown",
-      "community": 116,
+      "community": 104,
       "norm_label": "_showreceivablesbreakdown"
     },
     {
@@ -13292,7 +13322,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_invoices",
-      "community": 116,
+      "community": 104,
       "norm_label": "route /invoices"
     },
     {
@@ -13332,7 +13362,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_dashboard_screens_dashboard_screen_build",
-      "community": 85,
+      "community": 90,
       "norm_label": "build"
     },
     {
@@ -13342,7 +13372,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_expenses_create",
-      "community": 105,
+      "community": 90,
       "norm_label": "route /expenses/create"
     },
     {
@@ -13402,7 +13432,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "customers_screens_create_customer_screen_dart",
-      "community": 35,
+      "community": 98,
       "norm_label": "../customers/screens/create_customer_screen.dart"
     },
     {
@@ -13522,7 +13552,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_dashboard_widgets_cash_flow_card_cashflowpainter",
-      "community": 87,
+      "community": 168,
       "norm_label": "_cashflowpainter"
     },
     {
@@ -13532,7 +13562,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "custompainter",
-      "community": 87,
+      "community": 168,
       "norm_label": "custompainter"
     },
     {
@@ -13822,7 +13852,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_dashboard_widgets_expense_breakdown_card_dart",
-      "community": 165,
+      "community": 167,
       "norm_label": "expense_breakdown_card.dart"
     },
     {
@@ -13832,7 +13862,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_dashboard_widgets_expense_breakdown_card_expensebreakdowncard",
-      "community": 165,
+      "community": 167,
       "norm_label": "expensebreakdowncard"
     },
     {
@@ -13842,7 +13872,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_dashboard_widgets_expense_breakdown_card_profitloss",
-      "community": 165,
+      "community": 167,
       "norm_label": "profitloss"
     },
     {
@@ -13852,7 +13882,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_dashboard_widgets_expense_breakdown_card_palette",
-      "community": 165,
+      "community": 167,
       "norm_label": "_palette"
     },
     {
@@ -13862,7 +13892,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_dashboard_widgets_expense_breakdown_card_build",
-      "community": 165,
+      "community": 167,
       "norm_label": "build"
     },
     {
@@ -13982,7 +14012,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_dashboard_widgets_kpi_summary_grid_dart",
-      "community": 165,
+      "community": 162,
       "norm_label": "kpi_summary_grid.dart"
     },
     {
@@ -13992,7 +14022,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_dashboard_widgets_kpi_summary_grid_kpisummarygrid",
-      "community": 165,
+      "community": 162,
       "norm_label": "kpisummarygrid"
     },
     {
@@ -14002,7 +14032,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_dashboard_widgets_kpi_summary_grid_salessummary",
-      "community": 165,
+      "community": 162,
       "norm_label": "salessummary"
     },
     {
@@ -14012,7 +14042,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_dashboard_widgets_kpi_summary_grid_profitloss",
-      "community": 165,
+      "community": 162,
       "norm_label": "profitloss"
     },
     {
@@ -14022,7 +14052,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_dashboard_widgets_kpi_summary_grid_build",
-      "community": 165,
+      "community": 162,
       "norm_label": "build"
     },
     {
@@ -14032,7 +14062,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_dashboard_widgets_kpi_summary_grid_buildkpicard",
-      "community": 165,
+      "community": 162,
       "norm_label": "_buildkpicard"
     },
     {
@@ -14122,7 +14152,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_dashboard_widgets_receivables_card_dart",
-      "community": 165,
+      "community": 156,
       "norm_label": "receivables_card.dart"
     },
     {
@@ -14132,7 +14162,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_dashboard_widgets_receivables_card_receivablescard",
-      "community": 165,
+      "community": 156,
       "norm_label": "receivablescard"
     },
     {
@@ -14142,7 +14172,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_dashboard_widgets_receivables_card_report",
-      "community": 165,
+      "community": 156,
       "norm_label": "report"
     },
     {
@@ -14152,7 +14182,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_dashboard_widgets_receivables_card_build",
-      "community": 165,
+      "community": 156,
       "norm_label": "build"
     },
     {
@@ -14162,7 +14192,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_dashboard_widgets_receivables_card_buildbucketitem",
-      "community": 165,
+      "community": 156,
       "norm_label": "_buildbucketitem"
     },
     {
@@ -14172,7 +14202,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_dashboard_widgets_recent_payments_widget_dart",
-      "community": 165,
+      "community": 37,
       "norm_label": "recent_payments_widget.dart"
     },
     {
@@ -14182,7 +14212,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_dashboard_widgets_recent_payments_widget_recentpaymentswidget",
-      "community": 165,
+      "community": 37,
       "norm_label": "recentpaymentswidget"
     },
     {
@@ -14192,7 +14222,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_dashboard_widgets_recent_payments_widget_payments",
-      "community": 165,
+      "community": 37,
       "norm_label": "payments"
     },
     {
@@ -14202,7 +14232,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_dashboard_widgets_recent_payments_widget_build",
-      "community": 165,
+      "community": 37,
       "norm_label": "build"
     },
     {
@@ -14302,7 +14332,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_dashboard_widgets_top_customers_widget_dart",
-      "community": 165,
+      "community": 84,
       "norm_label": "top_customers_widget.dart"
     },
     {
@@ -14312,7 +14342,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_dashboard_widgets_top_customers_widget_topcustomerswidget",
-      "community": 165,
+      "community": 84,
       "norm_label": "topcustomerswidget"
     },
     {
@@ -14322,7 +14352,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_dashboard_widgets_top_customers_widget_topcustomers",
-      "community": 165,
+      "community": 84,
       "norm_label": "topcustomers"
     },
     {
@@ -14332,7 +14362,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_dashboard_widgets_top_customers_widget_build",
-      "community": 165,
+      "community": 84,
       "norm_label": "build"
     },
     {
@@ -14342,7 +14372,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_customers",
-      "community": 165,
+      "community": 84,
       "norm_label": "route /customers"
     },
     {
@@ -14872,7 +14902,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_invoices_providers_invoice_provider_invoiceprovider",
-      "community": 65,
+      "community": 115,
       "norm_label": "invoiceprovider"
     },
     {
@@ -16102,7 +16132,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_invoices_screens_create_invoice_screen_buildstickybottombar",
-      "community": 116,
+      "community": 46,
       "norm_label": "_buildstickybottombar"
     },
     {
@@ -16112,7 +16142,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_invoices_preview",
-      "community": 116,
+      "community": 46,
       "norm_label": "route /invoices/preview"
     },
     {
@@ -16192,7 +16222,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_invoices_screens_invoice_detail_screen_build",
-      "community": 116,
+      "community": 104,
       "norm_label": "build"
     },
     {
@@ -16272,7 +16302,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_invoices_screens_invoice_detail_screen_buildactionbottombar",
-      "community": 116,
+      "community": 104,
       "norm_label": "_buildactionbottombar"
     },
     {
@@ -16282,7 +16312,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_invoices_edit",
-      "community": 116,
+      "community": 104,
       "norm_label": "route /invoices/edit"
     },
     {
@@ -16392,7 +16422,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_invoices_screens_invoice_details_invoice_details_screen_build",
-      "community": 116,
+      "community": 104,
       "norm_label": "build"
     },
     {
@@ -16622,7 +16652,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_screens_invoice_list_invoice_list_screen_build",
-      "community": 116,
+      "community": 46,
       "norm_label": "build"
     },
     {
@@ -16632,7 +16662,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "route_profile",
-      "community": 105,
+      "community": 46,
       "norm_label": "route /profile"
     },
     {
@@ -16892,7 +16922,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_screens_invoice_preview_screen_buildactionbottombar",
-      "community": 116,
+      "community": 104,
       "norm_label": "_buildactionbottombar"
     },
     {
@@ -16942,7 +16972,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_invoices_screens_new_invoice_add_customer_overlay_screen_addcustomeroverlayscreen",
-      "community": 65,
+      "community": 45,
       "norm_label": "addcustomeroverlayscreen"
     },
     {
@@ -16952,7 +16982,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_invoices_screens_new_invoice_add_customer_overlay_screen_addcustomerform",
-      "community": 45,
+      "community": 135,
       "norm_label": "addcustomerform"
     },
     {
@@ -16962,7 +16992,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_invoices_screens_new_invoice_add_customer_overlay_screen_addcustomerformstate",
-      "community": 45,
+      "community": 135,
       "norm_label": "_addcustomerformstate"
     },
     {
@@ -17212,7 +17242,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "numberformat",
-      "community": 62,
+      "community": 106,
       "norm_label": "numberformat"
     },
     {
@@ -17342,7 +17372,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_screens_new_invoice_new_invoice_screen_initstate",
-      "community": 48,
+      "community": 115,
       "norm_label": "initstate"
     },
     {
@@ -17372,7 +17402,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_screens_new_invoice_new_invoice_screen_pickdate",
-      "community": 65,
+      "community": 115,
       "norm_label": "_pickdate"
     },
     {
@@ -17442,7 +17472,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_screens_new_invoice_new_invoice_screen_buildrouteandoutletcard",
-      "community": 65,
+      "community": 115,
       "norm_label": "_buildrouteandoutletcard"
     },
     {
@@ -17622,7 +17652,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_screens_product_picker_screen_initstate",
-      "community": 57,
+      "community": 115,
       "norm_label": "initstate"
     },
     {
@@ -17652,7 +17682,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_screens_product_picker_screen_showquickaddproductdialog",
-      "community": 57,
+      "community": 115,
       "norm_label": "_showquickaddproductdialog"
     },
     {
@@ -17672,7 +17702,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_screens_product_picker_screen_build",
-      "community": 57,
+      "community": 115,
       "norm_label": "build"
     },
     {
@@ -17742,7 +17772,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_services_route_service_routeservice",
-      "community": 57,
+      "community": 115,
       "norm_label": "routeservice"
     },
     {
@@ -17962,7 +17992,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_invoices_widgets_customer_autocomplete_customersearchfield",
-      "community": 84,
+      "community": 135,
       "norm_label": "customersearchfield"
     },
     {
@@ -17972,7 +18002,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_invoices_widgets_customer_autocomplete_customersearchfieldstate",
-      "community": 84,
+      "community": 135,
       "norm_label": "_customersearchfieldstate"
     },
     {
@@ -17982,7 +18012,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_invoices_widgets_customer_autocomplete_customersuggestiontile",
-      "community": 47,
+      "community": 49,
       "norm_label": "customersuggestiontile"
     },
     {
@@ -17992,7 +18022,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_invoices_widgets_customer_autocomplete_customerdetailscard",
-      "community": 47,
+      "community": 49,
       "norm_label": "customerdetailscard"
     },
     {
@@ -18442,7 +18472,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_invoices_widgets_customer_card_dart",
-      "community": 58,
+      "community": 145,
       "norm_label": "customer_card.dart"
     },
     {
@@ -18452,7 +18482,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_invoices_widgets_customer_card_customercard",
-      "community": 58,
+      "community": 145,
       "norm_label": "customercard"
     },
     {
@@ -18462,7 +18492,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_invoices_widgets_customer_card_customer",
-      "community": 58,
+      "community": 145,
       "norm_label": "customer"
     },
     {
@@ -18472,7 +18502,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_invoices_widgets_customer_card_onselecttap",
-      "community": 58,
+      "community": 145,
       "norm_label": "onselecttap"
     },
     {
@@ -18482,7 +18512,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_invoices_widgets_customer_card_onaddcustomertap",
-      "community": 58,
+      "community": 145,
       "norm_label": "onaddcustomertap"
     },
     {
@@ -18492,7 +18522,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_invoices_widgets_customer_card_build",
-      "community": 58,
+      "community": 145,
       "norm_label": "build"
     },
     {
@@ -18502,7 +18532,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_invoices_widgets_customer_card_buildinfolabel",
-      "community": 58,
+      "community": 145,
       "norm_label": "_buildinfolabel"
     },
     {
@@ -19012,7 +19042,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_invoices_widgets_payment_history_dart",
-      "community": 165,
+      "community": 37,
       "norm_label": "payment_history.dart"
     },
     {
@@ -19022,7 +19052,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_invoices_widgets_payment_history_paymenthistory",
-      "community": 165,
+      "community": 37,
       "norm_label": "paymenthistory"
     },
     {
@@ -19032,7 +19062,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_invoices_widgets_payment_history_payments",
-      "community": 165,
+      "community": 37,
       "norm_label": "payments"
     },
     {
@@ -19042,7 +19072,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_invoices_widgets_payment_history_invoice",
-      "community": 165,
+      "community": 37,
       "norm_label": "invoice"
     },
     {
@@ -19052,7 +19082,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_invoices_widgets_payment_history_build",
-      "community": 165,
+      "community": 37,
       "norm_label": "build"
     },
     {
@@ -19092,7 +19122,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_widgets_product_autocomplete_productsuggestiontile",
-      "community": 51,
+      "community": 49,
       "norm_label": "productsuggestiontile"
     },
     {
@@ -19382,7 +19412,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_widgets_product_autocomplete_showquickaddproductdialog",
-      "community": 57,
+      "community": 115,
       "norm_label": "_showquickaddproductdialog"
     },
     {
@@ -19622,7 +19652,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_widgets_simple_product_picker_modal_initstate",
-      "community": 57,
+      "community": 115,
       "norm_label": "initstate"
     },
     {
@@ -19702,7 +19732,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_widgets_simple_product_picker_modal_savecurrentproducttoinvoice",
-      "community": 62,
+      "community": 115,
       "norm_label": "_savecurrentproducttoinvoice"
     },
     {
@@ -19732,7 +19762,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_invoices_widgets_simple_product_picker_modal_build",
-      "community": 57,
+      "community": 115,
       "norm_label": "build"
     },
     {
@@ -20402,7 +20432,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_navigation_navigation_shell_showquickcreate",
-      "community": 105,
+      "community": 90,
       "norm_label": "_showquickcreate"
     },
     {
@@ -20482,7 +20512,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_products_models_product_product",
-      "community": 44,
+      "community": 61,
       "norm_label": "product"
     },
     {
@@ -20932,7 +20962,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_products_models_product_hierarchy_producthierarchyservice",
-      "community": 57,
+      "community": 115,
       "norm_label": "producthierarchyservice"
     },
     {
@@ -21172,7 +21202,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_products_providers_product_provider_productprovider",
-      "community": 57,
+      "community": 115,
       "norm_label": "productprovider"
     },
     {
@@ -21812,7 +21842,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_products_screens_create_product_screen_saveproduct",
-      "community": 57,
+      "community": 115,
       "norm_label": "_saveproduct"
     },
     {
@@ -21832,7 +21862,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_products_screens_create_product_screen_build",
-      "community": 57,
+      "community": 115,
       "norm_label": "build"
     },
     {
@@ -21912,7 +21942,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_products_screens_product_detail_screen_sliverappbardelegate",
-      "community": 115,
+      "community": 61,
       "norm_label": "_sliverappbardelegate"
     },
     {
@@ -21992,7 +22022,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_products_screens_product_detail_screen_initstate",
-      "community": 57,
+      "community": 115,
       "norm_label": "initstate"
     },
     {
@@ -22002,7 +22032,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_products_screens_product_detail_screen_confirmdeleteproduct",
-      "community": 57,
+      "community": 115,
       "norm_label": "_confirmdeleteproduct"
     },
     {
@@ -22022,7 +22052,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_products_screens_product_detail_screen_build",
-      "community": 57,
+      "community": 115,
       "norm_label": "build"
     },
     {
@@ -23412,7 +23442,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_proforma_invoices_screens_new_proforma_invoice_screen_newproformainvoicescreen",
-      "community": 155,
+      "community": 186,
       "norm_label": "newproformainvoicescreen"
     },
     {
@@ -23422,7 +23452,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_proforma_invoices_screens_new_proforma_invoice_screen_newproformainvoicescreenstate",
-      "community": 155,
+      "community": 186,
       "norm_label": "_newproformainvoicescreenstate"
     },
     {
@@ -24252,7 +24282,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_proforma_invoices_screens_new_proforma_invoice_screen_buildsummaryandstatuscard",
-      "community": 116,
+      "community": 104,
       "norm_label": "_buildsummaryandstatuscard"
     },
     {
@@ -28102,7 +28132,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_quotations_screens_quotations_list_screen_buildactionmenu",
-      "community": 127,
+      "community": 90,
       "norm_label": "_buildactionmenu"
     },
     {
@@ -29712,7 +29742,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_about_us_settings_screen_dart",
-      "community": 84,
+      "community": 149,
       "norm_label": "about_us_settings_screen.dart"
     },
     {
@@ -29722,7 +29752,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_about_us_settings_screen_aboutussettingsscreen",
-      "community": 84,
+      "community": 149,
       "norm_label": "aboutussettingsscreen"
     },
     {
@@ -29732,7 +29762,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_about_us_settings_screen_build",
-      "community": 84,
+      "community": 149,
       "norm_label": "build"
     },
     {
@@ -29742,7 +29772,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_app_preferences_settings_screen_dart",
-      "community": 17,
+      "community": 116,
       "norm_label": "app_preferences_settings_screen.dart"
     },
     {
@@ -29752,7 +29782,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_app_preferences_settings_screen_apppreferencessettingsscreen",
-      "community": 17,
+      "community": 116,
       "norm_label": "apppreferencessettingsscreen"
     },
     {
@@ -29762,7 +29792,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_app_preferences_settings_screen_apppreferencessettingsscreenstate",
-      "community": 17,
+      "community": 116,
       "norm_label": "_apppreferencessettingsscreenstate"
     },
     {
@@ -29772,7 +29802,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_app_preferences_settings_screen_smtpformkey",
-      "community": 17,
+      "community": 116,
       "norm_label": "_smtpformkey"
     },
     {
@@ -29782,7 +29812,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_app_preferences_settings_screen_smtphostcontroller",
-      "community": 17,
+      "community": 116,
       "norm_label": "_smtphostcontroller"
     },
     {
@@ -29792,7 +29822,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_app_preferences_settings_screen_smtpportcontroller",
-      "community": 17,
+      "community": 116,
       "norm_label": "_smtpportcontroller"
     },
     {
@@ -29802,7 +29832,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_app_preferences_settings_screen_smtpusernamecontroller",
-      "community": 17,
+      "community": 116,
       "norm_label": "_smtpusernamecontroller"
     },
     {
@@ -29812,7 +29842,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_app_preferences_settings_screen_smtppasswordcontroller",
-      "community": 17,
+      "community": 116,
       "norm_label": "_smtppasswordcontroller"
     },
     {
@@ -29822,7 +29852,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_app_preferences_settings_screen_senderemailcontroller",
-      "community": 17,
+      "community": 116,
       "norm_label": "_senderemailcontroller"
     },
     {
@@ -29832,7 +29862,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_app_preferences_settings_screen_sendernamecontroller",
-      "community": 17,
+      "community": 116,
       "norm_label": "_sendernamecontroller"
     },
     {
@@ -29842,7 +29872,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_app_preferences_settings_screen_replyemailcontroller",
-      "community": 17,
+      "community": 116,
       "norm_label": "_replyemailcontroller"
     },
     {
@@ -29852,7 +29882,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_app_preferences_settings_screen_encryptiontype",
-      "community": 17,
+      "community": 116,
       "norm_label": "_encryptiontype"
     },
     {
@@ -29862,7 +29892,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_app_preferences_settings_screen_defaultpagination",
-      "community": 17,
+      "community": 116,
       "norm_label": "_defaultpagination"
     },
     {
@@ -29872,7 +29902,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_app_preferences_settings_screen_createstate",
-      "community": 17,
+      "community": 116,
       "norm_label": "createstate"
     },
     {
@@ -29882,7 +29912,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_app_preferences_settings_screen_initstate",
-      "community": 17,
+      "community": 116,
       "norm_label": "initstate"
     },
     {
@@ -29892,7 +29922,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_app_preferences_settings_screen_dispose",
-      "community": 17,
+      "community": 116,
       "norm_label": "dispose"
     },
     {
@@ -29902,7 +29932,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_app_preferences_settings_screen_savesmtp",
-      "community": 17,
+      "community": 116,
       "norm_label": "_savesmtp"
     },
     {
@@ -29912,7 +29942,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_app_preferences_settings_screen_triggertestemail",
-      "community": 17,
+      "community": 116,
       "norm_label": "_triggertestemail"
     },
     {
@@ -29922,7 +29952,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_app_preferences_settings_screen_savepagination",
-      "community": 17,
+      "community": 116,
       "norm_label": "_savepagination"
     },
     {
@@ -29942,7 +29972,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "core_theme_theme_provider_dart",
-      "community": 17,
+      "community": 116,
       "norm_label": "core/theme/theme_provider.dart"
     },
     {
@@ -30462,7 +30492,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_payment_methods_settings_screen_dart",
-      "community": 77,
+      "community": 76,
       "norm_label": "payment_methods_settings_screen.dart"
     },
     {
@@ -30472,7 +30502,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_payment_methods_settings_screen_paymentmethodssettingsscreen",
-      "community": 77,
+      "community": 76,
       "norm_label": "paymentmethodssettingsscreen"
     },
     {
@@ -30482,7 +30512,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_payment_methods_settings_screen_paymentmethodssettingsscreenstate",
-      "community": 77,
+      "community": 76,
       "norm_label": "_paymentmethodssettingsscreenstate"
     },
     {
@@ -30492,7 +30522,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_payment_methods_settings_screen_formkey",
-      "community": 77,
+      "community": 76,
       "norm_label": "_formkey"
     },
     {
@@ -30502,7 +30532,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_payment_methods_settings_screen_tabcontroller",
-      "community": 77,
+      "community": 76,
       "norm_label": "_tabcontroller"
     },
     {
@@ -30512,7 +30542,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_payment_methods_settings_screen_stripeenabled",
-      "community": 77,
+      "community": 76,
       "norm_label": "_stripeenabled"
     },
     {
@@ -30522,7 +30552,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_payment_methods_settings_screen_stripepubkeycontroller",
-      "community": 77,
+      "community": 76,
       "norm_label": "_stripepubkeycontroller"
     },
     {
@@ -30532,7 +30562,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_payment_methods_settings_screen_stripesecretkeycontroller",
-      "community": 77,
+      "community": 76,
       "norm_label": "_stripesecretkeycontroller"
     },
     {
@@ -30542,7 +30572,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_payment_methods_settings_screen_razorpayenabled",
-      "community": 77,
+      "community": 76,
       "norm_label": "_razorpayenabled"
     },
     {
@@ -30552,7 +30582,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_payment_methods_settings_screen_razorpaykeyidcontroller",
-      "community": 77,
+      "community": 76,
       "norm_label": "_razorpaykeyidcontroller"
     },
     {
@@ -30562,7 +30592,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_payment_methods_settings_screen_razorpaykeysecretcontroller",
-      "community": 77,
+      "community": 76,
       "norm_label": "_razorpaykeysecretcontroller"
     },
     {
@@ -30572,7 +30602,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_payment_methods_settings_screen_paypalenabled",
-      "community": 77,
+      "community": 76,
       "norm_label": "_paypalenabled"
     },
     {
@@ -30582,7 +30612,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_payment_methods_settings_screen_paypalclientidcontroller",
-      "community": 77,
+      "community": 76,
       "norm_label": "_paypalclientidcontroller"
     },
     {
@@ -30592,7 +30622,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_payment_methods_settings_screen_paypalsecretcontroller",
-      "community": 77,
+      "community": 76,
       "norm_label": "_paypalsecretcontroller"
     },
     {
@@ -30602,7 +30632,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_payment_methods_settings_screen_createstate",
-      "community": 77,
+      "community": 76,
       "norm_label": "createstate"
     },
     {
@@ -30612,7 +30642,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_payment_methods_settings_screen_initstate",
-      "community": 77,
+      "community": 76,
       "norm_label": "initstate"
     },
     {
@@ -30622,7 +30652,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_payment_methods_settings_screen_dispose",
-      "community": 77,
+      "community": 76,
       "norm_label": "dispose"
     },
     {
@@ -30632,7 +30662,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_payment_methods_settings_screen_saveintegrations",
-      "community": 77,
+      "community": 76,
       "norm_label": "_saveintegrations"
     },
     {
@@ -30642,7 +30672,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_payment_methods_settings_screen_showcustommethoddialog",
-      "community": 77,
+      "community": 76,
       "norm_label": "_showcustommethoddialog"
     },
     {
@@ -30652,7 +30682,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_payment_methods_settings_screen_deletemethod",
-      "community": 77,
+      "community": 76,
       "norm_label": "_deletemethod"
     },
     {
@@ -30662,7 +30692,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_payment_methods_settings_screen_build",
-      "community": 77,
+      "community": 76,
       "norm_label": "build"
     },
     {
@@ -30672,7 +30702,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_payment_methods_settings_screen_buildpaymentgatewaycard",
-      "community": 77,
+      "community": 76,
       "norm_label": "_buildpaymentgatewaycard"
     },
     {
@@ -31302,7 +31332,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_tax_settings_screen_dart",
-      "community": 77,
+      "community": 128,
       "norm_label": "tax_settings_screen.dart"
     },
     {
@@ -31312,7 +31342,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_tax_settings_screen_taxsettingsscreen",
-      "community": 77,
+      "community": 128,
       "norm_label": "taxsettingsscreen"
     },
     {
@@ -31322,7 +31352,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_tax_settings_screen_taxsettingsscreenstate",
-      "community": 77,
+      "community": 128,
       "norm_label": "_taxsettingsscreenstate"
     },
     {
@@ -31332,7 +31362,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_tax_settings_screen_formkey",
-      "community": 77,
+      "community": 128,
       "norm_label": "_formkey"
     },
     {
@@ -31342,7 +31372,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_tax_settings_screen_tabcontroller",
-      "community": 77,
+      "community": 128,
       "norm_label": "_tabcontroller"
     },
     {
@@ -31352,7 +31382,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_tax_settings_screen_taxnamecontroller",
-      "community": 77,
+      "community": 128,
       "norm_label": "_taxnamecontroller"
     },
     {
@@ -31362,7 +31392,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_tax_settings_screen_taxpercentagecontroller",
-      "community": 77,
+      "community": 128,
       "norm_label": "_taxpercentagecontroller"
     },
     {
@@ -31372,7 +31402,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_tax_settings_screen_taxtype",
-      "community": 77,
+      "community": 128,
       "norm_label": "_taxtype"
     },
     {
@@ -31382,7 +31412,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_tax_settings_screen_hsnenabled",
-      "community": 77,
+      "community": 128,
       "norm_label": "_hsnenabled"
     },
     {
@@ -31392,7 +31422,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_tax_settings_screen_sacenabled",
-      "community": 77,
+      "community": 128,
       "norm_label": "_sacenabled"
     },
     {
@@ -31402,7 +31432,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_tax_settings_screen_reversecharge",
-      "community": 77,
+      "community": 128,
       "norm_label": "_reversecharge"
     },
     {
@@ -31412,7 +31442,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_tax_settings_screen_defaulttax",
-      "community": 77,
+      "community": 128,
       "norm_label": "_defaulttax"
     },
     {
@@ -31422,7 +31452,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_tax_settings_screen_createstate",
-      "community": 77,
+      "community": 128,
       "norm_label": "createstate"
     },
     {
@@ -31432,7 +31462,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_tax_settings_screen_initstate",
-      "community": 77,
+      "community": 128,
       "norm_label": "initstate"
     },
     {
@@ -31442,7 +31472,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_tax_settings_screen_dispose",
-      "community": 77,
+      "community": 128,
       "norm_label": "dispose"
     },
     {
@@ -31452,7 +31482,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_tax_settings_screen_savepreferences",
-      "community": 77,
+      "community": 128,
       "norm_label": "_savepreferences"
     },
     {
@@ -31462,7 +31492,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_tax_settings_screen_showtaxratedialog",
-      "community": 77,
+      "community": 128,
       "norm_label": "_showtaxratedialog"
     },
     {
@@ -31472,7 +31502,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_tax_settings_screen_deletetaxrate",
-      "community": 77,
+      "community": 128,
       "norm_label": "_deletetaxrate"
     },
     {
@@ -31482,7 +31512,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_settings_screens_tax_settings_screen_build",
-      "community": 77,
+      "community": 128,
       "norm_label": "build"
     },
     {
@@ -31582,7 +31612,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_shared_placeholder_screen_dart",
-      "community": 146,
+      "community": 166,
       "norm_label": "placeholder_screen.dart"
     },
     {
@@ -31592,7 +31622,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_shared_placeholder_screen_placeholderscreen",
-      "community": 146,
+      "community": 166,
       "norm_label": "placeholderscreen"
     },
     {
@@ -31602,7 +31632,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_shared_placeholder_screen_title",
-      "community": 146,
+      "community": 166,
       "norm_label": "title"
     },
     {
@@ -31612,7 +31642,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_shared_placeholder_screen_description",
-      "community": 146,
+      "community": 166,
       "norm_label": "description"
     },
     {
@@ -31622,7 +31652,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_shared_placeholder_screen_icon",
-      "community": 146,
+      "community": 166,
       "norm_label": "icon"
     },
     {
@@ -31632,7 +31662,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_features_shared_placeholder_screen_build",
-      "community": 146,
+      "community": 166,
       "norm_label": "build"
     },
     {
@@ -33152,7 +33182,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_features_vendors_widgets_vendor_autocomplete_vendorsuggestiontile",
-      "community": 79,
+      "community": 49,
       "norm_label": "vendorsuggestiontile"
     },
     {
@@ -34022,7 +34052,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_modules_expenses_data_mock_expenses_dart",
-      "community": 107,
+      "community": 95,
       "norm_label": "mock_expenses.dart"
     },
     {
@@ -34032,7 +34062,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_modules_expenses_data_mock_expenses_now",
-      "community": 107,
+      "community": 95,
       "norm_label": "now"
     },
     {
@@ -34042,7 +34072,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "d_flutter_tut_app_lib_modules_expenses_data_mock_expenses_getmockexpenses",
-      "community": 107,
+      "community": 95,
       "norm_label": "getmockexpenses"
     },
     {
@@ -34052,7 +34082,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "models_expense_model_dart",
-      "community": 107,
+      "community": 95,
       "norm_label": "../models/expense_model.dart"
     },
     {
@@ -34952,7 +34982,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_modules_expenses_screens_add_expense_screen_addexpensescreen",
-      "community": 71,
+      "community": 135,
       "norm_label": "addexpensescreen"
     },
     {
@@ -34962,7 +34992,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_modules_expenses_screens_add_expense_screen_addexpensescreenstate",
-      "community": 71,
+      "community": 135,
       "norm_label": "_addexpensescreenstate"
     },
     {
@@ -34972,7 +35002,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_modules_expenses_screens_add_expense_screen_dottedbordercontainer",
-      "community": 27,
+      "community": 49,
       "norm_label": "_dottedbordercontainer"
     },
     {
@@ -34982,7 +35012,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_modules_expenses_screens_add_expense_screen_dottedborderpainter",
-      "community": 87,
+      "community": 168,
       "norm_label": "_dottedborderpainter"
     },
     {
@@ -35342,7 +35372,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_modules_expenses_screens_add_expense_screen_initstate",
-      "community": 105,
+      "community": 48,
       "norm_label": "initstate"
     },
     {
@@ -35882,7 +35912,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_modules_expenses_screens_expense_list_screen_buildemptystate",
-      "community": 105,
+      "community": 90,
       "norm_label": "_buildemptystate"
     },
     {
@@ -36262,7 +36292,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "core_constants_app_spacing_dart",
-      "community": 32,
+      "community": 107,
       "norm_label": "../../../core/constants/app_spacing.dart"
     },
     {
@@ -36282,7 +36312,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_modules_expenses_widgets_expense_form_expenseform",
-      "community": 81,
+      "community": 135,
       "norm_label": "expenseform"
     },
     {
@@ -36292,7 +36322,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_modules_expenses_widgets_expense_form_expenseformstate",
-      "community": 81,
+      "community": 135,
       "norm_label": "_expenseformstate"
     },
     {
@@ -36302,7 +36332,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_modules_expenses_widgets_expense_form_searchablepickersheet",
-      "community": 81,
+      "community": 135,
       "norm_label": "_searchablepickersheet"
     },
     {
@@ -36312,7 +36342,7 @@
       "source_location": null,
       "_origin": "ast",
       "id": "lib_modules_expenses_widgets_expense_form_searchablepickersheetstate",
-      "community": 81,
+      "community": 135,
       "norm_label": "_searchablepickersheetstate"
     },
     {
@@ -40371,16 +40401,6 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "lib/core/widgets/custom_inputs.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_core_widgets_custom_inputs_dart",
-      "target": "package_flutter_services_dart"
-    },
-    {
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
       "source_file": "lib/features/authentication/screens/otp_verification_screen.dart",
       "source_location": null,
       "weight": 1.0,
@@ -40435,6 +40455,16 @@
       "source_location": null,
       "weight": 1.0,
       "source": "d_flutter_tut_app_lib_modules_expenses_widgets_gst_dropdown_dart",
+      "target": "package_flutter_services_dart"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/custom_inputs.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_core_widgets_custom_inputs",
       "target": "package_flutter_services_dart"
     },
     {
@@ -41077,16 +41107,6 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "lib/core/widgets/custom_inputs.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_core_widgets_custom_inputs_dart",
-      "target": "package_flutter_material_dart"
-    },
-    {
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
       "source_file": "lib/core/widgets/custom_states.dart",
       "source_location": null,
       "weight": 1.0,
@@ -41101,16 +41121,6 @@
       "source_location": null,
       "weight": 1.0,
       "source": "d_flutter_tut_app_lib_features_authentication_screens_forgot_password_screen_dart",
-      "target": "package_flutter_material_dart"
-    },
-    {
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/features/authentication/screens/login_screen.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_dart",
       "target": "package_flutter_material_dart"
     },
     {
@@ -41907,6 +41917,26 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/custom_inputs.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_core_widgets_custom_inputs",
+      "target": "package_flutter_material_dart"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/features/authentication/screens/login_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_features_authentication_screens_login_screen",
+      "target": "package_flutter_material_dart"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
       "source_file": "lib/features/bills/screens/new_bill_screen.dart",
       "source_location": null,
       "weight": 1.0,
@@ -42111,16 +42141,6 @@
       "source_location": null,
       "weight": 1.0,
       "source": "d_flutter_tut_app_lib_features_authentication_screens_forgot_password_screen_dart",
-      "target": "package_go_router_go_router_dart"
-    },
-    {
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/features/authentication/screens/login_screen.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_dart",
       "target": "package_go_router_go_router_dart"
     },
     {
@@ -42357,6 +42377,16 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
+      "source_file": "lib/features/authentication/screens/login_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_features_authentication_screens_login_screen",
+      "target": "package_go_router_go_router_dart"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
       "source_file": "lib/features/invoices/screens/invoice_list/invoice_list_screen.dart",
       "source_location": null,
       "weight": 1.0,
@@ -42431,16 +42461,6 @@
       "source_location": null,
       "weight": 1.0,
       "source": "d_flutter_tut_app_lib_features_authentication_screens_forgot_password_screen_dart",
-      "target": "package_provider_provider_dart"
-    },
-    {
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/features/authentication/screens/login_screen.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_dart",
       "target": "package_provider_provider_dart"
     },
     {
@@ -42791,6 +42811,16 @@
       "source_location": null,
       "weight": 1.0,
       "source": "d_flutter_tut_app_lib_settings_integrate_update_button_dart",
+      "target": "package_provider_provider_dart"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/features/authentication/screens/login_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_features_authentication_screens_login_screen",
       "target": "package_provider_provider_dart"
     },
     {
@@ -44225,17 +44255,6 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "lib/core/widgets/custom_inputs.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "source": "d_flutter_tut_app_lib_core_widgets_custom_inputs_dart",
-      "target": "voidcallback"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
       "source_file": "lib/core/widgets/custom_states.dart",
       "source_location": null,
       "weight": 1.0,
@@ -44406,6 +44425,17 @@
       "weight": 1.0,
       "context": "variable_type",
       "source": "d_flutter_tut_app_lib_modules_expenses_widgets_expense_card_dart",
+      "target": "voidcallback"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/custom_inputs.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "source": "lib_core_widgets_custom_inputs",
       "target": "voidcallback"
     },
     {
@@ -45742,17 +45772,6 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "lib/core/widgets/custom_inputs.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "variable_type",
-      "source": "d_flutter_tut_app_lib_core_widgets_custom_inputs_dart",
-      "target": "list"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
       "source_file": "lib/features/authentication/screens/otp_verification_screen.dart",
       "source_location": null,
       "weight": 1.0,
@@ -46165,6 +46184,17 @@
       "weight": 1.0,
       "context": "variable_type",
       "source": "d_flutter_tut_app_lib_modules_expenses_widgets_gst_dropdown_dart",
+      "target": "list"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/custom_inputs.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "source": "lib_core_widgets_custom_inputs",
       "target": "list"
     },
     {
@@ -47366,56 +47396,6 @@
       "relation": "inherits",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "lib/core/widgets/custom_inputs.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_core_widgets_custom_inputs_customdatepicker",
-      "target": "statelesswidget"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/core/widgets/custom_inputs.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_core_widgets_custom_inputs_customdropdown",
-      "target": "statelesswidget"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/core/widgets/custom_inputs.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_core_widgets_custom_inputs_customemailfield",
-      "target": "statelesswidget"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/core/widgets/custom_inputs.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_core_widgets_custom_inputs_customnumberfield",
-      "target": "statelesswidget"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/core/widgets/custom_inputs.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_core_widgets_custom_inputs_customsearchfield",
-      "target": "statelesswidget"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
       "source_file": "lib/core/widgets/custom_states.dart",
       "source_location": null,
       "weight": 1.0,
@@ -47816,6 +47796,66 @@
       "relation": "inherits",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/custom_inputs.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_core_widgets_custom_inputs_customdatepicker",
+      "target": "statelesswidget"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/custom_inputs.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_core_widgets_custom_inputs_customdropdown",
+      "target": "statelesswidget"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/custom_inputs.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_core_widgets_custom_inputs_customemailfield",
+      "target": "statelesswidget"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/custom_inputs.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_core_widgets_custom_inputs_customnumberfield",
+      "target": "statelesswidget"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/custom_inputs.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_core_widgets_custom_inputs_customsearchfield",
+      "target": "statelesswidget"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/custom_inputs.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_core_widgets_custom_inputs_customtextfield",
+      "target": "statelesswidget"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
       "source_file": "lib/features/invoices/widgets/product_autocomplete.dart",
       "source_location": null,
       "weight": 1.0,
@@ -47895,6 +47935,17 @@
       "weight": 1.0,
       "context": "variable_type",
       "source": "d_flutter_tut_app_lib_modules_expenses_widgets_dashboard_card_dart",
+      "target": "icondata"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/custom_inputs.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "source": "lib_core_widgets_custom_inputs",
       "target": "icondata"
     },
     {
@@ -48399,248 +48450,8 @@
       "source_location": null,
       "weight": 1.0,
       "context": "type_lookup",
-      "source": "d_flutter_tut_app_lib_core_widgets_custom_inputs_dart",
+      "source": "lib_core_widgets_custom_inputs",
       "target": "t"
-    },
-    {
-      "relation": "defines",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/core/widgets/custom_inputs.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_core_widgets_custom_inputs_dart",
-      "target": "d_flutter_tut_app_lib_core_widgets_custom_inputs_build"
-    },
-    {
-      "relation": "defines",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/core/widgets/custom_inputs.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_core_widgets_custom_inputs_dart",
-      "target": "d_flutter_tut_app_lib_core_widgets_custom_inputs_controller"
-    },
-    {
-      "relation": "defines",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/core/widgets/custom_inputs.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_core_widgets_custom_inputs_dart",
-      "target": "d_flutter_tut_app_lib_core_widgets_custom_inputs_createstate"
-    },
-    {
-      "relation": "defines",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/core/widgets/custom_inputs.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_core_widgets_custom_inputs_dart",
-      "target": "d_flutter_tut_app_lib_core_widgets_custom_inputs_customdatepicker"
-    },
-    {
-      "relation": "defines",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/core/widgets/custom_inputs.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_core_widgets_custom_inputs_dart",
-      "target": "d_flutter_tut_app_lib_core_widgets_custom_inputs_customdropdown"
-    },
-    {
-      "relation": "defines",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/core/widgets/custom_inputs.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_core_widgets_custom_inputs_dart",
-      "target": "d_flutter_tut_app_lib_core_widgets_custom_inputs_customemailfield"
-    },
-    {
-      "relation": "defines",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/core/widgets/custom_inputs.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_core_widgets_custom_inputs_dart",
-      "target": "d_flutter_tut_app_lib_core_widgets_custom_inputs_customnumberfield"
-    },
-    {
-      "relation": "defines",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/core/widgets/custom_inputs.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_core_widgets_custom_inputs_dart",
-      "target": "d_flutter_tut_app_lib_core_widgets_custom_inputs_custompasswordfield"
-    },
-    {
-      "relation": "defines",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/core/widgets/custom_inputs.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_core_widgets_custom_inputs_dart",
-      "target": "d_flutter_tut_app_lib_core_widgets_custom_inputs_custompasswordfieldstate"
-    },
-    {
-      "relation": "defines",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/core/widgets/custom_inputs.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_core_widgets_custom_inputs_dart",
-      "target": "d_flutter_tut_app_lib_core_widgets_custom_inputs_customsearchfield"
-    },
-    {
-      "relation": "defines",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/core/widgets/custom_inputs.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_core_widgets_custom_inputs_dart",
-      "target": "d_flutter_tut_app_lib_core_widgets_custom_inputs_firstdate"
-    },
-    {
-      "relation": "defines",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/core/widgets/custom_inputs.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_core_widgets_custom_inputs_dart",
-      "target": "d_flutter_tut_app_lib_core_widgets_custom_inputs_hint"
-    },
-    {
-      "relation": "defines",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/core/widgets/custom_inputs.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_core_widgets_custom_inputs_dart",
-      "target": "d_flutter_tut_app_lib_core_widgets_custom_inputs_items"
-    },
-    {
-      "relation": "defines",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/core/widgets/custom_inputs.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_core_widgets_custom_inputs_dart",
-      "target": "d_flutter_tut_app_lib_core_widgets_custom_inputs_label"
-    },
-    {
-      "relation": "defines",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/core/widgets/custom_inputs.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_core_widgets_custom_inputs_dart",
-      "target": "d_flutter_tut_app_lib_core_widgets_custom_inputs_lastdate"
-    },
-    {
-      "relation": "defines",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/core/widgets/custom_inputs.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_core_widgets_custom_inputs_dart",
-      "target": "d_flutter_tut_app_lib_core_widgets_custom_inputs_obscuretext"
-    },
-    {
-      "relation": "defines",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/core/widgets/custom_inputs.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_core_widgets_custom_inputs_dart",
-      "target": "d_flutter_tut_app_lib_core_widgets_custom_inputs_onchanged"
-    },
-    {
-      "relation": "defines",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/core/widgets/custom_inputs.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_core_widgets_custom_inputs_dart",
-      "target": "d_flutter_tut_app_lib_core_widgets_custom_inputs_onclear"
-    },
-    {
-      "relation": "defines",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/core/widgets/custom_inputs.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_core_widgets_custom_inputs_dart",
-      "target": "d_flutter_tut_app_lib_core_widgets_custom_inputs_ondateselected"
-    },
-    {
-      "relation": "defines",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/core/widgets/custom_inputs.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_core_widgets_custom_inputs_dart",
-      "target": "d_flutter_tut_app_lib_core_widgets_custom_inputs_selectdate"
-    },
-    {
-      "relation": "defines",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/core/widgets/custom_inputs.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_core_widgets_custom_inputs_dart",
-      "target": "d_flutter_tut_app_lib_core_widgets_custom_inputs_selecteddate"
-    },
-    {
-      "relation": "defines",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/core/widgets/custom_inputs.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_core_widgets_custom_inputs_dart",
-      "target": "d_flutter_tut_app_lib_core_widgets_custom_inputs_textinputaction"
-    },
-    {
-      "relation": "defines",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/core/widgets/custom_inputs.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_core_widgets_custom_inputs_dart",
-      "target": "d_flutter_tut_app_lib_core_widgets_custom_inputs_validator"
-    },
-    {
-      "relation": "defines",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/core/widgets/custom_inputs.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_core_widgets_custom_inputs_dart",
-      "target": "d_flutter_tut_app_lib_core_widgets_custom_inputs_value"
     },
     {
       "relation": "references",
@@ -48650,7 +48461,7 @@
       "source_location": null,
       "weight": 1.0,
       "context": "variable_type",
-      "source": "d_flutter_tut_app_lib_core_widgets_custom_inputs_dart",
+      "source": "lib_core_widgets_custom_inputs",
       "target": "datetime"
     },
     {
@@ -48661,8 +48472,278 @@
       "source_location": null,
       "weight": 1.0,
       "context": "variable_type",
-      "source": "d_flutter_tut_app_lib_core_widgets_custom_inputs_dart",
+      "source": "lib_core_widgets_custom_inputs",
       "target": "formfieldvalidator"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/custom_inputs.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_core_widgets_custom_inputs",
+      "target": "lib_core_widgets_custom_inputs_build"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/custom_inputs.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_core_widgets_custom_inputs",
+      "target": "lib_core_widgets_custom_inputs_controller"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/custom_inputs.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_core_widgets_custom_inputs",
+      "target": "lib_core_widgets_custom_inputs_createstate"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/custom_inputs.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_core_widgets_custom_inputs",
+      "target": "lib_core_widgets_custom_inputs_customdatepicker"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/custom_inputs.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_core_widgets_custom_inputs",
+      "target": "lib_core_widgets_custom_inputs_customdropdown"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/custom_inputs.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_core_widgets_custom_inputs",
+      "target": "lib_core_widgets_custom_inputs_customemailfield"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/custom_inputs.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_core_widgets_custom_inputs",
+      "target": "lib_core_widgets_custom_inputs_customnumberfield"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/custom_inputs.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_core_widgets_custom_inputs",
+      "target": "lib_core_widgets_custom_inputs_custompasswordfield"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/custom_inputs.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_core_widgets_custom_inputs",
+      "target": "lib_core_widgets_custom_inputs_custompasswordfieldstate"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/custom_inputs.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_core_widgets_custom_inputs",
+      "target": "lib_core_widgets_custom_inputs_customsearchfield"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/custom_inputs.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_core_widgets_custom_inputs",
+      "target": "lib_core_widgets_custom_inputs_customtextfield"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/custom_inputs.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_core_widgets_custom_inputs",
+      "target": "lib_core_widgets_custom_inputs_firstdate"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/custom_inputs.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_core_widgets_custom_inputs",
+      "target": "lib_core_widgets_custom_inputs_hint"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/custom_inputs.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_core_widgets_custom_inputs",
+      "target": "lib_core_widgets_custom_inputs_items"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/custom_inputs.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_core_widgets_custom_inputs",
+      "target": "lib_core_widgets_custom_inputs_keyboardtype"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/custom_inputs.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_core_widgets_custom_inputs",
+      "target": "lib_core_widgets_custom_inputs_label"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/custom_inputs.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_core_widgets_custom_inputs",
+      "target": "lib_core_widgets_custom_inputs_lastdate"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/custom_inputs.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_core_widgets_custom_inputs",
+      "target": "lib_core_widgets_custom_inputs_obscuretext"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/custom_inputs.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_core_widgets_custom_inputs",
+      "target": "lib_core_widgets_custom_inputs_onchanged"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/custom_inputs.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_core_widgets_custom_inputs",
+      "target": "lib_core_widgets_custom_inputs_onclear"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/custom_inputs.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_core_widgets_custom_inputs",
+      "target": "lib_core_widgets_custom_inputs_ondateselected"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/custom_inputs.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_core_widgets_custom_inputs",
+      "target": "lib_core_widgets_custom_inputs_prefixicon"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/custom_inputs.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_core_widgets_custom_inputs",
+      "target": "lib_core_widgets_custom_inputs_selectdate"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/custom_inputs.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_core_widgets_custom_inputs",
+      "target": "lib_core_widgets_custom_inputs_selecteddate"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/custom_inputs.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_core_widgets_custom_inputs",
+      "target": "lib_core_widgets_custom_inputs_textinputaction"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/custom_inputs.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_core_widgets_custom_inputs",
+      "target": "lib_core_widgets_custom_inputs_validator"
+    },
+    {
+      "relation": "defines",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/custom_inputs.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_core_widgets_custom_inputs",
+      "target": "lib_core_widgets_custom_inputs_value"
     },
     {
       "relation": "references",
@@ -48672,7 +48753,7 @@
       "source_location": null,
       "weight": 1.0,
       "context": "variable_type",
-      "source": "d_flutter_tut_app_lib_core_widgets_custom_inputs_dart",
+      "source": "lib_core_widgets_custom_inputs",
       "target": "texteditingcontroller"
     },
     {
@@ -48683,7 +48764,7 @@
       "source_location": null,
       "weight": 1.0,
       "context": "variable_type",
-      "source": "d_flutter_tut_app_lib_core_widgets_custom_inputs_dart",
+      "source": "lib_core_widgets_custom_inputs",
       "target": "textinputaction"
     },
     {
@@ -48694,7 +48775,18 @@
       "source_location": null,
       "weight": 1.0,
       "context": "variable_type",
-      "source": "d_flutter_tut_app_lib_core_widgets_custom_inputs_dart",
+      "source": "lib_core_widgets_custom_inputs",
+      "target": "textinputtype"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/core/widgets/custom_inputs.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "variable_type",
+      "source": "lib_core_widgets_custom_inputs",
       "target": "valuechanged"
     },
     {
@@ -48704,7 +48796,7 @@
       "source_file": "lib/core/widgets/custom_inputs.dart",
       "source_location": null,
       "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_core_widgets_custom_inputs_custompasswordfield",
+      "source": "lib_core_widgets_custom_inputs_custompasswordfield",
       "target": "statefulwidget"
     },
     {
@@ -48714,8 +48806,8 @@
       "source_file": "lib/core/widgets/custom_inputs.dart",
       "source_location": null,
       "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_core_widgets_custom_inputs_custompasswordfieldstate",
-      "target": "d_flutter_tut_app_lib_core_widgets_custom_inputs_custompasswordfield"
+      "source": "lib_core_widgets_custom_inputs_custompasswordfieldstate",
+      "target": "lib_core_widgets_custom_inputs_custompasswordfield"
     },
     {
       "relation": "inherits",
@@ -48725,16 +48817,6 @@
       "source_location": null,
       "weight": 1.0,
       "source": "d_flutter_tut_app_lib_features_authentication_screens_forgot_password_screen_forgotpasswordscreen",
-      "target": "statefulwidget"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/features/authentication/screens/login_screen.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_loginscreen",
       "target": "statefulwidget"
     },
     {
@@ -49161,6 +49243,16 @@
       "relation": "inherits",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
+      "source_file": "lib/features/authentication/screens/login_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_features_authentication_screens_login_screen_loginscreen",
+      "target": "statefulwidget"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
       "source_file": "lib/features/bills/screens/new_bill_screen.dart",
       "source_location": null,
       "weight": 1.0,
@@ -49354,7 +49446,7 @@
       "source_file": "lib/core/widgets/custom_inputs.dart",
       "source_location": null,
       "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_core_widgets_custom_inputs_custompasswordfieldstate",
+      "source": "lib_core_widgets_custom_inputs_custompasswordfieldstate",
       "target": "state"
     },
     {
@@ -49365,16 +49457,6 @@
       "source_location": null,
       "weight": 1.0,
       "source": "d_flutter_tut_app_lib_features_authentication_screens_forgot_password_screen_forgotpasswordscreenstate",
-      "target": "state"
-    },
-    {
-      "relation": "inherits",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/features/authentication/screens/login_screen.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_loginscreenstate",
       "target": "state"
     },
     {
@@ -49795,6 +49877,16 @@
       "source_location": null,
       "weight": 1.0,
       "source": "d_flutter_tut_app_lib_widgets_update_dialog_updatedialogstate",
+      "target": "state"
+    },
+    {
+      "relation": "inherits",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/features/authentication/screens/login_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_features_authentication_screens_login_screen_loginscreenstate",
       "target": "state"
     },
     {
@@ -51682,61 +51774,6 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "lib/features/authentication/screens/login_screen.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "bloc_lookup",
-      "source": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_build",
-      "target": "lib_features_authentication_providers_auth_provider_authprovider"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/features/authentication/screens/login_screen.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "type_lookup",
-      "source": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_dart",
-      "target": "lib_features_authentication_providers_auth_provider_authprovider"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/features/authentication/screens/login_screen.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "bloc_lookup",
-      "source": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_handlelogin",
-      "target": "lib_features_authentication_providers_auth_provider_authprovider"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/features/authentication/screens/login_screen.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "bloc_lookup",
-      "source": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_initstate",
-      "target": "lib_features_authentication_providers_auth_provider_authprovider"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/features/authentication/screens/login_screen.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "bloc_lookup",
-      "source": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_loginscreenstate",
-      "target": "lib_features_authentication_providers_auth_provider_authprovider"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
       "source_file": "lib/features/authentication/screens/otp_verification_screen.dart",
       "source_location": null,
       "weight": 1.0,
@@ -52006,6 +52043,61 @@
       "weight": 1.0,
       "context": "bloc_lookup",
       "source": "d_flutter_tut_app_lib_features_settings_screens_profile_business_settings_screen_showchangepassworddialog",
+      "target": "lib_features_authentication_providers_auth_provider_authprovider"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/features/authentication/screens/login_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "type_lookup",
+      "source": "lib_features_authentication_screens_login_screen",
+      "target": "lib_features_authentication_providers_auth_provider_authprovider"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/features/authentication/screens/login_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "bloc_lookup",
+      "source": "lib_features_authentication_screens_login_screen_build",
+      "target": "lib_features_authentication_providers_auth_provider_authprovider"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/features/authentication/screens/login_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "bloc_lookup",
+      "source": "lib_features_authentication_screens_login_screen_handlelogin",
+      "target": "lib_features_authentication_providers_auth_provider_authprovider"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/features/authentication/screens/login_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "bloc_lookup",
+      "source": "lib_features_authentication_screens_login_screen_initstate",
+      "target": "lib_features_authentication_providers_auth_provider_authprovider"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "lib/features/authentication/screens/login_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "bloc_lookup",
+      "source": "lib_features_authentication_screens_login_screen_loginscreenstate",
       "target": "lib_features_authentication_providers_auth_provider_authprovider"
     },
     {
@@ -52761,17 +52853,6 @@
       "relation": "navigates",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "lib/features/authentication/screens/login_screen.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "context": "route_path",
-      "source": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_handlelogin",
-      "target": "route_otp_verify"
-    },
-    {
-      "relation": "navigates",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
       "source_file": "lib/features/authentication/screens/signup_screen.dart",
       "source_location": null,
       "weight": 1.0,
@@ -52789,16 +52870,6 @@
       "context": "route_path",
       "source": "d_flutter_tut_app_lib_features_authentication_screens_splash_screen_navigatetonext",
       "target": "route_otp_verify"
-    },
-    {
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/features/authentication/screens/login_screen.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_dart",
-      "target": "package_flutter_animate_flutter_animate_dart"
     },
     {
       "relation": "imports",
@@ -53047,8 +53118,8 @@
       "source_file": "lib/features/authentication/screens/login_screen.dart",
       "source_location": null,
       "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_dart",
-      "target": "core_widgets_custom_buttons_dart"
+      "source": "lib_features_authentication_screens_login_screen",
+      "target": "package_flutter_animate_flutter_animate_dart"
     },
     {
       "relation": "imports",
@@ -53104,21 +53175,21 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "lib/modules/expenses/widgets/expense_form.dart",
+      "source_file": "lib/features/authentication/screens/login_screen.dart",
       "source_location": null,
       "weight": 1.0,
-      "source": "lib_modules_expenses_widgets_expense_form",
+      "source": "lib_features_authentication_screens_login_screen",
       "target": "core_widgets_custom_buttons_dart"
     },
     {
       "relation": "imports",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "lib/features/authentication/screens/login_screen.dart",
+      "source_file": "lib/modules/expenses/widgets/expense_form.dart",
       "source_location": null,
       "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_dart",
-      "target": "core_widgets_custom_inputs_dart"
+      "source": "lib_modules_expenses_widgets_expense_form",
+      "target": "core_widgets_custom_buttons_dart"
     },
     {
       "relation": "imports",
@@ -53144,21 +53215,21 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "lib/modules/expenses/widgets/expense_form.dart",
+      "source_file": "lib/features/authentication/screens/login_screen.dart",
       "source_location": null,
       "weight": 1.0,
-      "source": "lib_modules_expenses_widgets_expense_form",
+      "source": "lib_features_authentication_screens_login_screen",
       "target": "core_widgets_custom_inputs_dart"
     },
     {
       "relation": "imports",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
-      "source_file": "lib/features/authentication/screens/login_screen.dart",
+      "source_file": "lib/modules/expenses/widgets/expense_form.dart",
       "source_location": null,
       "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_dart",
-      "target": "core_widgets_custom_dialogs_dart"
+      "source": "lib_modules_expenses_widgets_expense_form",
+      "target": "core_widgets_custom_inputs_dart"
     },
     {
       "relation": "imports",
@@ -53194,6 +53265,16 @@
       "relation": "imports",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
+      "source_file": "lib/features/authentication/screens/login_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "source": "lib_features_authentication_screens_login_screen",
+      "target": "core_widgets_custom_dialogs_dart"
+    },
+    {
+      "relation": "imports",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
       "source_file": "lib/features/invoices/screens/invoice_list/invoice_list_screen.dart",
       "source_location": null,
       "weight": 1.0,
@@ -53219,16 +53300,6 @@
       "weight": 1.0,
       "source": "lib_modules_expenses_screens_expense_list_screen",
       "target": "core_widgets_custom_dialogs_dart"
-    },
-    {
-      "relation": "imports",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/features/authentication/screens/login_screen.dart",
-      "source_location": null,
-      "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_dart",
-      "target": "providers_auth_provider_dart"
     },
     {
       "relation": "imports",
@@ -53271,15 +53342,14 @@
       "target": "providers_auth_provider_dart"
     },
     {
-      "relation": "references",
+      "relation": "imports",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "lib/features/authentication/screens/login_screen.dart",
       "source_location": null,
       "weight": 1.0,
-      "context": "type_lookup",
-      "source": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_dart",
-      "target": "formstate"
+      "source": "lib_features_authentication_screens_login_screen",
+      "target": "providers_auth_provider_dart"
     },
     {
       "relation": "references",
@@ -53494,6 +53564,17 @@
       "relation": "references",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
+      "source_file": "lib/features/authentication/screens/login_screen.dart",
+      "source_location": null,
+      "weight": 1.0,
+      "context": "type_lookup",
+      "source": "lib_features_authentication_screens_login_screen",
+      "target": "formstate"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
       "source_file": "lib/features/bills/screens/new_bill_screen.dart",
       "source_location": null,
       "weight": 1.0,
@@ -53585,8 +53666,8 @@
       "source_file": "lib/features/authentication/screens/login_screen.dart",
       "source_location": null,
       "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_dart",
-      "target": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_build"
+      "source": "lib_features_authentication_screens_login_screen",
+      "target": "lib_features_authentication_screens_login_screen_build"
     },
     {
       "relation": "defines",
@@ -53595,8 +53676,8 @@
       "source_file": "lib/features/authentication/screens/login_screen.dart",
       "source_location": null,
       "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_dart",
-      "target": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_createstate"
+      "source": "lib_features_authentication_screens_login_screen",
+      "target": "lib_features_authentication_screens_login_screen_createstate"
     },
     {
       "relation": "defines",
@@ -53605,8 +53686,8 @@
       "source_file": "lib/features/authentication/screens/login_screen.dart",
       "source_location": null,
       "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_dart",
-      "target": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_dispose"
+      "source": "lib_features_authentication_screens_login_screen",
+      "target": "lib_features_authentication_screens_login_screen_dispose"
     },
     {
       "relation": "defines",
@@ -53615,8 +53696,8 @@
       "source_file": "lib/features/authentication/screens/login_screen.dart",
       "source_location": null,
       "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_dart",
-      "target": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_emailcontroller"
+      "source": "lib_features_authentication_screens_login_screen",
+      "target": "lib_features_authentication_screens_login_screen_formkey"
     },
     {
       "relation": "defines",
@@ -53625,8 +53706,8 @@
       "source_file": "lib/features/authentication/screens/login_screen.dart",
       "source_location": null,
       "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_dart",
-      "target": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_formkey"
+      "source": "lib_features_authentication_screens_login_screen",
+      "target": "lib_features_authentication_screens_login_screen_handlelogin"
     },
     {
       "relation": "defines",
@@ -53635,8 +53716,8 @@
       "source_file": "lib/features/authentication/screens/login_screen.dart",
       "source_location": null,
       "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_dart",
-      "target": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_handlelogin"
+      "source": "lib_features_authentication_screens_login_screen",
+      "target": "lib_features_authentication_screens_login_screen_initstate"
     },
     {
       "relation": "defines",
@@ -53645,8 +53726,8 @@
       "source_file": "lib/features/authentication/screens/login_screen.dart",
       "source_location": null,
       "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_dart",
-      "target": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_initstate"
+      "source": "lib_features_authentication_screens_login_screen",
+      "target": "lib_features_authentication_screens_login_screen_loginscreen"
     },
     {
       "relation": "defines",
@@ -53655,8 +53736,8 @@
       "source_file": "lib/features/authentication/screens/login_screen.dart",
       "source_location": null,
       "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_dart",
-      "target": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_loginscreen"
+      "source": "lib_features_authentication_screens_login_screen",
+      "target": "lib_features_authentication_screens_login_screen_loginscreenstate"
     },
     {
       "relation": "defines",
@@ -53665,8 +53746,8 @@
       "source_file": "lib/features/authentication/screens/login_screen.dart",
       "source_location": null,
       "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_dart",
-      "target": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_loginscreenstate"
+      "source": "lib_features_authentication_screens_login_screen",
+      "target": "lib_features_authentication_screens_login_screen_passwordcontroller"
     },
     {
       "relation": "defines",
@@ -53675,8 +53756,8 @@
       "source_file": "lib/features/authentication/screens/login_screen.dart",
       "source_location": null,
       "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_dart",
-      "target": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_passwordcontroller"
+      "source": "lib_features_authentication_screens_login_screen",
+      "target": "lib_features_authentication_screens_login_screen_rememberme"
     },
     {
       "relation": "defines",
@@ -53685,8 +53766,8 @@
       "source_file": "lib/features/authentication/screens/login_screen.dart",
       "source_location": null,
       "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_dart",
-      "target": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_rememberme"
+      "source": "lib_features_authentication_screens_login_screen",
+      "target": "lib_features_authentication_screens_login_screen_showsocialmock"
     },
     {
       "relation": "defines",
@@ -53695,8 +53776,8 @@
       "source_file": "lib/features/authentication/screens/login_screen.dart",
       "source_location": null,
       "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_dart",
-      "target": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_showsocialmock"
+      "source": "lib_features_authentication_screens_login_screen",
+      "target": "lib_features_authentication_screens_login_screen_usernamecontroller"
     },
     {
       "relation": "references",
@@ -53705,8 +53786,8 @@
       "source_file": "lib/features/authentication/screens/login_screen.dart",
       "source_location": null,
       "weight": 1.0,
-      "source": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_loginscreenstate",
-      "target": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_loginscreen"
+      "source": "lib_features_authentication_screens_login_screen_loginscreenstate",
+      "target": "lib_features_authentication_screens_login_screen_loginscreen"
     },
     {
       "relation": "navigates",
@@ -53716,7 +53797,7 @@
       "source_location": null,
       "weight": 1.0,
       "context": "route_path",
-      "source": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_handlelogin",
+      "source": "lib_features_authentication_screens_login_screen_handlelogin",
       "target": "route_dashboard"
     },
     {
@@ -53749,7 +53830,7 @@
       "source_location": null,
       "weight": 1.0,
       "context": "route_path",
-      "source": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_build",
+      "source": "lib_features_authentication_screens_login_screen_build",
       "target": "route_forgot_password"
     },
     {
@@ -53760,7 +53841,7 @@
       "source_location": null,
       "weight": 1.0,
       "context": "route_path",
-      "source": "d_flutter_tut_app_lib_features_authentication_screens_login_screen_build",
+      "source": "lib_features_authentication_screens_login_screen_build",
       "target": "route_signup"
     },
     {
@@ -96733,5 +96814,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "1b78481a58719ef2faf8839cfc534a11e8e47d04"
+  "built_at_commit": "2501b0aa88f0f0e108a39a3fc34a80a08a253395"
 }

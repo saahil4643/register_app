@@ -50,7 +50,7 @@
     "semantic_hash": ""
   },
   "ios/Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage/Package.swift": {
-    "mtime": 1792863316.54342,
+    "mtime": 1792916714.987992,
     "ast_hash": "63bc00d19466662a75b7492ac07d5a97",
     "semantic_hash": ""
   },
@@ -155,8 +155,8 @@
     "semantic_hash": ""
   },
   "lib/core/widgets/custom_inputs.dart": {
-    "mtime": 1783522366.0729823,
-    "ast_hash": "74a69242eba6ac03615bd53576fedf1f",
+    "mtime": 1792916584.7084222,
+    "ast_hash": "5f07ef16d051d180b52d86c36018df2e",
     "semantic_hash": ""
   },
   "lib/core/widgets/custom_states.dart": {
@@ -165,8 +165,8 @@
     "semantic_hash": ""
   },
   "lib/features/authentication/providers/auth_provider.dart": {
-    "mtime": 1792507579.343814,
-    "ast_hash": "5323b7d61a32177e1fdeacb596f770df",
+    "mtime": 1792916652.357415,
+    "ast_hash": "53856f27d63ff640e525b72e897b5f4d",
     "semantic_hash": ""
   },
   "lib/features/authentication/screens/forgot_password_screen.dart": {
@@ -175,8 +175,8 @@
     "semantic_hash": ""
   },
   "lib/features/authentication/screens/login_screen.dart": {
-    "mtime": 1790401232.9511418,
-    "ast_hash": "aa392ce346a82d7e9fc43cc206f20586",
+    "mtime": 1792916691.0858507,
+    "ast_hash": "473a6e3b3b76ad717166498074c3eb33",
     "semantic_hash": ""
   },
   "lib/features/authentication/screens/otp_verification_screen.dart": {
@@ -485,7 +485,7 @@
     "semantic_hash": ""
   },
   "macos/Flutter/ephemeral/Packages/FlutterGeneratedPluginSwiftPackage/Package.swift": {
-    "mtime": 1792863316.5701978,
+    "mtime": 1792916715.0726836,
     "ast_hash": "61d013e6c93b3d917c4f6178b9f6c9cb",
     "semantic_hash": ""
   },
@@ -1327,6 +1327,11 @@
   "lib/features/invoices/widgets/simple_product_picker_modal.dart": {
     "mtime": 1792818184.152008,
     "ast_hash": "4df8056a521d490089726c283c7b08d5",
+    "semantic_hash": ""
+  },
+  ".github/workflows/deploy.yml": {
+    "mtime": 1792863686.6694283,
+    "ast_hash": "689b885fcefd1f9d6e9254aec7ff4a18",
     "semantic_hash": ""
   }
 }

@@ -16,7 +16,7 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
+  final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _rememberMe = false;
 
@@ -26,9 +26,9 @@ class _LoginScreenState extends State<LoginScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final authProvider = context.read<AuthProvider>();
-      if (_emailController.text.isEmpty && authProvider.tempEmail != null && authProvider.tempEmail!.isNotEmpty) {
+      if (_usernameController.text.isEmpty && authProvider.tempEmail != null && authProvider.tempEmail!.isNotEmpty) {
         setState(() {
-          _emailController.text = authProvider.tempEmail!;
+          _usernameController.text = authProvider.tempEmail!;
         });
       }
     });
@@ -36,7 +36,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void dispose() {
-    _emailController.dispose();
+    _usernameController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
@@ -46,7 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
       final authProvider = context.read<AuthProvider>();
       
       final success = await authProvider.login(
-        _emailController.text.trim(),
+        _usernameController.text.trim(),
         _passwordController.text,
       );
 
@@ -54,30 +54,13 @@ class _LoginScreenState extends State<LoginScreen> {
         if (success) {
           context.go('/dashboard');
         } else {
-          if (authProvider.isEmailUnverified) {
-            showDialog(
-              context: context,
-              builder: (context) => ConfirmationDialog(
-                title: 'Email Unverified',
-                content: 'Your email has not been verified yet. Would you like to verify it now?',
-                confirmLabel: 'Verify Now',
-                cancelLabel: 'Cancel',
-                onConfirm: () {
-                  context.push('/otp-verify', extra: {
-                    'email': _emailController.text.trim(),
-                  });
-                },
-              ),
-            );
-          } else {
-            showDialog(
-              context: context,
-              builder: (context) => ErrorDialog(
-                title: 'Login Failed',
-                content: authProvider.errorMessage ?? 'Invalid email or password.',
-              ),
-            );
-          }
+          showDialog(
+            context: context,
+            builder: (context) => ErrorDialog(
+              title: 'Login Failed',
+              content: authProvider.errorMessage ?? 'Invalid username or password. Please use admin and Pass123.',
+            ),
+          );
         }
       }
     }
@@ -134,17 +117,31 @@ class _LoginScreenState extends State<LoginScreen> {
                 ).animate().fade(delay: 100.ms),
                 const SizedBox(height: 36),
 
-                // Email field
-                CustomEmailField(
-                  controller: _emailController,
-                  hint: 'admin@prabhim.com',
+                // Username field
+                CustomTextField(
+                  controller: _usernameController,
+                  label: 'Username',
+                  hint: 'admin',
+                  prefixIcon: Icons.person_outline_rounded,
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Please enter username';
+                    }
+                    return null;
+                  },
                 ).animate().fade(delay: 200.ms).slideY(begin: 0.1),
                 const SizedBox(height: 20),
 
                 // Password field
                 CustomPasswordField(
                   controller: _passwordController,
-                  hint: '123456',
+                  hint: 'Pass123',
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter password';
+                    }
+                    return null;
+                  },
                 ).animate().fade(delay: 300.ms).slideY(begin: 0.1),
                 const SizedBox(height: 12),
 

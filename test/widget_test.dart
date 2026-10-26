@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:app/features/invoices/models/invoice.dart';
 import 'package:app/features/invoices/models/invoice_item.dart';
 import 'package:app/features/products/models/product.dart';
 import 'package:app/features/customers/models/customer.dart';
@@ -111,6 +112,48 @@ void main() {
       expect(customer.displayName, 'Acme Corp');
       expect(customer.gstNumber, '29ABCDE1234F1Z5');
       expect(customer.paymentTerms, 'Net 30');
+    });
+
+    test('Invoice status displayName returns correct business terms', () {
+      expect(InvoiceStatus.draft.displayName, 'Draft');
+      expect(InvoiceStatus.sent.displayName, 'Sent');
+      expect(InvoiceStatus.partially_paid.displayName, 'Partially Paid');
+      expect(InvoiceStatus.paid.displayName, 'Paid');
+      expect(InvoiceStatus.overdue.displayName, 'Overdue');
+      expect(InvoiceStatus.cancelled.displayName, 'Cancelled');
+    });
+
+    test('Invoice item handles discounts correctly', () {
+      final product = Product(
+        id: 'PROD-DISC',
+        name: 'Item with Discount',
+        sku: 'SKU-DISC',
+        barcode: '',
+        category: 'Services',
+        brand: '',
+        purchasePrice: 100.0,
+        sellingPrice: 500.0,
+        stock: 50,
+        minStock: 5,
+        gst: 18.0,
+        createdAt: DateTime.now(),
+      );
+
+      final item = InvoiceItem(
+        id: 'item-disc',
+        product: product,
+        quantity: 2,
+        unitPrice: 500.0,
+        discountPercentage: 10.0, // 10% discount on 1000 = 100 discount
+        taxPercentage: 18.0,
+      );
+
+      expect(item.subtotal, 1000.0);
+      expect(item.discountAmount, 100.0);
+      // Taxable amount is 900.0. 18% of 900 = 162.0
+      expect(item.taxableAmount, 900.0);
+      expect(item.taxAmount, 162.0);
+      expect(item.total, 1062.0);
     });
   });
 }

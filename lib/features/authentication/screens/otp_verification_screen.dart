@@ -287,13 +287,12 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                         CustomTextButton(
                           text: 'Resend Code',
                           onPressed: () async {
-                            final currentContext = context;
                             final messenger = ScaffoldMessenger.of(context);
                             final success = await authProvider.resendOtp(
                               email: email,
                               purpose: isForgotPassword ? 'password_reset' : 'registration',
                             );
-                            if (!mounted) return;
+                            if (!context.mounted) return;
                             if (success) {
                               _startTimer();
                               messenger.showSnackBar(
@@ -305,7 +304,7 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
                               );
                             } else {
                               showDialog(
-                                context: currentContext,
+                                context: context,
                                 builder: (context) => ErrorDialog(
                                   title: 'Resend Failed',
                                   content: authProvider.errorMessage ?? 'Unable to resend OTP.',

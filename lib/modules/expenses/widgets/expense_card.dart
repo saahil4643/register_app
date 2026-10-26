@@ -120,13 +120,13 @@ class _ExpenseCardState extends State<ExpenseCard> {
           borderRadius: BorderRadius.circular(AppDimensions.radiusM),
           border: Border.all(
             color: _isHovered
-                ? theme.colorScheme.primary.withOpacity(0.4)
+                ? theme.colorScheme.primary.withValues(alpha: 0.4)
                 : (isDark ? AppColors.darkBorder : AppColors.lightBorder),
             width: 1.5,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(_isHovered ? 0.05 : 0.01),
+              color: Colors.black.withValues(alpha: _isHovered ? 0.05 : 0.01),
               blurRadius: _isHovered ? 8 : 4,
               offset: const Offset(0, 2),
             ),
@@ -143,7 +143,7 @@ class _ExpenseCardState extends State<ExpenseCard> {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: catColor.withOpacity(isDark ? 0.2 : 0.1),
+                    color: catColor.withValues(alpha: isDark ? 0.2 : 0.1),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(

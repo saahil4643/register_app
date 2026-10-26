@@ -5,6 +5,7 @@ import 'invoice_item.dart';
 enum InvoiceStatus {
   draft,
   sent,
+  // ignore: constant_identifier_names
   partially_paid,
   paid,
   overdue,

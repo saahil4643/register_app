@@ -130,19 +130,20 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
                     _showSnackBar(context, 'This invoice is already fully paid.');
                     return;
                   }
+                  final messenger = ScaffoldMessenger.of(context);
                   showDialog(
                     context: context,
-                    builder: (context) => AlertDialog(
+                    builder: (dialogCtx) => AlertDialog(
                       title: const Text('Record Payment'),
                       content: Text('Record full payment of ${currencyFormat.format(outstanding)} for invoice ${invoice.invoiceNumber}?'),
                       actions: [
                         TextButton(
-                          onPressed: () => Navigator.pop(context),
+                          onPressed: () => Navigator.pop(dialogCtx),
                           child: const Text('Cancel'),
                         ),
                         ElevatedButton(
                           onPressed: () async {
-                            Navigator.pop(context);
+                            Navigator.pop(dialogCtx);
                             final success = await provider.recordPayment(
                               invoiceId: invoice.id,
                               amount: outstanding,
@@ -151,10 +152,14 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
                               reference: 'TXN${DateTime.now().millisecondsSinceEpoch.toString().substring(8)}',
                             );
                             if (success) {
-                              _showSnackBar(context, 'Payment registered successfully!');
+                              messenger.showSnackBar(
+                                const SnackBar(content: Text('Payment registered successfully!'), behavior: SnackBarBehavior.floating),
+                              );
                               _fetchDetails();
                             } else {
-                              _showSnackBar(context, provider.errorMessage ?? 'Failed to record payment');
+                              messenger.showSnackBar(
+                                SnackBar(content: Text(provider.errorMessage ?? 'Failed to record payment'), behavior: SnackBarBehavior.floating),
+                              );
                             }
                           },
                           style: ElevatedButton.styleFrom(minimumSize: const Size(80, 36)),
@@ -169,46 +174,51 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
                   context.push('/invoices/edit');
                 },
                 onDownloadPdf: () async {
-                  _showSnackBar(context, 'Downloading PDF...');
+                  final messenger = ScaffoldMessenger.of(context);
+                  messenger.showSnackBar(const SnackBar(content: Text('Downloading PDF...'), behavior: SnackBarBehavior.floating));
                   final success = await provider.downloadInvoicePdf(
                     invoiceId: invoice.id,
                     invoiceNumber: invoice.invoiceNumber,
                   );
-                  if (!success && mounted) {
-                    _showSnackBar(context, provider.errorMessage ?? 'Failed to download PDF');
+                  if (!success) {
+                    messenger.showSnackBar(SnackBar(content: Text(provider.errorMessage ?? 'Failed to download PDF'), behavior: SnackBarBehavior.floating));
                   }
                 },
                 onPrint: () => _showSnackBar(context, 'Connecting to print service...'),
                 onDuplicate: () async {
+                  final messenger = ScaffoldMessenger.of(context);
+                  final router = GoRouter.of(context);
                   final success = await provider.duplicateInvoice(invoice);
                   if (success) {
-                    _showSnackBar(context, 'Invoice duplicated successfully!');
-                    context.go('/invoices');
+                    messenger.showSnackBar(const SnackBar(content: Text('Invoice duplicated successfully!'), behavior: SnackBarBehavior.floating));
+                    router.go('/invoices');
                   } else {
-                    _showSnackBar(context, provider.errorMessage ?? 'Failed to duplicate invoice');
+                    messenger.showSnackBar(SnackBar(content: Text(provider.errorMessage ?? 'Failed to duplicate invoice'), behavior: SnackBarBehavior.floating));
                   }
                 },
                 onShare: () => _showSnackBar(context, 'Share invoice link copied to clipboard!'),
                 onDelete: () {
+                  final messenger = ScaffoldMessenger.of(context);
+                  final router = GoRouter.of(context);
                   showDialog(
                     context: context,
-                    builder: (context) => AlertDialog(
+                    builder: (dialogCtx) => AlertDialog(
                       title: const Text('Delete Invoice'),
                       content: Text('Are you sure you want to delete ${invoice.invoiceNumber}? This action cannot be undone.'),
                       actions: [
                         TextButton(
-                          onPressed: () => Navigator.pop(context),
+                          onPressed: () => Navigator.pop(dialogCtx),
                           child: const Text('Cancel'),
                         ),
                         ElevatedButton(
                           onPressed: () async {
-                            Navigator.pop(context);
+                            Navigator.pop(dialogCtx);
                             final success = await provider.deleteInvoice(invoice.id);
                             if (success) {
-                              context.go('/invoices');
-                              _showSnackBar(context, 'Invoice ${invoice.invoiceNumber} deleted.');
+                              router.go('/invoices');
+                              messenger.showSnackBar(SnackBar(content: Text('Invoice ${invoice.invoiceNumber} deleted.'), behavior: SnackBarBehavior.floating));
                             } else {
-                              _showSnackBar(context, provider.errorMessage ?? 'Failed to delete invoice');
+                              messenger.showSnackBar(SnackBar(content: Text(provider.errorMessage ?? 'Failed to delete invoice'), behavior: SnackBarBehavior.floating));
                             }
                           },
                           style: ElevatedButton.styleFrom(
@@ -223,12 +233,13 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
                   );
                 },
                 onSend: () async {
+                  final messenger = ScaffoldMessenger.of(context);
                   final success = await provider.markAsSent(invoice.id);
                   if (success) {
-                    _showSnackBar(context, 'Invoice sent successfully!');
+                    messenger.showSnackBar(const SnackBar(content: Text('Invoice sent successfully!'), behavior: SnackBarBehavior.floating));
                     _fetchDetails();
                   } else {
-                    _showSnackBar(context, provider.errorMessage ?? 'Failed to send invoice');
+                    messenger.showSnackBar(SnackBar(content: Text(provider.errorMessage ?? 'Failed to send invoice'), behavior: SnackBarBehavior.floating));
                   }
                 },
               ),
@@ -319,7 +330,7 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
                               'Discount: ${item.discountPercentage}% | GST: ${item.taxPercentage}%',
                               style: theme.textTheme.bodySmall?.copyWith(
                                 fontSize: 10,
-                                color: theme.colorScheme.primary.withOpacity(0.8),
+                                color: theme.colorScheme.primary.withValues(alpha: 0.8),
                               ),
                             ),
                           ],
@@ -339,7 +350,7 @@ class _InvoiceDetailsScreenState extends State<InvoiceDetailsScreen> {
             // Financial calculations details
             _buildFinancialRow('Subtotal', currencyFormat.format(invoice.subtotal), theme, isBold: false),
             if (invoice.totalDiscount > 0)
-              _buildFinancialRow('Total Discount', '- ' + currencyFormat.format(invoice.totalDiscount), theme, isBold: false, isDiscount: true),
+              _buildFinancialRow('Total Discount', '- ${currencyFormat.format(invoice.totalDiscount)}', theme, isBold: false, isDiscount: true),
             _buildFinancialRow('GST / Tax Total', currencyFormat.format(invoice.totalTax), theme, isBold: false),
             const Divider(height: 16),
             _buildFinancialRow(

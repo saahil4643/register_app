@@ -48,7 +48,7 @@ class InvoiceItemCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.primaryContainer.withOpacity(isDark ? 0.2 : 0.4),
+                    color: theme.colorScheme.primaryContainer.withValues(alpha: isDark ? 0.2 : 0.4),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(

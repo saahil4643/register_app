@@ -212,11 +212,11 @@ class _CustomerPickerSheetState extends State<CustomerPickerSheet> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                             side: BorderSide(
-                              color: theme.colorScheme.primary.withOpacity(0.3),
+                              color: theme.colorScheme.primary.withValues(alpha: 0.3),
                               width: 1.5,
                             ),
                           ),
-                          color: theme.colorScheme.primaryContainer.withOpacity(0.1),
+                          color: theme.colorScheme.primaryContainer.withValues(alpha: 0.1),
                           child: InkWell(
                             borderRadius: BorderRadius.circular(12),
                             onTap: () => _openAddCustomerDialog(context, initialName: _searchQuery),
@@ -226,7 +226,7 @@ class _CustomerPickerSheetState extends State<CustomerPickerSheet> {
                                 children: [
                                   CircleAvatar(
                                     radius: 20,
-                                    backgroundColor: theme.colorScheme.primary.withOpacity(0.2),
+                                    backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.2),
                                     child: Icon(
                                       Icons.person_add_rounded,
                                       color: theme.colorScheme.primary,
@@ -279,12 +279,12 @@ class _CustomerPickerSheetState extends State<CustomerPickerSheet> {
                           side: BorderSide(
                             color: isSelected
                                 ? theme.colorScheme.primary
-                                : (isDark ? Colors.transparent : Colors.grey.withOpacity(0.08)),
+                                : (isDark ? Colors.transparent : Colors.grey.withValues(alpha: 0.08)),
                             width: 1.5,
                           ),
                         ),
                         color: isSelected
-                            ? theme.colorScheme.primaryContainer.withOpacity(0.4)
+                            ? theme.colorScheme.primaryContainer.withValues(alpha: 0.4)
                             : (isDark ? theme.colorScheme.surface : Colors.white),
                         child: InkWell(
                           borderRadius: BorderRadius.circular(12),

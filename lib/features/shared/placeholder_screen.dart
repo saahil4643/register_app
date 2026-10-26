@@ -40,7 +40,7 @@ class PlaceholderScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(24),
                     boxShadow: [
                       BoxShadow(
-                        color: theme.colorScheme.primary.withOpacity(0.15),
+                        color: theme.colorScheme.primary.withValues(alpha: 0.15),
                         blurRadius: 20,
                         offset: const Offset(0, 8),
                       ),
@@ -83,7 +83,7 @@ class PlaceholderScreen extends StatelessWidget {
                     color: theme.colorScheme.secondaryContainer,
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: theme.colorScheme.primary.withOpacity(0.15),
+                      color: theme.colorScheme.primary.withValues(alpha: 0.15),
                       width: 1,
                     ),
                   ),

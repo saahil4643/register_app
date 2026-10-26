@@ -580,7 +580,7 @@ class InvoiceDetailScreen extends StatelessWidget {
               padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
                 color: isCompleted
-                    ? (iconColor ?? theme.colorScheme.primary).withOpacity(0.15)
+                    ? (iconColor ?? theme.colorScheme.primary).withValues(alpha: 0.15)
                     : (isDark ? Colors.grey[800] : Colors.grey[200]),
                 shape: BoxShape.circle,
               ),
@@ -597,7 +597,7 @@ class InvoiceDetailScreen extends StatelessWidget {
                 width: 2,
                 height: 36,
                 color: isCompleted
-                    ? theme.colorScheme.primary.withOpacity(0.4)
+                    ? theme.colorScheme.primary.withValues(alpha: 0.4)
                     : (isDark ? Colors.grey[800] : Colors.grey[200]),
               ),
           ],

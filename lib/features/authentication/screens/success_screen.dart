@@ -42,7 +42,7 @@ class SuccessScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(30),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.success.withOpacity(0.2),
+                        color: AppColors.success.withValues(alpha: 0.2),
                         blurRadius: 25,
                         offset: const Offset(0, 10),
                       ),

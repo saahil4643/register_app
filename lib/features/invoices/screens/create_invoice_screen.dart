@@ -257,7 +257,7 @@ class _CreateInvoiceScreenState extends State<CreateInvoiceScreen> {
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
                   decoration: BoxDecoration(
-                    color: isDark ? AppColors.darkBorder.withOpacity(0.3) : const Color(0xFFF9FAFB),
+                    color: isDark ? AppColors.darkBorder.withValues(alpha: 0.3) : const Color(0xFFF9FAFB),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
                       color: isDark ? AppColors.darkBorder : const Color(0xFFE5E7EB),
@@ -436,7 +436,7 @@ class _CreateInvoiceScreenState extends State<CreateInvoiceScreen> {
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(vertical: 36, horizontal: 16),
                   decoration: BoxDecoration(
-                    color: isDark ? AppColors.darkBorder.withOpacity(0.3) : const Color(0xFFF9FAFB),
+                    color: isDark ? AppColors.darkBorder.withValues(alpha: 0.3) : const Color(0xFFF9FAFB),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
                       color: isDark ? AppColors.darkBorder : const Color(0xFFE5E7EB),
@@ -506,11 +506,11 @@ class _CreateInvoiceScreenState extends State<CreateInvoiceScreen> {
   ) {
     return Card(
       elevation: 0,
-      color: theme.colorScheme.primaryContainer.withOpacity(isDark ? 0.2 : 0.4),
+      color: theme.colorScheme.primaryContainer.withValues(alpha: isDark ? 0.2 : 0.4),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
         side: BorderSide(
-          color: theme.colorScheme.primary.withOpacity(0.2),
+          color: theme.colorScheme.primary.withValues(alpha: 0.2),
           width: 1,
         ),
       ),

@@ -151,7 +151,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         prefixIcon: Icon(
                           Icons.person_outline_rounded,
                           size: 20,
-                          color: theme.colorScheme.primary.withOpacity(0.7),
+                          color: theme.colorScheme.primary.withValues(alpha: 0.7),
                         ),
                       ),
                       validator: (value) {
@@ -188,7 +188,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         prefixIcon: Icon(
                           Icons.business_outlined,
                           size: 20,
-                          color: theme.colorScheme.primary.withOpacity(0.7),
+                          color: theme.colorScheme.primary.withValues(alpha: 0.7),
                         ),
                       ),
                       validator: (value) {
@@ -226,7 +226,7 @@ class _SignupScreenState extends State<SignupScreen> {
                         prefixIcon: Icon(
                           Icons.phone_outlined,
                           size: 20,
-                          color: theme.colorScheme.primary.withOpacity(0.7),
+                          color: theme.colorScheme.primary.withValues(alpha: 0.7),
                         ),
                       ),
                       validator: (value) {

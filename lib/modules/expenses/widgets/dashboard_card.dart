@@ -40,8 +40,8 @@ class _DashboardCardState extends State<DashboardCard> {
     // Use default values if not custom colored
     final primaryColor = widget.tintColor ?? theme.colorScheme.primary;
     final defaultBgColor = isDark 
-        ? primaryColor.withOpacity(0.08) 
-        : primaryColor.withOpacity(0.04);
+        ? primaryColor.withValues(alpha: 0.08) 
+        : primaryColor.withValues(alpha: 0.04);
     final cardBgColor = widget.backgroundColor ?? defaultBgColor;
 
     return MouseRegion(
@@ -52,20 +52,20 @@ class _DashboardCardState extends State<DashboardCard> {
         curve: Curves.easeInOut,
         width: 240,
         height: 125,
-        transform: _isHovered ? (Matrix4.identity()..translate(0, -4, 0)) : Matrix4.identity(),
+        transform: _isHovered ? Matrix4.translationValues(0.0, -4.0, 0.0) : Matrix4.identity(),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: isDark ? theme.colorScheme.surface : cardBgColor,
           borderRadius: BorderRadius.circular(AppDimensions.radiusL),
           border: Border.all(
             color: _isHovered 
-                ? primaryColor.withOpacity(0.4) 
-                : (isDark ? AppColors.darkBorder : primaryColor.withOpacity(0.12)),
+                ? primaryColor.withValues(alpha: 0.4) 
+                : (isDark ? AppColors.darkBorder : primaryColor.withValues(alpha: 0.12)),
             width: 1.5,
           ),
           boxShadow: [
             BoxShadow(
-              color: primaryColor.withOpacity(_isHovered ? 0.08 : 0.02),
+              color: primaryColor.withValues(alpha: _isHovered ? 0.08 : 0.02),
               blurRadius: _isHovered ? 12 : 6,
               offset: const Offset(0, 4),
             ),
@@ -93,7 +93,7 @@ class _DashboardCardState extends State<DashboardCard> {
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: isDark ? primaryColor.withOpacity(0.2) : primaryColor.withOpacity(0.1),
+                    color: isDark ? primaryColor.withValues(alpha: 0.2) : primaryColor.withValues(alpha: 0.1),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
@@ -122,7 +122,7 @@ class _DashboardCardState extends State<DashboardCard> {
                   widget.subtitle,
                   style: theme.textTheme.bodySmall?.copyWith(
                     fontSize: 10,
-                    color: resolvedSubColor.withOpacity(0.8),
+                    color: resolvedSubColor.withValues(alpha: 0.8),
                   ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,

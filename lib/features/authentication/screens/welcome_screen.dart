@@ -26,8 +26,8 @@ class WelcomeScreen extends StatelessWidget {
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    theme.colorScheme.primary.withOpacity(isDark ? 0.15 : 0.08),
-                    theme.colorScheme.primary.withOpacity(0.0),
+                    theme.colorScheme.primary.withValues(alpha: isDark ? 0.15 : 0.08),
+                    theme.colorScheme.primary.withValues(alpha: 0.0),
                   ],
                 ),
               ),
@@ -53,7 +53,7 @@ class WelcomeScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(24),
                         boxShadow: [
                           BoxShadow(
-                            color: theme.colorScheme.primary.withOpacity(0.25),
+                            color: theme.colorScheme.primary.withValues(alpha: 0.25),
                             blurRadius: 25,
                             offset: const Offset(0, 10),
                           ),
@@ -172,13 +172,13 @@ class WelcomeScreen extends StatelessWidget {
                           onPressed: () => context.push('/signup'),
                           style: OutlinedButton.styleFrom(
                             backgroundColor: isDark 
-                                ? theme.colorScheme.primary.withOpacity(0.08) 
+                                ? theme.colorScheme.primary.withValues(alpha: 0.08) 
                                 : const Color(0xFFF5F3FF),
                             foregroundColor: theme.colorScheme.primary,
                             side: BorderSide(
                               color: isDark 
-                                  ? theme.colorScheme.primary.withOpacity(0.2) 
-                                  : theme.colorScheme.primary.withOpacity(0.12),
+                                  ? theme.colorScheme.primary.withValues(alpha: 0.2) 
+                                  : theme.colorScheme.primary.withValues(alpha: 0.12),
                               width: 1.5,
                             ),
                             shape: RoundedRectangleBorder(

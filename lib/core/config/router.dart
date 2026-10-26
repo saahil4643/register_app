@@ -22,7 +22,13 @@ import '../../features/invoices/screens/product_picker_screen.dart';
 import '../../features/invoices/screens/invoice_preview_screen.dart';
 import '../../features/invoices/screens/invoice_details/invoice_details_screen.dart';
 import '../../features/customers/screens/customers_list_screen.dart';
+import '../../features/customers/screens/create_customer_screen.dart';
+import '../../features/customers/screens/customer_detail_screen.dart';
+import '../../features/customers/models/customer.dart';
 import '../../features/products/screens/products_list_screen.dart';
+import '../../features/products/screens/create_product_screen.dart';
+import '../../features/products/screens/product_detail_screen.dart';
+import '../../features/products/models/product.dart';
 import '../../features/invoices/screens/new_invoice/add_customer_overlay_screen.dart';
 import '../../modules/expenses/screens/add_expense_screen.dart';
 import '../../modules/expenses/screens/expense_list_screen.dart';
@@ -273,6 +279,38 @@ class AppRouter {
           parentNavigatorKey: _rootNavigatorKey,
           path: '/reports',
           builder: (context, state) => const ReportsScreen(),
+        ),
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
+          path: '/customers/create',
+          builder: (context, state) {
+            final customer = state.extra as Customer?;
+            return CreateCustomerScreen(customer: customer);
+          },
+        ),
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
+          path: '/customers/details/:id',
+          builder: (context, state) {
+            final id = state.pathParameters['id'] ?? '';
+            return CustomerDetailScreen(customerId: id);
+          },
+        ),
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
+          path: '/products/create',
+          builder: (context, state) {
+            final product = state.extra as Product?;
+            return CreateProductScreen(product: product);
+          },
+        ),
+        GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
+          path: '/products/details/:id',
+          builder: (context, state) {
+            final id = state.pathParameters['id'] ?? '';
+            return ProductDetailScreen(productId: id);
+          },
         ),
         GoRoute(
           parentNavigatorKey: _rootNavigatorKey,

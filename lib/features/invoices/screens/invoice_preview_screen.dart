@@ -1739,7 +1739,7 @@ class _InvoicePreviewScreenState extends State<InvoicePreviewScreen> {
           borderRadius: shape == 'circle' ? null : BorderRadius.circular(8),
           shape: shape == 'circle' ? BoxShape.circle : BoxShape.rectangle,
           border: Border.all(
-            color: Colors.grey.withOpacity(0.3),
+            color: Colors.grey.withValues(alpha: 0.3),
             width: 1.5,
           ),
         ),

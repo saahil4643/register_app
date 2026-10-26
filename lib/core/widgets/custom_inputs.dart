@@ -50,7 +50,7 @@ class CustomTextField extends StatelessWidget {
                 ? Icon(
                     prefixIcon,
                     size: 20,
-                    color: theme.colorScheme.primary.withOpacity(0.7),
+                    color: theme.colorScheme.primary.withValues(alpha: 0.7),
                   )
                 : null,
           ),
@@ -103,7 +103,7 @@ class CustomEmailField extends StatelessWidget {
             prefixIcon: Icon(
               Icons.email_outlined,
               size: 20,
-              color: theme.colorScheme.primary.withOpacity(0.7),
+              color: theme.colorScheme.primary.withValues(alpha: 0.7),
             ),
           ),
           validator: validator ??
@@ -173,7 +173,7 @@ class _CustomPasswordFieldState extends State<CustomPasswordField> {
             prefixIcon: Icon(
               Icons.lock_outlined,
               size: 20,
-              color: theme.colorScheme.primary.withOpacity(0.7),
+              color: theme.colorScheme.primary.withValues(alpha: 0.7),
             ),
             suffixIcon: IconButton(
               icon: Icon(
@@ -290,7 +290,7 @@ class CustomNumberField extends StatelessWidget {
             prefixIcon: Icon(
               Icons.tag_rounded,
               size: 20,
-              color: theme.colorScheme.primary.withOpacity(0.7),
+              color: theme.colorScheme.primary.withValues(alpha: 0.7),
             ),
           ),
           validator: validator,
@@ -337,7 +337,7 @@ class CustomDropdown<T> extends StatelessWidget {
           ),
         ),
         DropdownButtonFormField<T>(
-          value: value,
+          initialValue: value,
           items: items,
           onChanged: onChanged,
           validator: validator,
@@ -350,7 +350,7 @@ class CustomDropdown<T> extends StatelessWidget {
             prefixIcon: Icon(
               Icons.arrow_drop_down_circle_outlined,
               size: 20,
-              color: theme.colorScheme.primary.withOpacity(0.7),
+              color: theme.colorScheme.primary.withValues(alpha: 0.7),
             ),
           ),
         ),
@@ -426,7 +426,7 @@ class CustomDatePicker extends StatelessWidget {
                 Icon(
                   Icons.calendar_today_rounded,
                   size: 20,
-                  color: theme.colorScheme.primary.withOpacity(0.7),
+                  color: theme.colorScheme.primary.withValues(alpha: 0.7),
                 ),
                 const SizedBox(width: 12),
                 Text(

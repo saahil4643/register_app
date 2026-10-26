@@ -9,8 +9,6 @@ import '../../providers/invoice_provider.dart';
 import '../../../customers/providers/customer_provider.dart';
 import '../../../customers/models/customer.dart';
 import '../../../products/providers/product_provider.dart';
-import '../../../products/models/product.dart';
-import '../../models/invoice_item.dart';
 
 class NewInvoiceScreen extends StatefulWidget {
   final bool isEditing;
@@ -325,7 +323,7 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
                           )
                         : ListView.separated(
                             itemCount: filtered.length,
-                            separatorBuilder: (_, __) => const Divider(height: 1),
+                            separatorBuilder: (_, _) => const Divider(height: 1),
                             itemBuilder: (context, idx) {
                               final cust = filtered[idx];
                               return ListTile(
@@ -669,7 +667,7 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
                               )
                             : ListView.separated(
                                 itemCount: products.length,
-                                separatorBuilder: (_, __) => const Divider(height: 1),
+                                separatorBuilder: (_, _) => const Divider(height: 1),
                                 itemBuilder: (context, idx) {
                                   final p = products[idx];
                                   final rate = p.price > 0 ? p.price : (p.sellingPrice > 0 ? p.sellingPrice : 0.0);
@@ -743,7 +741,7 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
                                   Expanded(
                                     flex: 2,
                                     child: DropdownButtonFormField<String>(
-                                      value: unit,
+                                      initialValue: unit,
                                       decoration: const InputDecoration(
                                         labelText: 'Unit',
                                         border: OutlineInputBorder(),
@@ -770,7 +768,7 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
                               ),
                               const SizedBox(height: 12),
                               DropdownButtonFormField<double>(
-                                value: taxPercentage,
+                                initialValue: taxPercentage,
                                 decoration: const InputDecoration(
                                   labelText: 'GST Tax Rate',
                                   border: OutlineInputBorder(),
@@ -1322,7 +1320,7 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
               // Payment Terms
               Expanded(
                 child: DropdownButtonFormField<String>(
-                  value: _paymentTerms,
+                  initialValue: _paymentTerms,
                   decoration: const InputDecoration(
                     labelText: 'Payment Terms',
                     border: OutlineInputBorder(),
@@ -1403,7 +1401,7 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: items.length,
-              separatorBuilder: (_, __) => const Divider(height: 20),
+              separatorBuilder: (_, _) => const Divider(height: 20),
               itemBuilder: (context, idx) {
                 final item = items[idx];
                 final displayName = (item.itemName != null && item.itemName!.isNotEmpty)
@@ -1550,7 +1548,7 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
                     const Text('Mark as Paid', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
                     Switch(
                       value: _markAsPaid,
-                      activeColor: AppColors.lightPrimary,
+                      activeThumbColor: AppColors.lightPrimary,
                       onChanged: (v) => setState(() => _markAsPaid = v),
                     ),
                   ],
@@ -1558,7 +1556,7 @@ class _NewInvoiceScreenState extends State<NewInvoiceScreen> {
                 if (_markAsPaid) ...[
                   const SizedBox(height: 8),
                   DropdownButtonFormField<String>(
-                    value: _paymentMode,
+                    initialValue: _paymentMode,
                     decoration: const InputDecoration(
                       labelText: 'Payment Method',
                       border: OutlineInputBorder(),

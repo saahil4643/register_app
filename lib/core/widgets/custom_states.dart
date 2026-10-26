@@ -89,7 +89,7 @@ class LoadingSkeleton extends StatelessWidget {
       width: width,
       height: height,
       decoration: BoxDecoration(
-        color: isDark ? AppColors.darkBorder.withOpacity(0.5) : AppColors.lightBorder,
+        color: isDark ? AppColors.darkBorder.withValues(alpha: 0.5) : AppColors.lightBorder,
         borderRadius: BorderRadius.circular(borderRadius),
       ),
     );

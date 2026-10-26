@@ -664,8 +664,8 @@ class _CustomerDetailScreenState extends State<CustomerDetailScreen> with Single
                 : null,
             leading: CircleAvatar(
               backgroundColor: isInvoice 
-                  ? (isDark ? Colors.purple.withOpacity(0.2) : const Color(0xFFF3E8FF))
-                  : (isDark ? Colors.teal.withOpacity(0.2) : const Color(0xFFE6FFFA)),
+                  ? (isDark ? Colors.purple.withValues(alpha: 0.2) : const Color(0xFFF3E8FF))
+                  : (isDark ? Colors.teal.withValues(alpha: 0.2) : const Color(0xFFE6FFFA)),
               child: Icon(
                 isInvoice ? Icons.receipt_long_outlined : Icons.account_balance_wallet_outlined,
                 color: isInvoice ? Colors.purple : Colors.teal,
@@ -1113,7 +1113,7 @@ class _ReceivePaymentDialogState extends State<_ReceivePaymentDialog> {
                     labelText: 'Allocate to Invoice',
                     prefixIcon: Icon(Icons.receipt_rounded),
                   ),
-                  value: _selectedInvoice,
+                  initialValue: _selectedInvoice,
                   items: [
                     const DropdownMenuItem<Invoice>(
                       value: null,
@@ -1167,7 +1167,7 @@ class _ReceivePaymentDialogState extends State<_ReceivePaymentDialog> {
                   labelText: 'Payment Mode *',
                   prefixIcon: Icon(Icons.payments_rounded),
                 ),
-                value: _paymentMode,
+                initialValue: _paymentMode,
                 items: ['UPI', 'Bank Transfer', 'Cash', 'Cheque'].map((mode) {
                   return DropdownMenuItem(value: mode, child: Text(mode));
                 }).toList(),

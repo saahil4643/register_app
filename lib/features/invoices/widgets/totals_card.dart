@@ -42,11 +42,11 @@ class TotalsCard extends StatelessWidget {
 
     return Card(
       elevation: 0,
-      color: theme.colorScheme.primaryContainer.withOpacity(isDark ? 0.15 : 0.4),
+      color: theme.colorScheme.primaryContainer.withValues(alpha: isDark ? 0.15 : 0.4),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
         side: BorderSide(
-          color: theme.colorScheme.primary.withOpacity(0.15),
+          color: theme.colorScheme.primary.withValues(alpha: 0.15),
           width: 1,
         ),
       ),
@@ -182,7 +182,7 @@ class TotalsCard extends StatelessWidget {
                 return Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: isDark ? AppColors.darkBackground.withOpacity(0.5) : Colors.white.withOpacity(0.85),
+                    color: isDark ? AppColors.darkBackground.withValues(alpha: 0.5) : Colors.white.withValues(alpha: 0.85),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
                       color: isDark ? AppColors.darkBorder : const Color(0xFFE5E7EB),

@@ -28,7 +28,7 @@ class CustomPrimaryButton extends StatelessWidget {
           backgroundColor: theme.colorScheme.primary,
           foregroundColor: theme.colorScheme.onPrimary,
           elevation: 2,
-          shadowColor: theme.colorScheme.primary.withOpacity(0.25),
+          shadowColor: theme.colorScheme.primary.withValues(alpha: 0.25),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
@@ -94,7 +94,7 @@ class CustomSecondaryButton extends StatelessWidget {
           backgroundColor: theme.colorScheme.secondary,
           foregroundColor: theme.colorScheme.onSecondary,
           elevation: 1,
-          shadowColor: theme.colorScheme.secondary.withOpacity(0.15),
+          shadowColor: theme.colorScheme.secondary.withValues(alpha: 0.15),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
@@ -161,7 +161,7 @@ class CustomOutlinedButton extends StatelessWidget {
         style: OutlinedButton.styleFrom(
           foregroundColor: theme.colorScheme.primary,
           side: BorderSide(
-            color: isDark ? theme.colorScheme.outline : theme.colorScheme.primary.withOpacity(0.2),
+            color: isDark ? theme.colorScheme.outline : theme.colorScheme.primary.withValues(alpha: 0.2),
             width: 1.5,
           ),
           shape: RoundedRectangleBorder(

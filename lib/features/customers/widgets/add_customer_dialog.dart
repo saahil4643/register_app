@@ -214,7 +214,7 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: theme.colorScheme.primary.withOpacity(0.1),
+                          color: theme.colorScheme.primary.withValues(alpha: 0.1),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
@@ -271,50 +271,104 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
                           const SizedBox(height: 8),
                           Container(
                             decoration: BoxDecoration(
-                              color: theme.brightness == Brightness.dark ? theme.colorScheme.surface : Colors.grey.shade50,
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: theme.brightness == Brightness.dark ? AppColors.darkBorder : AppColors.lightBorder,
-                              ),
+                              color: theme.brightness == Brightness.dark ? theme.colorScheme.surface : Colors.grey.shade100,
+                              borderRadius: BorderRadius.circular(10),
                             ),
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            padding: const EdgeInsets.all(4),
                             child: Row(
                               children: [
                                 Expanded(
                                   child: InkWell(
                                     onTap: () => setState(() => _customerType = 'business'),
                                     borderRadius: BorderRadius.circular(8),
-                                    child: Row(
-                                      children: [
-                                        Radio<String>(
-                                          value: 'business',
-                                          groupValue: _customerType,
-                                          activeColor: theme.colorScheme.primary,
-                                          onChanged: (val) {
-                                            if (val != null) setState(() => _customerType = val);
-                                          },
-                                        ),
-                                        const Text('Business', style: TextStyle(fontWeight: FontWeight.w600)),
-                                      ],
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(vertical: 10),
+                                      decoration: BoxDecoration(
+                                        color: _customerType == 'business'
+                                            ? (theme.brightness == Brightness.dark ? AppColors.darkSurface : Colors.white)
+                                            : Colors.transparent,
+                                        borderRadius: BorderRadius.circular(8),
+                                        boxShadow: _customerType == 'business'
+                                            ? [
+                                                BoxShadow(
+                                                  color: Colors.black.withValues(alpha: 0.05),
+                                                  blurRadius: 4,
+                                                  offset: const Offset(0, 1),
+                                                ),
+                                              ]
+                                            : null,
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.business_rounded,
+                                            size: 16,
+                                            color: _customerType == 'business'
+                                                ? theme.colorScheme.primary
+                                                : Colors.grey[600],
+                                          ),
+                                          const SizedBox(width: 6),
+                                          Text(
+                                            'Business (B2B)',
+                                            style: TextStyle(
+                                              fontSize: 13,
+                                              fontWeight: _customerType == 'business' ? FontWeight.w600 : FontWeight.w500,
+                                              color: _customerType == 'business'
+                                                  ? theme.colorScheme.primary
+                                                  : Colors.grey[600],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
+                                const SizedBox(width: 4),
                                 Expanded(
                                   child: InkWell(
                                     onTap: () => setState(() => _customerType = 'individual'),
                                     borderRadius: BorderRadius.circular(8),
-                                    child: Row(
-                                      children: [
-                                        Radio<String>(
-                                          value: 'individual',
-                                          groupValue: _customerType,
-                                          activeColor: theme.colorScheme.primary,
-                                          onChanged: (val) {
-                                            if (val != null) setState(() => _customerType = val);
-                                          },
-                                        ),
-                                        const Text('Individual', style: TextStyle(fontWeight: FontWeight.w600)),
-                                      ],
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(vertical: 10),
+                                      decoration: BoxDecoration(
+                                        color: _customerType == 'individual'
+                                            ? (theme.brightness == Brightness.dark ? AppColors.darkSurface : Colors.white)
+                                            : Colors.transparent,
+                                        borderRadius: BorderRadius.circular(8),
+                                        boxShadow: _customerType == 'individual'
+                                            ? [
+                                                BoxShadow(
+                                                  color: Colors.black.withValues(alpha: 0.05),
+                                                  blurRadius: 4,
+                                                  offset: const Offset(0, 1),
+                                                ),
+                                              ]
+                                            : null,
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.person_outline_rounded,
+                                            size: 16,
+                                            color: _customerType == 'individual'
+                                                ? theme.colorScheme.primary
+                                                : Colors.grey[600],
+                                          ),
+                                          const SizedBox(width: 6),
+                                          Text(
+                                            'Individual (B2C)',
+                                            style: TextStyle(
+                                              fontSize: 13,
+                                              fontWeight: _customerType == 'individual' ? FontWeight.w600 : FontWeight.w500,
+                                              color: _customerType == 'individual'
+                                                  ? theme.colorScheme.primary
+                                                  : Colors.grey[600],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -614,7 +668,7 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
             if (_isLoading)
               Positioned.fill(
                 child: Container(
-                  color: Colors.black.withOpacity(0.3),
+                  color: Colors.black.withValues(alpha: 0.3),
                   child: const Center(
                     child: CircularProgressIndicator(),
                   ),
@@ -631,7 +685,7 @@ class _AddCustomerDialogState extends State<AddCustomerDialog> {
       title,
       style: theme.textTheme.labelMedium?.copyWith(
         fontWeight: FontWeight.bold,
-        color: theme.colorScheme.primary.withOpacity(0.8),
+        color: theme.colorScheme.primary.withValues(alpha: 0.8),
         letterSpacing: 0.8,
         fontSize: 11,
       ),

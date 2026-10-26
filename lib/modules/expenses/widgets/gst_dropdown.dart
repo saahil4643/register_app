@@ -121,7 +121,7 @@ class _GstDropdownState extends State<GstDropdown> {
           ),
         ),
         DropdownButtonFormField<String>(
-          value: _selectedValue,
+          initialValue: _selectedValue,
           items: _gstOptions
               .map((val) => DropdownMenuItem<String>(
                     value: val,
@@ -139,7 +139,7 @@ class _GstDropdownState extends State<GstDropdown> {
             prefixIcon: Icon(
               Icons.percent_rounded,
               size: 20,
-              color: theme.colorScheme.primary.withOpacity(0.7),
+              color: theme.colorScheme.primary.withValues(alpha: 0.7),
             ),
           ),
         ),
@@ -173,7 +173,7 @@ class _GstDropdownState extends State<GstDropdown> {
                     prefixIcon: Icon(
                       Icons.tune_rounded,
                       size: 20,
-                      color: theme.colorScheme.primary.withOpacity(0.7),
+                      color: theme.colorScheme.primary.withValues(alpha: 0.7),
                     ),
                   ),
                   onChanged: _handleCustomValChanged,

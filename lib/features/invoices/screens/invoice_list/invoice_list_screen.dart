@@ -348,6 +348,7 @@ class _InvoiceListScreenState extends State<InvoiceListScreen> {
                                           ),
                                           ElevatedButton(
                                             onPressed: () async {
+                                              final messenger = ScaffoldMessenger.of(context);
                                               Navigator.pop(context);
                                               final success = await invoiceProvider.recordPayment(
                                                 invoiceId: invoice.id,
@@ -357,7 +358,7 @@ class _InvoiceListScreenState extends State<InvoiceListScreen> {
                                                 reference: 'TXN${DateTime.now().millisecondsSinceEpoch.toString().substring(8)}',
                                               );
                                               if (success) {
-                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                messenger.showSnackBar(
                                                   SnackBar(
                                                     content: Text('Payment registered for ${invoice.invoiceNumber}!'),
                                                     backgroundColor: AppColors.success,
@@ -366,7 +367,7 @@ class _InvoiceListScreenState extends State<InvoiceListScreen> {
                                                 );
                                                 invoiceProvider.fetchInvoices(refresh: true);
                                               } else {
-                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                messenger.showSnackBar(
                                                   SnackBar(
                                                     content: Text(invoiceProvider.errorMessage ?? 'Failed to record payment'),
                                                     backgroundColor: AppColors.error,
@@ -383,19 +384,33 @@ class _InvoiceListScreenState extends State<InvoiceListScreen> {
                                     );
                                   },
                                   onDownloadPdf: () async {
-                                    _showMockToast(context, 'Downloading PDF...');
+                                    final messenger = ScaffoldMessenger.of(context);
+                                    messenger.showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Downloading PDF...'),
+                                        behavior: SnackBarBehavior.floating,
+                                        duration: Duration(seconds: 1),
+                                      ),
+                                    );
                                     final success = await invoiceProvider.downloadInvoicePdf(
                                       invoiceId: invoice.id,
                                       invoiceNumber: invoice.invoiceNumber,
                                     );
-                                    if (!success && mounted) {
-                                      _showMockToast(context, invoiceProvider.errorMessage ?? 'Failed to download PDF');
+                                    if (!success) {
+                                      messenger.showSnackBar(
+                                        SnackBar(
+                                          content: Text(invoiceProvider.errorMessage ?? 'Failed to download PDF'),
+                                          backgroundColor: AppColors.error,
+                                          behavior: SnackBarBehavior.floating,
+                                        ),
+                                      );
                                     }
                                   },
                                   onDuplicate: () async {
+                                    final messenger = ScaffoldMessenger.of(context);
                                     final success = await invoiceProvider.duplicateInvoice(invoice);
                                     if (success) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
+                                      messenger.showSnackBar(
                                         SnackBar(
                                           content: Text('Invoice ${invoice.invoiceNumber} duplicated!'),
                                           backgroundColor: AppColors.success,
@@ -403,7 +418,7 @@ class _InvoiceListScreenState extends State<InvoiceListScreen> {
                                         ),
                                       );
                                     } else {
-                                      ScaffoldMessenger.of(context).showSnackBar(
+                                      messenger.showSnackBar(
                                         SnackBar(
                                           content: Text(invoiceProvider.errorMessage ?? 'Failed to duplicate invoice'),
                                           backgroundColor: AppColors.error,
@@ -426,10 +441,11 @@ class _InvoiceListScreenState extends State<InvoiceListScreen> {
                                           ),
                                           ElevatedButton(
                                             onPressed: () async {
+                                              final messenger = ScaffoldMessenger.of(context);
                                               Navigator.pop(context);
                                               final success = await invoiceProvider.deleteInvoice(invoice.id);
                                               if (success) {
-                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                messenger.showSnackBar(
                                                   SnackBar(
                                                     content: Text('Invoice deleted successfully!'),
                                                     backgroundColor: AppColors.success,
@@ -438,7 +454,7 @@ class _InvoiceListScreenState extends State<InvoiceListScreen> {
                                                 );
                                                 invoiceProvider.fetchInvoices(refresh: true);
                                               } else {
-                                                ScaffoldMessenger.of(context).showSnackBar(
+                                                messenger.showSnackBar(
                                                   SnackBar(
                                                     content: Text(invoiceProvider.errorMessage ?? 'Failed to delete invoice'),
                                                     backgroundColor: AppColors.error,

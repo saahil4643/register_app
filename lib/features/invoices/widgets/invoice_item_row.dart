@@ -87,7 +87,7 @@ class InvoiceItemRow extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(6),
                   decoration: BoxDecoration(
-                    color: _getCategoryColor(item.product.category).withOpacity(0.15),
+                    color: _getCategoryColor(item.product.category).withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Icon(

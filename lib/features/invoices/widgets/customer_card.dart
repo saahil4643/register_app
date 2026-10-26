@@ -177,7 +177,7 @@ class CustomerCard extends StatelessWidget {
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
                   decoration: BoxDecoration(
-                    color: isDark ? AppColors.darkBorder.withOpacity(0.3) : const Color(0xFFF9FAFB),
+                    color: isDark ? AppColors.darkBorder.withValues(alpha: 0.3) : const Color(0xFFF9FAFB),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
                       color: isDark ? AppColors.darkBorder : const Color(0xFFE5E7EB),
@@ -227,7 +227,7 @@ class CustomerCard extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 4),
       child: Row(
         children: [
-          Icon(icon, size: 12, color: theme.textTheme.bodySmall?.color?.withOpacity(0.7)),
+          Icon(icon, size: 12, color: theme.textTheme.bodySmall?.color?.withValues(alpha: 0.7)),
           const SizedBox(width: 6),
           Text(
             '$label: ',

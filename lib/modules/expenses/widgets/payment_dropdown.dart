@@ -42,7 +42,7 @@ class PaymentDropdown extends StatelessWidget {
           ),
         ),
         DropdownButtonFormField<String>(
-          value: initialValue,
+          initialValue: initialValue,
           items: paymentModes
               .map((mode) => DropdownMenuItem<String>(
                     value: mode,
@@ -60,7 +60,7 @@ class PaymentDropdown extends StatelessWidget {
             prefixIcon: Icon(
               Icons.account_balance_wallet_outlined,
               size: 20,
-              color: theme.colorScheme.primary.withOpacity(0.7),
+              color: theme.colorScheme.primary.withValues(alpha: 0.7),
             ),
           ),
         ),

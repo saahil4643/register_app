@@ -205,14 +205,14 @@ class _UploadWidgetState extends State<UploadWidget> {
           )
         else
           DragTarget<String>(
-            onWillAccept: (_) {
+            onWillAcceptWithDetails: (_) {
               setState(() => _isDragging = true);
               return true;
             },
             onLeave: (_) {
               setState(() => _isDragging = false);
             },
-            onAccept: (_) {
+            onAcceptWithDetails: (_) {
               setState(() => _isDragging = false);
               _simulateMockFile();
             },
@@ -225,7 +225,7 @@ class _UploadWidgetState extends State<UploadWidget> {
                   padding: const EdgeInsets.symmetric(vertical: 28, horizontal: 16),
                   decoration: BoxDecoration(
                     color: _isDragging
-                        ? theme.colorScheme.primary.withOpacity(0.04)
+                        ? theme.colorScheme.primary.withValues(alpha: 0.04)
                         : (isDark ? theme.colorScheme.surface : const Color(0xFFF9FAFB)),
                     borderRadius: BorderRadius.circular(AppDimensions.radiusM),
                     border: Border.all(

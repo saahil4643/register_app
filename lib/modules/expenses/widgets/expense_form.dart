@@ -388,7 +388,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
                                   prefixIcon: Icon(
                                     Icons.currency_rupee_rounded,
                                     size: 20,
-                                    color: theme.colorScheme.primary.withOpacity(0.7),
+                                    color: theme.colorScheme.primary.withValues(alpha: 0.7),
                                   ),
                                 ),
                                 validator: (value) {
@@ -450,7 +450,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
                                   fontWeight: FontWeight.bold,
                                 ),
                                 decoration: InputDecoration(
-                                  fillColor: isDark ? theme.colorScheme.surface.withOpacity(0.4) : const Color(0xFFF3F4F6),
+                                  fillColor: isDark ? theme.colorScheme.surface.withValues(alpha: 0.4) : const Color(0xFFF3F4F6),
                                   prefixIcon: const Icon(Icons.calculate_outlined, size: 20),
                                 ),
                               ),
@@ -482,7 +482,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
                                   fontWeight: FontWeight.bold,
                                 ),
                                 decoration: InputDecoration(
-                                  fillColor: isDark ? theme.colorScheme.surface.withOpacity(0.4) : const Color(0xFFF3F4F6),
+                                  fillColor: isDark ? theme.colorScheme.surface.withValues(alpha: 0.4) : const Color(0xFFF3F4F6),
                                   prefixIcon: const Icon(Icons.summarize_outlined, size: 20),
                                 ),
                               ),
@@ -533,7 +533,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
                                   prefixIcon: Icon(
                                     Icons.receipt_rounded,
                                     size: 20,
-                                    color: theme.colorScheme.primary.withOpacity(0.7),
+                                    color: theme.colorScheme.primary.withValues(alpha: 0.7),
                                   ),
                                 ),
                               ),
@@ -730,7 +730,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
                     Icon(
                       icon,
                       size: 20,
-                      color: theme.colorScheme.primary.withOpacity(0.7),
+                      color: theme.colorScheme.primary.withValues(alpha: 0.7),
                     ),
                     const SizedBox(width: 12),
                     Expanded(

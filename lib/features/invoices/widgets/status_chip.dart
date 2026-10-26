@@ -59,7 +59,7 @@ class StatusChip extends StatelessWidget {
         color: backgroundColor,
         borderRadius: BorderRadius.circular(20), // Zoho style pill-shape
         border: Border.all(
-          color: textColor.withOpacity(0.15),
+          color: textColor.withValues(alpha: 0.15),
           width: 1,
         ),
       ),

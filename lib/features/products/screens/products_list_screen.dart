@@ -122,12 +122,7 @@ class _ProductsListScreenState extends State<ProductsListScreen> {
             tooltip: 'Sort Items',
             onPressed: _showSortBottomSheet,
           ),
-          IconButton(
-            icon: const Icon(Icons.add_rounded),
-            tooltip: 'Add Item',
-            onPressed: () => _navigateToAddProduct(context),
-          ),
-          const SizedBox(width: 4),
+          const SizedBox(width: 8),
         ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1.0),
@@ -298,13 +293,15 @@ class _ProductsListScreenState extends State<ProductsListScreen> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _navigateToAddProduct(context),
-        backgroundColor: AppColors.lightPrimary,
-        foregroundColor: Colors.white,
-        icon: const Icon(Icons.add_rounded),
-        label: const Text('New Item', style: TextStyle(fontWeight: FontWeight.bold)),
-      ),
+      floatingActionButton: filteredProducts.isEmpty
+          ? null
+          : FloatingActionButton.extended(
+              onPressed: () => _navigateToAddProduct(context),
+              backgroundColor: AppColors.lightPrimary,
+              foregroundColor: Colors.white,
+              icon: const Icon(Icons.add_rounded),
+              label: const Text('New Item', style: TextStyle(fontWeight: FontWeight.bold)),
+            ),
     );
   }
 

@@ -5,9 +5,6 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/widgets/custom_states.dart';
 import '../../../core/widgets/custom_dialogs.dart';
 import '../authentication/providers/auth_provider.dart';
-import '../invoices/providers/invoice_provider.dart';
-import '../customers/screens/create_customer_screen.dart';
-import '../products/screens/create_product_screen.dart';
 import '../settings/providers/settings_provider.dart';
 
 class NavigationShell extends StatefulWidget {
@@ -453,86 +450,6 @@ class _NavigationShellState extends State<NavigationShell> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  void _showQuickCreate(BuildContext context) {
-    showCustomBottomSheet(
-      context: context,
-      title: 'Quick Actions',
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const SizedBox(height: 8),
-          ListTile(
-            leading: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: const BoxDecoration(color: Color(0xFFD1FAE5), shape: BoxShape.circle),
-              child: const Icon(Icons.add_chart_rounded, color: AppColors.success, size: 20),
-            ),
-            title: const Text('Create Invoice', style: TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: const Text('Generate a new invoice'),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            onTap: () {
-              Navigator.pop(context);
-              context.read<InvoiceProvider>().startNewInvoice();
-              context.push('/invoices/create');
-            },
-          ),
-          const SizedBox(height: 8),
-          ListTile(
-            leading: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: const BoxDecoration(color: Color(0xFFEFF6FF), shape: BoxShape.circle),
-              child: const Icon(Icons.person_add_alt_1_rounded, color: AppColors.info, size: 20),
-            ),
-            title: const Text('Add Customer', style: TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: const Text('Register a new client'),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const CreateCustomerScreen()),
-              );
-            },
-          ),
-          const SizedBox(height: 8),
-          ListTile(
-            leading: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: const BoxDecoration(color: Color(0xFFFEF3C7), shape: BoxShape.circle),
-              child: const Icon(Icons.add_box_rounded, color: AppColors.warning, size: 20),
-            ),
-            title: const Text('Add Product & Service', style: TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: const Text('Insert an item in inventory'),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            onTap: () {
-              Navigator.pop(context);
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const CreateProductScreen()),
-              );
-            },
-          ),
-          const SizedBox(height: 8),
-          ListTile(
-            leading: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: const BoxDecoration(color: Color(0xFFF5F3FF), shape: BoxShape.circle),
-              child: const Icon(Icons.account_balance_wallet_rounded, color: AppColors.lightPrimary, size: 20),
-            ),
-            title: const Text('Add Expense', style: TextStyle(fontWeight: FontWeight.bold)),
-            subtitle: const Text('Record business transaction expenses'),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            onTap: () {
-              Navigator.pop(context);
-              context.push('/expenses/create');
-            },
-          ),
-          const SizedBox(height: 16),
-        ],
       ),
     );
   }
@@ -1000,21 +917,6 @@ class _NavigationShellState extends State<NavigationShell> {
           ),
         ),
       ),
-      floatingActionButton: (widget.navigationShell.currentIndex == 1 || widget.navigationShell.currentIndex == 4)
-          ? null
-          : Container(
-              height: 56,
-              width: 56,
-              margin: const EdgeInsets.only(bottom: 12),
-              child: FloatingActionButton(
-                onPressed: () => _showQuickCreate(context),
-                backgroundColor: theme.colorScheme.primary,
-                foregroundColor: theme.colorScheme.onPrimary,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-                elevation: 4,
-                child: const Icon(Icons.add_rounded, size: 28),
-              ),
-            ),
     );
   }
 }

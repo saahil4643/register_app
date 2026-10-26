@@ -104,12 +104,7 @@ class _CustomersListScreenState extends State<CustomersListScreen> {
             tooltip: 'Sort Customers',
             onPressed: _showSortBottomSheet,
           ),
-          IconButton(
-            icon: const Icon(Icons.person_add_alt_1_rounded),
-            tooltip: 'Add Customer',
-            onPressed: () => _navigateToAddCustomer(context),
-          ),
-          const SizedBox(width: 4),
+          const SizedBox(width: 8),
         ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1.0),
@@ -251,13 +246,15 @@ class _CustomersListScreenState extends State<CustomersListScreen> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _navigateToAddCustomer(context),
-        backgroundColor: AppColors.lightPrimary,
-        foregroundColor: Colors.white,
-        icon: const Icon(Icons.person_add_alt_1_rounded),
-        label: const Text('New Customer', style: TextStyle(fontWeight: FontWeight.bold)),
-      ),
+      floatingActionButton: filteredCustomers.isEmpty
+          ? null
+          : FloatingActionButton.extended(
+              onPressed: () => _navigateToAddCustomer(context),
+              backgroundColor: AppColors.lightPrimary,
+              foregroundColor: Colors.white,
+              icon: const Icon(Icons.person_add_alt_1_rounded),
+              label: const Text('New Customer', style: TextStyle(fontWeight: FontWeight.bold)),
+            ),
     );
   }
 

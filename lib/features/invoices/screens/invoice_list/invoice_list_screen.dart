@@ -530,7 +530,7 @@ class _InvoiceListScreenState extends State<InvoiceListScreen> {
                 borderRadius: BorderRadius.circular(20), // Zoho style rounded pill
                 side: BorderSide(
                   color: isSelected
-                      ? theme.colorScheme.primary.withOpacity(0.5)
+                      ? theme.colorScheme.primary.withValues(alpha: 0.5)
                       : (isDark ? AppColors.darkBorder : AppColors.lightBorder),
                   width: 1.2,
                 ),

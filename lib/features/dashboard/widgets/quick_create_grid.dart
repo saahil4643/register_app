@@ -2,23 +2,22 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 
 class QuickCreateGrid extends StatelessWidget {
-  final VoidCallback onNewCustomer;
   final VoidCallback onNewInvoice;
-  final VoidCallback onNewBill;
-  final VoidCallback onNewExpense;
+  final VoidCallback onCollectPayment;
+  final VoidCallback onNewCustomer;
+  final VoidCallback onGstReports;
 
   const QuickCreateGrid({
     super.key,
-    required this.onNewCustomer,
     required this.onNewInvoice,
-    required this.onNewBill,
-    required this.onNewExpense,
+    required this.onCollectPayment,
+    required this.onNewCustomer,
+    required this.onGstReports,
   });
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final itemBg = isDark
         ? const Color(0xFF1E293B)
@@ -35,19 +34,18 @@ class QuickCreateGrid extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Section Header: Lightning Icon + Quick Create
         Row(
           children: [
             Icon(
-              Icons.bolt_rounded,
-              size: 20,
+              Icons.add_circle_outline_rounded,
+              size: 18,
               color: isDark ? AppColors.darkTextPrimary : const Color(0xFF0F172A),
             ),
             const SizedBox(width: 6),
             Text(
-              'Quick Create',
+              'Quick Actions',
               style: TextStyle(
-                fontSize: 15,
+                fontSize: 14,
                 fontWeight: FontWeight.w700,
                 color: isDark ? AppColors.darkTextPrimary : const Color(0xFF0F172A),
                 letterSpacing: -0.2,
@@ -63,7 +61,27 @@ class QuickCreateGrid extends StatelessWidget {
           children: [
             _buildActionItem(
               context,
-              icon: Icons.person_outline_rounded,
+              icon: Icons.receipt_long_rounded,
+              label: 'New\nInvoice',
+              bgColor: itemBg,
+              iconColor: AppColors.lightPrimary,
+              textColor: textColor,
+              onTap: onNewInvoice,
+            ),
+            const SizedBox(width: 10),
+            _buildActionItem(
+              context,
+              icon: Icons.payments_outlined,
+              label: 'Collect\nPayment',
+              bgColor: itemBg,
+              iconColor: AppColors.success,
+              textColor: textColor,
+              onTap: onCollectPayment,
+            ),
+            const SizedBox(width: 10),
+            _buildActionItem(
+              context,
+              icon: Icons.person_add_alt_1_outlined,
               label: 'New\nCustomer',
               bgColor: itemBg,
               iconColor: iconColor,
@@ -73,32 +91,12 @@ class QuickCreateGrid extends StatelessWidget {
             const SizedBox(width: 10),
             _buildActionItem(
               context,
-              icon: Icons.receipt_long_rounded,
-              label: 'New\nInvoice',
+              icon: Icons.bar_chart_rounded,
+              label: 'GST\nReports',
               bgColor: itemBg,
-              iconColor: iconColor,
+              iconColor: const Color(0xFF0284C7),
               textColor: textColor,
-              onTap: onNewInvoice,
-            ),
-            const SizedBox(width: 10),
-            _buildActionItem(
-              context,
-              icon: Icons.receipt_long_outlined,
-              label: 'New\nBill',
-              bgColor: itemBg,
-              iconColor: iconColor,
-              textColor: textColor,
-              onTap: onNewBill,
-            ),
-            const SizedBox(width: 10),
-            _buildActionItem(
-              context,
-              icon: Icons.rate_review_outlined,
-              label: 'New\nExpense',
-              bgColor: itemBg,
-              iconColor: iconColor,
-              textColor: textColor,
-              onTap: onNewExpense,
+              onTap: onGstReports,
             ),
           ],
         ),
@@ -116,38 +114,37 @@ class QuickCreateGrid extends StatelessWidget {
     required VoidCallback onTap,
   }) {
     return Expanded(
-      child: Column(
-        children: [
-          InkWell(
-            onTap: onTap,
-            borderRadius: BorderRadius.circular(16),
-            child: Container(
-              height: 72,
-              decoration: BoxDecoration(
-                color: bgColor,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Center(
-                child: Icon(
+      child: Material(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(12),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
                   icon,
-                  size: 28,
+                  size: 24,
                   color: iconColor,
                 ),
-              ),
+                const SizedBox(height: 8),
+                Text(
+                  label,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w600,
+                    color: textColor,
+                    height: 1.25,
+                  ),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            label,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 12,
-              height: 1.25,
-              fontWeight: FontWeight.w500,
-              color: textColor,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

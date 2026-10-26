@@ -42,6 +42,8 @@ import '../../features/credit_notes/screens/credit_notes_list_screen.dart';
 import '../../features/credit_notes/screens/new_credit_note_screen.dart';
 import '../../features/proforma_invoices/screens/proforma_invoices_list_screen.dart';
 import '../../features/proforma_invoices/screens/new_proforma_invoice_screen.dart';
+import '../../features/payments/screens/payments_screen.dart';
+import '../../features/reports/screens/reports_screen.dart';
 
 class AppRouter {
   static final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -270,11 +272,7 @@ class AppRouter {
         GoRoute(
           parentNavigatorKey: _rootNavigatorKey,
           path: '/reports',
-          builder: (context, state) => const PlaceholderScreen(
-            title: 'Financial Reports',
-            description: 'View balance sheets, general ledgers, cash flow statements, and tax summary tables.',
-            icon: Icons.bar_chart_outlined,
-          ),
+          builder: (context, state) => const ReportsScreen(),
         ),
         GoRoute(
           parentNavigatorKey: _rootNavigatorKey,
@@ -399,11 +397,7 @@ class AppRouter {
         GoRoute(
           parentNavigatorKey: _rootNavigatorKey,
           path: '/payments',
-          builder: (context, state) => const PlaceholderScreen(
-            title: 'Payments',
-            description: 'Record customer payment receipts, bank transactions, and payout settlements.',
-            icon: Icons.payments_rounded,
-          ),
+          builder: (context, state) => const PaymentsScreen(),
         ),
         GoRoute(
           parentNavigatorKey: _rootNavigatorKey,

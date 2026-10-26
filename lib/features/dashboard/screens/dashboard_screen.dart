@@ -428,21 +428,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 16.0),
                             child: QuickCreateGrid(
+                              onNewInvoice: () {
+                                context.read<InvoiceProvider>().startNewInvoice();
+                                context.push('/invoices/create');
+                              },
+                              onCollectPayment: () {
+                                context.push('/payments');
+                              },
                               onNewCustomer: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(builder: (context) => const CreateCustomerScreen()),
                                 );
                               },
-                              onNewInvoice: () {
-                                context.read<InvoiceProvider>().startNewInvoice();
-                                context.push('/invoices/create');
-                              },
-                              onNewBill: () {
-                                context.push('/purchases/bills/new');
-                              },
-                              onNewExpense: () {
-                                context.push('/expenses/create');
+                              onGstReports: () {
+                                context.push('/reports');
                               },
                             ),
                           ).animate().fade(delay: 100.ms),

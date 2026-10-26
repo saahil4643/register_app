@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:app/features/invoices/models/invoice_item.dart';
 import 'package:app/features/products/models/product.dart';
+import 'package:app/features/customers/models/customer.dart';
 
 void main() {
   setUp(() async {
@@ -70,6 +71,46 @@ void main() {
       final updated = item.copyWith(quantity: 5);
       expect(updated.quantity, 5);
       expect(updated.total, 250.0);
+    });
+
+    test('Creates Service and Goods items properly', () {
+      final serviceProduct = Product(
+        id: 'SRV-1',
+        name: 'Website Consulting',
+        sku: 'SRV-001',
+        productType: 'service',
+        category: 'Services',
+        sellingPrice: 2500.0,
+        stock: 0,
+        minStock: 0,
+        trackInventory: false,
+        gst: 18.0,
+        createdAt: DateTime.now(),
+      );
+
+      expect(serviceProduct.productType, 'service');
+      expect(serviceProduct.trackInventory, false);
+      expect(serviceProduct.sellingPrice, 2500.0);
+    });
+
+    test('Customer model instantiates with business details', () {
+      final customer = Customer(
+        id: 'CUST-1',
+        customerType: 'business',
+        displayName: 'Acme Corp',
+        companyName: 'Acme Corporation Pvt Ltd',
+        primaryPhone: '+91 9876543210',
+        email: 'billing@acme.com',
+        gstNumber: '29ABCDE1234F1Z5',
+        billingCity: 'Bengaluru',
+        paymentTerms: 'Net 30',
+        createdAt: DateTime.now(),
+      );
+
+      expect(customer.customerType, 'business');
+      expect(customer.displayName, 'Acme Corp');
+      expect(customer.gstNumber, '29ABCDE1234F1Z5');
+      expect(customer.paymentTerms, 'Net 30');
     });
   });
 }
